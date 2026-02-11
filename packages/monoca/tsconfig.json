@@ -4,7 +4,6 @@
 		"lib": ["ES2021", "DOM"],
 		"outDir": "build",
 		"rootDir": "src",
-		"baseUrl": ".",
 		"paths": {
 			"@/*": ["./src/*"],
 			"@webgal/language-client": ["../language-client/src"],
