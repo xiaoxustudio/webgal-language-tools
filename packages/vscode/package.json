@@ -40,7 +40,9 @@
 					"webgalscript",
 					"webgalScript",
 					"webgal script",
-					"webgal Script"
+					"webgal Script",
+					"webgal-Script",
+					"webgal-script"
 				],
 				"icon": {
 					"dark": "./resources/icon_script.png",
@@ -52,6 +54,8 @@
 				"id": "webgal-config",
 				"extensions": [],
 				"aliases": [
+					"webgal-config",
+					"webgal-Config",
 					"webgalConfig",
 					"webgalconfig",
 					"webgal Config",
