@@ -10,7 +10,7 @@ Install the [webgal-for-vscode](https://marketplace.visualstudio.com/items?itemN
 
 ### For Monaco Users
 
-先启动 WebSocket 版 language-server：
+The first step is to start the language server with websocket:
 
 ```bash
 pnpm --filter @webgal/language-server run dev:ws
@@ -26,7 +26,7 @@ await createWebgalMonocaLanguageClient({
 });
 ```
 
-如果你需要自定义文件系统能力，可以覆盖 clientHandlers：
+You can also use the `clientHandlers` to override the default behavior of the language client.
 
 ```ts
 await createWebgalMonocaLanguageClient({
@@ -50,6 +50,7 @@ await createWebgalMonocaLanguageClient({
 | :---------------------------------------------------- | :------------------------------------------ |
 | [@webgal/language-core](./packages/language-core)     | Contains some configurations and core tools |
 | [@webgal/language-server](./packages/language-server) | LSP Language Service                        |
+| [@webgal/language-client](./packages/language-server) | LSP Language Client                         |
 | [vscode](./packages/vscode-extension)                 | vscode extension                            |
 
 ## License
