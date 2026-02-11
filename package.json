@@ -6,10 +6,12 @@
 		"url": "https://github.com/volarjs/starter.git"
 	},
 	"scripts": {
-		"build": "cd ./packages/vscode && npm run build",
-		"watch": "cd ./packages/vscode && npm run watch",
-		"pack": "cd ./packages/vscode && npm run pack",
-		"release": "cd ./packages/vscode && npm run release"
+		"build:vsc": "pnpm --filter ./packages/vscode run build",
+		"build:core": "pnpm --filter ./packages/language-core run build",
+		"build:server": "pnpm --filter ./packages/language-server run build",
+		"watch": "cd ./packages/vscode && pnpm run watch",
+		"pack": "cd ./packages/vscode && pnpm run pack",
+		"release": "cd ./packages/vscode && pnpm run release"
 	},
 	"devDependencies": {
 		"@types/node": "latest",

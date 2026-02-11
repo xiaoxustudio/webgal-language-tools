@@ -1,45 +1,16 @@
-import * as serverProtocol from '@volar/language-server/protocol';
-import { activateAutoInsertion, createLabsInfo, getTsdk } from '@volar/vscode';
-import { BaseLanguageClient, LanguageClient, LanguageClientOptions, ServerOptions, TransportKind } from '@volar/vscode/node';
-import * as vscode from 'vscode';
+import * as serverProtocol from "@volar/language-server/protocol";
+import { activateAutoInsertion, createLabsInfo } from "@volar/vscode";
+import { BaseLanguageClient } from "@volar/vscode/node";
+import * as vscode from "vscode";
+import { createClient } from "./client";
 
 let client: BaseLanguageClient;
 
 export async function activate(context: vscode.ExtensionContext) {
-
-	const serverModule = vscode.Uri.joinPath(context.extensionUri, 'dist', 'server.js');
-	const runOptions = { execArgv: <string[]>[] };
-	const debugOptions = { execArgv: ['--nolazy', '--inspect=' + 6009] };
-	const serverOptions: ServerOptions = {
-		run: {
-			module: serverModule.fsPath,
-			transport: TransportKind.ipc,
-			options: runOptions
-		},
-		debug: {
-			module: serverModule.fsPath,
-			transport: TransportKind.ipc,
-			options: debugOptions
-		},
-	};
-	const clientOptions: LanguageClientOptions = {
-		documentSelector: [{ language: 'html1' }],
-		initializationOptions: {
-			typescript: {
-				tsdk: (await getTsdk(context))!.tsdk,
-			},
-		},
-	};
-	client = new LanguageClient(
-		'html1-language-server',
-		'HTML1 Language Server',
-		serverOptions,
-		clientOptions,
-	);
+	client = createClient(context);
 	await client.start();
 
-	// support for auto close tag
-	activateAutoInsertion('html1', client);
+	activateAutoInsertion("webgal", client);
 
 	// support for https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.volarjs-labs
 	// ref: https://twitter.com/johnsoncodehk/status/1656126976774791168

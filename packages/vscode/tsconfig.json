@@ -3,10 +3,12 @@
 	"compilerOptions": {
 		"outDir": "out",
 		"rootDir": "src",
+		"paths": {
+			"@/*": ["./src/*"]
+		}
 	},
-	"include": [
-		"src",
-	],
+	"include": ["src"],
+	"exclude": ["node_modules", "out", "scripts"],
 	"references": [
 		{
 			"path": "../language-server/tsconfig.json"

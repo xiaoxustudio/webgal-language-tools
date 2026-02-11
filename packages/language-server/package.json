@@ -1,24 +1,31 @@
 {
-	"name": "@html1/language-server",
+	"name": "@webgal/language-server",
 	"version": "0.0.1",
 	"main": "out/index.js",
 	"license": "MIT",
 	"files": [
 		"out/**/*.js",
-		"out/**/*.d.ts"
+		"out/**/*.d.ts",
+		"bin"
 	],
 	"bin": {
-		"html1-language-server": "./bin/html1-language-server.js"
+		"webgal-language-server": "./bin/webgal-language-server.js"
 	},
+	"scripts": {
+		"build": "tsc -p tsconfig.json & tsc-alias -p tsconfig.json",
+		"gen": "tsx scripts/gen.ts",
+		"dev": "node bin/webgal-language-server.js --stdio"
+	}, 
 	"dependencies": {
 		"@volar/language-core": "~2.4.0",
 		"@volar/language-server": "~2.4.0",
 		"@volar/typescript": "~2.4.0",
-		"volar-service-css": "volar-2.4",
-		"volar-service-emmet": "volar-2.4",
-		"volar-service-html": "volar-2.4",
-		"volar-service-typescript": "volar-2.4",
-		"vscode-html-languageservice": "^5.3.1",
+		"@webgal/language-core": "workspace:*",
+		"tsc-alias": "^1.8.16",
+		"vscode-languageserver-textdocument": "^1.0.11",
 		"vscode-uri": "^3.0.8"
+	},
+	"devDependencies": {
+		"tsx": "^4.21.0"
 	}
 }

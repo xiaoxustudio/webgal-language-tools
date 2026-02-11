@@ -1,9 +1,7 @@
 {
 	"compilerOptions": {
 		"target": "ES2021",
-		"lib": [
-			"ES2021",
-		],
+		"lib": ["ES2021"],
 		"module": "Node16",
 		"sourceMap": true,
 		"composite": true,
@@ -12,11 +10,10 @@
 		"skipLibCheck": true,
 		"noUnusedLocals": true,
 		"noUnusedParameters": true,
-		"baseUrl": "./",
+		"types": ["@types/node"],
 		"paths": {
-			"@html1/language-server": [
-				"packages/language-server/src"
-			],
-		},
-	},
+			"@webgal/language-server": ["packages/language-server/src"],
+			"@webgal/language-core": ["packages/language-core/src"]
+		}
+	}
 }

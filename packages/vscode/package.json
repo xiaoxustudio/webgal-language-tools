@@ -1,6 +1,6 @@
 {
 	"private": true,
-	"name": "vscode-html1",
+	"name": "webgal-for-vscode",
 	"version": "0.0.1",
 	"repository": {
 		"type": "git",
@@ -8,41 +8,218 @@
 		"directory": "packages/vscode"
 	},
 	"categories": [
-		"Programming Languages"
+		"Programming Languages",
+		"Formatters",
+		"Debuggers",
+		"Snippets"
 	],
-	"displayName": "HTML1 Language Features",
-	"description": "HTML1 Language Features",
-	"author": "volarjs",
-	"publisher": "volarjs",
+	"displayName": "WebGal Language For VSCode",
+	"description": "WebGal Language For VSCode",
+	"author": "xuran",
+	"publisher": "Xuran1783558957",
 	"engines": {
 		"vscode": "^1.82.0"
 	},
 	"activationEvents": [
-		"onLanguage:html1"
+		"workspaceContains:**/game/config.txt"
 	],
 	"main": "./dist/client.js",
 	"contributes": {
+		"marks": [
+			"markdownString"
+		],
 		"languages": [
 			{
-				"id": "html1",
-				"extensions": [
-					".html1"
+				"id": "webgal",
+				"extensions": [],
+				"filenamePatterns": [
+					"**/game/scene/**/*.txt"
+				],
+				"aliases": [
+					"webgal",
+					"webgalscript",
+					"webgalScript",
+					"webgal script",
+					"webgal Script"
+				],
+				"icon": {
+					"dark": "./resources/icon_script.png",
+					"light": "./resources/icon_script.png"
+				},
+				"configuration": "./syntaxes/language-configuration.json"
+			},
+			{
+				"id": "webgal-config",
+				"extensions": [],
+				"aliases": [
+					"webgalConfig",
+					"webgalconfig",
+					"webgal Config",
+					"webgal config"
+				],
+				"filenamePatterns": [
+					"**/game/config.txt"
+				],
+				"icon": {
+					"dark": "./resources/icon_config.png",
+					"light": "./resources/icon_config.png"
+				},
+				"configuration": "./syntaxes/language-configuration.json"
+			}
+		],
+		"commands": [
+			{
+				"title": "(webgal)跳转到插值变量",
+				"command": "extension.goToDefinition"
+			},
+			{
+				"title": "(webgal)启动WebGal For VSCode",
+				"command": "extension.XRStartWFV"
+			},
+			{
+				"title": "(webgal)运行到当前行",
+				"command": "extension.RunLineScript"
+			}
+		],
+		"menus": {
+			"editor/context": [
+				{
+					"when": "resourceLangId == webgal",
+					"command": "extension.RunLineScript",
+					"group": "webgal for vscode"
+				}
+			]
+		},
+		"debuggers": [
+			{
+				"type": "webgal",
+				"label": "Webgal Debug",
+				"program": "./out/DebugAdapter.js",
+				"runtime": "node",
+				"configurationAttributes": {
+					"launch": {
+						"required": [
+							"program"
+						],
+						"properties": {
+							"program": {
+								"type": "string",
+								"description": "需要调试的场景(单文件名称即可,不含路径)：文件名.文件扩展名",
+								"default": "${fileBasename}"
+							},
+							"ws": {
+								"type": "string",
+								"description": "WebSoket 地址",
+								"default": "ws://localhost:3001/api/webgalsync"
+							}
+						}
+					}
+				},
+				"initialConfigurations": [
+					{
+						"type": "webgal",
+						"request": "launch",
+						"name": "Launch Webgal Script",
+						"program": "${fileBasename}",
+						"ws": "ws://localhost:3001/api/webgalsync"
+					}
+				],
+				"configurationSnippets": [
+					{
+						"label": "webgal Debug: Launch",
+						"description": "A new configuration for launching a webgal debug program",
+						"body": {
+							"type": "webgal",
+							"request": "launch",
+							"name": "${2:Launch Webgal Script}",
+							"program": "${fileBasename}",
+							"ws": "ws://localhost:3001/api/webgalsync"
+						}
+					}
 				]
+			}
+		],
+		"configuration": {
+			"type": "object",
+			"title": "wabgal configuration",
+			"properties": {
+				"XRWebGalLanguageServer.maxNumberOfProblems": {
+					"scope": "resource",
+					"type": "number",
+					"default": 500,
+					"description": "警告信息的最大数量"
+				},
+				"XRWebGalLanguageServer.isShowWarning": {
+					"scope": "resource",
+					"type": "boolean",
+					"default": true,
+					"description": "是否显示警告信息"
+				},
+				"XRWebGalLanguageServer.isShowHint": {
+					"scope": "resource",
+					"type": "string",
+					"enum": [
+						"关闭",
+						"最前面",
+						"变量名前",
+						"变量名后",
+						"最后面"
+					],
+					"default": "变量名后",
+					"description": "是否显示变量类型镶嵌"
+				}
+			}
+		},
+		"grammars": [
+			{
+				"language": "webgal",
+				"scopeName": "source.webgal",
+				"path": "./syntaxes/webgal.tmLanguage.json"
+			},
+			{
+				"language": "webgal-config",
+				"scopeName": "source.webgal-config",
+				"path": "./syntaxes/webgal-config.tmLanguage.json"
 			}
 		]
 	},
 	"scripts": {
 		"build": "node scripts/build -- --minify",
-		"watch": "npm run build -- --watch",
-		"pack": "npm run build && vsce package --pre-release",
-		"release": "npm run build && vsce publish --pre-release"
+		"watch": "pnpm run build -- --watch",
+		"pack": "pnpm run build && vsce package --pre-release",
+		"release": "pnpm run build && vsce publish --pre-release"
 	},
 	"devDependencies": {
-		"@html1/language-server": "workspace:*",
+		"@types/js-beautify": "^1.14.3",
+		"@types/node": "^25.2.2",
 		"@types/vscode": "^1.82.0",
+		"@types/ws": "^8.5.10",
+		"@typescript-eslint/eslint-plugin": "^7.18.0",
+		"@typescript-eslint/parser": "^7.18.0",
 		"@volar/language-server": "~2.4.0",
 		"@volar/vscode": "~2.4.0",
+		"concurrently": "^9.2.1",
 		"esbuild": "latest",
+		"esbuild-plugin-alias": "^0.2.1",
+		"eslint": "^8.56.0",
+		"prettier": "^3.8.1",
+		"tsc-alias": "^1.8.16",
+		"tsx": "^4.21.0",
+		"typescript": "^5.9.3",
 		"vsce": "latest"
+	},
+	"dependencies": {
+		"@vscode/debugadapter": "^1.65.0",
+		"angular-expressions": "^1.5.1",
+		"js-beautify": "^1.15.3",
+		"vscode-debugadapter": "^1.51.0",
+		"vscode-debugprotocol": "^1.51.0",
+		"vscode-languageclient": "^9.0.1",
+		"vscode-languageserver": "^9.0.1",
+		"vscode-languageserver-textdocument": "^1.0.11",
+		"webgal-parser": "^4.5.18",
+		"ws": "^8.17.1",
+		"@webgal/language-server": "workspace:*",
+		"@webgal/language-core": "workspace:*"
 	}
 }

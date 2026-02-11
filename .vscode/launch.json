@@ -9,11 +9,9 @@
 			"runtimeExecutable": "${execPath}",
 			"args": [
 				"--extensionDevelopmentPath=${workspaceRoot}/packages/vscode",
-				"--folder-uri=${workspaceRoot}/sample",
+				"--folder-uri=${workspaceRoot}/example"
 			],
-			"outFiles": [
-				"${workspaceRoot}/packages/vscode/dist/*.js"
-			],
+			"outFiles": ["${workspaceRoot}/packages/vscode/dist/*.js"],
 			"preLaunchTask": {
 				"type": "npm",
 				"script": "watch"
@@ -23,11 +21,9 @@
 			"name": "Attach to Server",
 			"type": "node",
 			"request": "attach",
-			"port": 6009,
+			"port": 5882,
 			"restart": true,
-			"outFiles": [
-				"${workspaceRoot}/packages/vscode/dist/*.js"
-			]
-		},
-	],
+			"outFiles": ["${workspaceRoot}/packages/vscode/dist/*.js"]
+		}
+	]
 }
