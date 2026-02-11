@@ -1,6 +1,6 @@
 import * as expressions from "angular-expressions";
 import * as fs from "fs/promises";
-import { FileAccessor, IDefinetionMap } from "@/types";
+import { FileAccessor, IDefinetionMap } from "./types";
 
 export const source = "WebGal Script";
 export const SCHEME = "webgal-virtual-doc";

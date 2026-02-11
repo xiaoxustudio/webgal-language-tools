@@ -4,8 +4,14 @@
 		"outDir": "build",
 		"rootDir": "src",
 		"paths": {
-			"@/*": ["./src/*"]
+			"@/*": ["./src/*"],
+			"@webgal/language-core": ["../language-core/build/index.d.ts"]
 		}
 	},
-	"include": ["src"]
+	"include": ["src"],
+	"references": [
+		{
+			"path": "../language-core"
+		}
+	]
 }

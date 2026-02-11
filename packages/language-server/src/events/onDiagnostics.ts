@@ -1,23 +1,14 @@
 import {
-	DocumentDiagnosticReportKind,
-	DocumentDiagnosticReport
+	Connection,
+	Diagnostic
 } from "@volar/language-server";
-import { ConnectionHandler } from "@/types";
 import { validateTextDocument } from "@/utils";
+import { TextDocument } from "vscode-languageserver-textdocument";
 
-export default <ConnectionHandler>function (documents, connection) {
-	connection.languages.diagnostics.on(async (params) => {
-		const document = documents.get(params.textDocument.uri);
-		if (document !== undefined) {
-			return {
-				kind: DocumentDiagnosticReportKind.Full,
-				items: await validateTextDocument(connection, document)
-			} satisfies DocumentDiagnosticReport;
-		} else {
-			return {
-				kind: DocumentDiagnosticReportKind.Full,
-				items: []
-			} satisfies DocumentDiagnosticReport;
-		}
-	});
-};
+export async function provideDiagnostics(
+	document: TextDocument,
+	connection: Connection
+): Promise<Diagnostic[]> {
+	// 使用 volar.js 的服务式诊断入口
+	return validateTextDocument(connection, document);
+}

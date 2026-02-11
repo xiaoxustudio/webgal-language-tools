@@ -212,30 +212,23 @@ export async function listPathCandidates(
 	token: string
 ): Promise<Array<{ label: string; insertText: string; isDirectory: boolean }>> {
 	try {
-		// 1. 先把文档 URI 转成本地文件路径（如果是 file: scheme）
 		let filePath: string | null = null;
 		if (docUri.startsWith("file://")) {
-			// fileURLToPath 会把 file:///C:/... 或 file:///home/... 转成本地路径
 			filePath = fileURLToPath(docUri);
 		} else {
-			// 如果不是 file:，可以尝试作为普通路径（或者直接返回空）
-			// 这里保守处理：不访问文件系统，返回空数组
 			return [];
 		}
 
 		const baseDir = path.dirname(filePath);
 
-		// 2. 根据 token 解析要列出的目录和 partial 前缀
 		let resolvedBase: string;
 		let partialName = "";
 
 		if (token.startsWith("/")) {
-			// 以 / 开头 — 当作绝对路径（UNIX 风格）；在 Windows 下可考虑驱动器字母处理
 			const maybeDir = token.endsWith("/") ? token : path.dirname(token);
 			resolvedBase = path.resolve(maybeDir);
 			partialName = token.endsWith("/") ? "" : path.basename(token);
 		} else if (token.startsWith("~")) {
-			// ~ 映射到用户主目录（可选）
 			const homedir = process.env.HOME || process.env.USERPROFILE || "";
 			const afterTilde = token === "~" ? "" : token.slice(2); // "~/" 前缀处理
 			const joined = path.join(homedir, afterTilde);
@@ -253,7 +246,6 @@ export async function listPathCandidates(
 			}
 		}
 
-		// 3. 读取目录并筛选
 		const entries = await fs
 			.readdir(resolvedBase, { withFileTypes: true })
 			.catch(() => []);
@@ -262,7 +254,6 @@ export async function listPathCandidates(
 			.map((e) => {
 				const isDir = e.isDirectory();
 				const name = e.name + (isDir ? "/" : "");
-				// 插入文本：保持 token 的前缀并补全剩余部分
 				let insertText: string;
 				if (token.includes("/")) {
 					const prefix = token.slice(0, token.lastIndexOf("/") + 1);
@@ -336,11 +327,11 @@ export function updateGlobalMap(documentTextArray: string[]) {
 		const labelExec = /label:\s*(\S+);/g.exec(currentLine);
 		const getUserInputExec = /getUserInput:\s*([^\s;]+)/g.exec(currentLine);
 		const chooseExec = /choose:\s*([^\s;]+)/g.exec(currentLine);
-		if (setVarExec != null) {
+		if (setVarExec !== null) {
 			const currentVariablePool = (GlobalMap.setVar[setVarExec[1]] ??=
 				[]);
 			const isGlobal =
-				currentLine.indexOf("-global") == -1 ? false : true;
+				currentLine.indexOf("-global") === -1 ? false : true;
 			currentVariablePool.push({
 				word: setVarExec[1],
 				value: setVarExec[2],
