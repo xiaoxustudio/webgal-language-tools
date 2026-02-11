@@ -1,0 +1,25 @@
+{
+	"name": "@webgal/monoca",
+	"version": "0.0.1",
+	"main": "build/index.js",
+	"type": "module",
+	"license": "MIT",
+	"files": ["build/**/*.js", "build/**/*.d.ts"],
+	"scripts": {
+		"build": "tsc -p tsconfig.json && tsc-alias -p tsconfig.json",
+		"format": " prettier --write \"src/**/*.ts\"",
+		"lint": "eslint src --ext ts --fix"
+	},
+	"dependencies": {
+		"@webgal/language-client": "workspace:*",
+		"monaco-editor": "^0.55.0",
+		"monaco-languageclient": "^7.3.0",
+		"vscode-languageclient": "^9.0.1",
+		"vscode-ws-jsonrpc": "^3.0.2",
+		"vscode": "npm:@codingame/monaco-vscode-api@>=1.85.0 <1.86.0"
+	},
+	"devDependencies": {
+		"@types/node": "^18.0.0",
+		"tsc-alias": "^1.8.16"
+	}
+}

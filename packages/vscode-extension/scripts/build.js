@@ -16,7 +16,11 @@ esbuild
 		outdir: "./dist",
 		minify: production,
 		sourcemap: !production,
-		external: ["vscode"],
+		external: [
+			"vscode",
+			"@webgal/language-client",
+			"@webgal/language-client/node"
+		],
 		plugins: [
 			alias({
 				tsconfig: "../tsconfig.json",

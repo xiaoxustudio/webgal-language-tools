@@ -1,0 +1,20 @@
+{
+	"name": "@webgal/language-client",
+	"version": "0.0.1",
+	"main": "build/index.js",
+	"types": "build/index.d.ts",
+	"license": "MIT",
+	"files": ["build/**/*.js", "build/**/*.d.ts"],
+	"exports": {
+		".": "./build/index.js",
+		"./node": "./build/node.js"
+	},
+	"scripts": {
+		"build": "tsc -p tsconfig.json",
+		"format": " prettier --write \"src/**/*.ts\"",
+		"lint": "eslint src --ext ts --fix"
+	},
+	"devDependencies": {
+		"@types/node": "^18.0.0"
+	}
+}

@@ -4,9 +4,14 @@ import {
 	ServerOptions,
 	TransportKind
 } from "vscode-languageclient/node";
-import requests from "./requests";
-import { ExtensionContext, Uri, workspace } from "vscode";
+import { ExtensionContext, Uri, window, workspace } from "vscode";
 import { selector, selectorConfig } from "@/utils/utils";
+import {
+	createWebgalClientHandlers,
+	registerWebgalClientHandlers
+} from "@webgal/language-client";
+import { createNodeFileSystem } from "@webgal/language-client/node";
+import { getState } from "@webgal/language-server/src/utils/providerState";
 
 export function createClient(context: ExtensionContext): LanguageClient {
 	const serverModule = Uri.joinPath(
@@ -44,9 +49,15 @@ export function createClient(context: ExtensionContext): LanguageClient {
 		clientOptions
 	);
 
-	for (const bindingFunction of requests) {
-		bindingFunction(client);
-	}
+	const rootPath =
+		workspace.workspaceFolders?.[0]?.uri.fsPath ?? process.cwd();
+	const vfs = createNodeFileSystem({ root: rootPath });
+	const handlers = createWebgalClientHandlers({
+		vfs,
+		showTip: (message) => window.showInformationMessage(message),
+		goPropertyDoc: (pathSegments) => getState(pathSegments)
+	});
+	registerWebgalClientHandlers(client, handlers);
 
 	return client;
 }

@@ -18,7 +18,10 @@ import {
 	Position,
 	Range
 } from "@volar/language-server";
+import { FileType, type FileStat, type FileSystem } from "@volar/language-service";
 import { TextDocument } from "vscode-languageserver-textdocument";
+import type { URI } from "vscode-uri";
+import type { VirtualFileSystem } from "@webgal/language-client";
 
 // 获取变量的描述
 export function getVariableTypeDesc(ALL_ARR: string[], _start_line: number) {
@@ -548,4 +551,52 @@ export async function validateTextDocument(
 		}
 	}
 	return diagnostics;
+}
+
+export function createVolarFileSystemFromVirtualFileSystem(
+	vfs: VirtualFileSystem,
+	options?: {
+		uriToPath?: (uri: URI) => string;
+	}
+): FileSystem {
+	const uriToPath =
+		options?.uriToPath ??
+		((uri: URI) => (uri.scheme === "file" ? uri.fsPath : uri.path));
+	return {
+		stat: async (uri) => {
+			const pathValue = uriToPath(uri);
+			const info = await vfs.stat(pathValue);
+			if (!info) {
+				return undefined;
+			}
+			const type = info.isDirectory
+				? FileType.Directory
+				: info.isFile
+					? FileType.File
+					: FileType.Unknown;
+			const stat: FileStat = {
+				type,
+				ctime: 0,
+				mtime: 0,
+				size: 0
+			};
+			return stat;
+		},
+		readFile: async (uri) => {
+			const pathValue = uriToPath(uri);
+			const content = await vfs.readFile(pathValue);
+			return content ?? undefined;
+		},
+		readDirectory: async (uri) => {
+			const pathValue = uriToPath(uri);
+			const entries = await vfs.readDirectory(pathValue);
+			if (!entries) {
+				return [];
+			}
+			return entries.map((entry) => [
+				entry.name,
+				entry.isDirectory ? FileType.Directory : FileType.File
+			]);
+		}
+	};
 }

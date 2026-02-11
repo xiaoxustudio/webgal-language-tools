@@ -13,7 +13,8 @@
 		"types": ["@types/node"],
 		"paths": {
 			"@webgal/language-server": ["packages/language-server/src"],
-			"@webgal/language-core": ["packages/language-core/src"]
+			"@webgal/language-core": ["packages/language-core/src"],
+			"@webgal/language-client": ["packages/language-client/src"],
 		}
 	}
 }

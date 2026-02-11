@@ -215,6 +215,7 @@
 		"vsce": "latest"
 	},
 	"dependencies": {
+		"@webgal/language-client": "workspace:*",
 		"@vscode/debugadapter": "^1.65.0",
 		"angular-expressions": "^1.5.1",
 		"js-beautify": "^1.15.3",

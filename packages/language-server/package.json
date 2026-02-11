@@ -15,19 +15,26 @@
 		"build": "tsc -p tsconfig.json & tsc-alias -p tsconfig.json",
 		"gen": "tsx scripts/gen.ts",
 		"dev": "node bin/webgal-language-server.js --stdio",
+		"dev:ws": "node bin/webgal-language-server.js --ws=3001",
 		"format": " prettier --write \"src/**/*.ts\"",
 		"lint": "eslint src --ext ts --fix"
 	},
 	"dependencies": {
 		"@volar/language-core": "~2.4.0",
+		"@volar/language-service": "~2.4.0",
 		"@volar/language-server": "~2.4.0",
 		"@volar/typescript": "~2.4.0",
+		"@webgal/language-client": "workspace:*",
 		"@webgal/language-core": "workspace:*",
 		"tsc-alias": "^1.8.16",
+		"vscode-languageserver": "^9.0.1",
+		"vscode-ws-jsonrpc": "^3.4.0",
 		"vscode-languageserver-textdocument": "^1.0.11",
-		"vscode-uri": "^3.0.8"
+		"vscode-uri": "^3.0.8",
+		"ws": "^8.18.3"
 	},
 	"devDependencies": {
+		"@types/ws": "^8.18.1",
 		"tsx": "^4.21.0"
 	}
 }

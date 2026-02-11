@@ -8,6 +8,42 @@
 
 Install the [webgal-for-vscode](https://marketplace.visualstudio.com/items?itemName=Xuran1783558957.webgal-for-vscode) extension.
 
+### For Monaco Users
+
+先启动 WebSocket 版 language-server：
+
+```bash
+pnpm --filter @webgal/language-server run dev:ws
+```
+
+```ts
+import * as monaco from "monaco-editor";
+import { createWebgalMonocaLanguageClient } from "@webgal/monoca";
+
+await createWebgalMonocaLanguageClient({
+	monaco,
+	languageServerUrl: "ws://localhost:3001/webgal-lsp"
+});
+```
+
+如果你需要自定义文件系统能力，可以覆盖 clientHandlers：
+
+```ts
+await createWebgalMonocaLanguageClient({
+	monaco,
+	languageServerUrl: "ws://localhost:3001/webgal-lsp",
+	clientHandlers: {
+		"client/currentDirectory": () => "/project",
+		"client/FJoin": (args) =>
+			Array.isArray(args) ? args.filter(Boolean).join("/") : args,
+		"client/findFile": ([root, name]) => `${root}/${name}`,
+		"client/FStat": () => true,
+		"client/goPropertyDoc": () => null,
+		"client/showTip": () => null
+	}
+});
+```
+
 ## Packages
 
 | Package                                               | Description                                 |
