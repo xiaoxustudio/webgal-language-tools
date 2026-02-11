@@ -2,14 +2,14 @@ import { ConnectionHandler } from "@/types";
 import {
 	getPatternAtPosition,
 	getWordAtPosition,
-	updateGlobalMap,
+	updateGlobalMap
 } from "@/utils";
 import {
 	argsMap,
 	WebGALConfigMap,
 	WebGALKeywords,
 	CommandNameSpecial,
-	WebGALCommandPrefix,
+	WebGALCommandPrefix
 } from "@/utils/provider";
 import { StateMap } from "@/utils/providerState";
 import {
@@ -17,7 +17,7 @@ import {
 	Hover,
 	MarkupKind,
 	MarkupContent,
-	Range,
+	Range
 } from "@volar/language-server";
 import { GlobalMap } from "@webgal/language-core";
 
@@ -25,9 +25,11 @@ import { GlobalMap } from "@webgal/language-core";
 export default <ConnectionHandler>function (documents, connection) {
 	connection.onHover(
 		async (
-			_textDocumentPosition: TextDocumentPositionParams,
+			_textDocumentPosition: TextDocumentPositionParams
 		): Promise<Hover> => {
-			const document = documents.get(_textDocumentPosition.textDocument.uri);
+			const document = documents.get(
+				_textDocumentPosition.textDocument.uri
+			);
 			if (!document) {
 				return { contents: [] };
 			}
@@ -41,20 +43,20 @@ export default <ConnectionHandler>function (documents, connection) {
 				0,
 				currentLine.indexOf(":") !== -1
 					? currentLine.indexOf(":")
-					: currentLine.indexOf(";"),
+					: currentLine.indexOf(";")
 			);
 
 			let findWordWithPattern = getPatternAtPosition(
 				document,
 				_textDocumentPosition.position,
-				/\{([^}]*)\}/,
+				/\{([^}]*)\}/
 			);
 
 			/* 参数 hover */
 			findWordWithPattern = getPatternAtPosition(
 				document,
 				_textDocumentPosition.position,
-				/(?<=-)[\w]+/,
+				/(?<=-)[\w]+/
 			);
 			if (findWordWithPattern) {
 				const argsData = argsMap[findWordWithPattern.text];
@@ -65,13 +67,13 @@ export default <ConnectionHandler>function (documents, connection) {
 							value: [
 								`### ${argsData.label}`,
 								`${argsData?.documentation}`,
-								`\`${argsData.detail}\``,
-							].join("\n\n"),
+								`\`${argsData.detail}\``
+							].join("\n\n")
 						} as MarkupContent,
 						range: Range.create(
 							findWordWithPattern.startPos,
-							findWordWithPattern.endPos,
-						),
+							findWordWithPattern.endPos
+						)
 					};
 				}
 			}
@@ -80,13 +82,13 @@ export default <ConnectionHandler>function (documents, connection) {
 			findWordWithPattern = getPatternAtPosition(
 				document,
 				_textDocumentPosition.position,
-				/\$(stage|userData)((?:\.[\w-]+)+|\b)/,
+				/\$(stage|userData)((?:\.[\w-]+)+|\b)/
 			);
 			if (findWordWithPattern) {
 				const strArray = findWordWithPattern.text.slice(1).split(".");
 				const info = await connection.sendRequest<StateMap>(
 					"client/goPropertyDoc",
-					strArray,
+					strArray
 				);
 				if (info) {
 					return {
@@ -95,20 +97,20 @@ export default <ConnectionHandler>function (documents, connection) {
 							value: [
 								`### ${info.key ?? findWordWithPattern.text}`,
 								`\`${info.__WG$key ?? info.type?.key ?? ""}\``,
-								`${info?.description ?? info.__WG$description}`,
-							].join("\n\n"),
+								`${info?.description ?? info.__WG$description}`
+							].join("\n\n")
 						} as MarkupContent,
 						range: Range.create(
 							findWordWithPattern.startPos,
-							findWordWithPattern.endPos,
-						),
+							findWordWithPattern.endPos
+						)
 					};
 				}
 			}
 
 			const findWord = getWordAtPosition(
 				document,
-				_textDocumentPosition.position,
+				_textDocumentPosition.position
 			);
 
 			if (!findWord) {
@@ -122,8 +124,10 @@ export default <ConnectionHandler>function (documents, connection) {
 						return {
 							contents: {
 								kind: MarkupKind.Markdown,
-								value: [`**${i}**`, `\n${kw_val.desc}`].join("\n"),
-							} as MarkupContent,
+								value: [`**${i}**`, `\n${kw_val.desc}`].join(
+									"\n"
+								)
+							} as MarkupContent
 						};
 					}
 				}
@@ -131,7 +135,8 @@ export default <ConnectionHandler>function (documents, connection) {
 			}
 
 			/* 指令 hover */
-			const maybeCommandMap = WebGALKeywords[commandType as CommandNameSpecial];
+			const maybeCommandMap =
+				WebGALKeywords[commandType as CommandNameSpecial];
 			if (maybeCommandMap) {
 				for (const key in WebGALKeywords) {
 					if (findWord.word === key && commandType === key) {
@@ -140,13 +145,13 @@ export default <ConnectionHandler>function (documents, connection) {
 								kind: MarkupKind.Markdown,
 								value: [
 									`### ${key}`,
-									(maybeCommandMap.documentation as string)?.replace(
-										/\t+/g,
-										"",
-									) || maybeCommandMap.desc,
-									`${WebGALCommandPrefix}${key}`,
-								].join("\n\n"),
-							} as MarkupContent,
+									(
+										maybeCommandMap.documentation as string
+									)?.replace(/\t+/g, "") ||
+										maybeCommandMap.desc,
+									`${WebGALCommandPrefix}${key}`
+								].join("\n\n")
+							} as MarkupContent
 						};
 					}
 				}
@@ -172,22 +177,22 @@ export default <ConnectionHandler>function (documents, connection) {
 				hoverContent.push("<hr>");
 				if (findWord.word in GlobalMap.setVar) {
 					hoverContent.push(
-						`Position: ${currentVariable.position?.line + 1},${currentVariable.position?.character + 1}`,
+						`Position: ${currentVariable.position?.line + 1},${currentVariable.position?.character + 1}`
 					);
 					hoverContent.push(`\`\`\`webgal`);
 					hoverContent.push(
-						`${currentVariable.input?.replace(/\t\r\n/g, "")}\n\n\`\`\``,
+						`${currentVariable.input?.replace(/\t\r\n/g, "")}\n\n\`\`\``
 					);
 				}
 				return {
 					contents: {
 						kind: MarkupKind.Markdown,
-						value: hoverContent.join("\n\n"),
-					} as MarkupContent,
+						value: hoverContent.join("\n\n")
+					} as MarkupContent
 				};
 			}
 
 			return { contents: [] };
-		},
+		}
 	);
 };

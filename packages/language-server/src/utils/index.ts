@@ -8,7 +8,7 @@ import {
 	IVChooseToken,
 	IVToken,
 	runCode,
-	source,
+	source
 } from "@webgal/language-core";
 import { warningConfig, getDiagnosticInformation } from "@/warnings";
 import {
@@ -16,7 +16,7 @@ import {
 	Diagnostic,
 	DiagnosticSeverity,
 	Position,
-	Range,
+	Range
 } from "@volar/language-server";
 import { TextDocument } from "vscode-languageserver-textdocument";
 
@@ -49,15 +49,19 @@ export function getVariableType(expr: string): string {
 export function getWordAtPosition(
 	doc: TextDocument,
 	pos: Position,
-	charRegex?: RegExp,
+	charRegex?: RegExp
 ): { word: string; start: number; end: number } | null {
 	const text = doc.getText();
 	const offset = doc.offsetAt(pos);
-	if (offset < 0 || offset > text.length) {return null;}
+	if (offset < 0 || offset > text.length) {
+		return null;
+	}
 
 	// 如果没有提供 charRegex，使用默认
 	const testChar = (ch: string) => {
-		if (!charRegex) {return /[\p{L}\p{N}_]_?[\p{L}\p{N}_]*/u.test(ch);}
+		if (!charRegex) {
+			return /[\p{L}\p{N}_]_?[\p{L}\p{N}_]*/u.test(ch);
+		}
 		// 为避免全局标志的问题，使用新的无 g 的正则来测试单个字符
 		const flags = (charRegex.flags || "").replace("g", "");
 		const r = new RegExp(charRegex.source, flags);
@@ -65,14 +69,20 @@ export function getWordAtPosition(
 	};
 
 	let i = offset - 1;
-	while (i >= 0 && testChar(text.charAt(i))) {i--;}
+	while (i >= 0 && testChar(text.charAt(i))) {
+		i--;
+	}
 	const start = i + 1;
 
 	let j = offset;
-	while (j < text.length && testChar(text.charAt(j))) {j++;}
+	while (j < text.length && testChar(text.charAt(j))) {
+		j++;
+	}
 	const end = j;
 
-	if (start >= end) {return null;}
+	if (start >= end) {
+		return null;
+	}
 	const word = text.slice(start, end);
 	return { word, start, end };
 }
@@ -81,7 +91,7 @@ export function getPatternAtPosition(
 	doc: TextDocument,
 	pos: Position,
 	pattern: RegExp,
-	maxRadius = 512,
+	maxRadius = 512
 ): {
 	text: string;
 	start: number;
@@ -92,7 +102,9 @@ export function getPatternAtPosition(
 } | null {
 	const text = doc.getText();
 	const offset = doc.offsetAt(pos);
-	if (offset < 0 || offset > text.length) {return null;}
+	if (offset < 0 || offset > text.length) {
+		return null;
+	}
 
 	const cleanFlags = (pattern.flags || "").replace(/[gy]/g, "");
 	const re = new RegExp(pattern.source, cleanFlags + "g");
@@ -131,7 +143,7 @@ export function getPatternAtPosition(
 				end: matchEnd,
 				startPos: startPos,
 				endPos: endPos,
-				groups: m,
+				groups: m
 			};
 		}
 	}
@@ -143,7 +155,7 @@ export function getTokenOrPatternAtPosition(
 	doc: TextDocument,
 	pos: Position,
 	charRegex?: RegExp,
-	pattern?: RegExp,
+	pattern?: RegExp
 ): { word: string; start: number; end: number } | null {
 	// 先用你已有的基于字符的扩展（保证传入 charRegex 是字符级的）
 	const basic = getWordAtPosition(doc, pos, charRegex);
@@ -151,14 +163,20 @@ export function getTokenOrPatternAtPosition(
 		// 如果 basic 匹配整个 pattern，则返回 basic（有时 basic 包含大括号）
 		const flags = (pattern.flags || "").replace("g", "");
 		const full = new RegExp(`^(?:${pattern.source})$`, flags);
-		if (full.test(basic.word)) {return basic;}
+		if (full.test(basic.word)) {
+			return basic;
+		}
 	}
-	if (basic) {return basic;}
+	if (basic) {
+		return basic;
+	}
 
 	// 否则尝试全文模式查找（pattern 提供时）
 	if (pattern) {
 		const found = getPatternAtPosition(doc, pos, pattern);
-		if (found) {return { word: found.text, start: found.start, end: found.end };}
+		if (found) {
+			return { word: found.text, start: found.start, end: found.end };
+		}
 	}
 	return null;
 }
@@ -170,15 +188,19 @@ export function isPathChar(ch: string): boolean {
 /** 从 position 找到当前 token 的 start offset（用于 replacement range） */
 export function findTokenRange(
 	doc: TextDocument,
-	pos: Position,
+	pos: Position
 ): { startOffset: number; endOffset: number; token: string } {
 	const text = doc.getText();
 	const offset = doc.offsetAt(pos);
 	let i = offset - 1;
-	while (i >= 0 && isPathChar(text.charAt(i))) {i--;}
+	while (i >= 0 && isPathChar(text.charAt(i))) {
+		i--;
+	}
 	const start = i + 1;
 	let j = offset;
-	while (j < text.length && isPathChar(text.charAt(j))) {j++;}
+	while (j < text.length && isPathChar(text.charAt(j))) {
+		j++;
+	}
 	const end = j;
 	const token = text.slice(start, end);
 	return { startOffset: start, endOffset: end, token };
@@ -187,7 +209,7 @@ export function findTokenRange(
 // 根据文档 URI 和 token（如 "./src/fi"）列出目录下匹配项
 export async function listPathCandidates(
 	docUri: string,
-	token: string,
+	token: string
 ): Promise<Array<{ label: string; insertText: string; isDirectory: boolean }>> {
 	try {
 		// 1. 先把文档 URI 转成本地文件路径（如果是 file: scheme）
@@ -236,8 +258,8 @@ export async function listPathCandidates(
 			.readdir(resolvedBase, { withFileTypes: true })
 			.catch(() => []);
 		const candidates = entries
-			.filter(e => e.name.startsWith(partialName))
-			.map(e => {
+			.filter((e) => e.name.startsWith(partialName))
+			.map((e) => {
 				const isDir = e.isDirectory();
 				const name = e.name + (isDir ? "/" : "");
 				// 插入文本：保持 token 的前缀并补全剩余部分
@@ -261,7 +283,7 @@ export async function listPathCandidates(
 export function getStageCompletionContext(
 	document: TextDocument,
 	cursorPos: Position,
-	match: { text: string; start: number },
+	match: { text: string; start: number }
 ): {
 	replaceRange: Range;
 	fullSegments: string[];
@@ -271,7 +293,7 @@ export function getStageCompletionContext(
 	const cursorOffset = document.offsetAt(cursorPos);
 	const relCursor = Math.max(
 		0,
-		Math.min(cursorOffset - match.start, match.text.length),
+		Math.min(cursorOffset - match.start, match.text.length)
 	);
 	const rawBeforeCursor = match.text.slice(0, relCursor);
 	const lastDotIndex = rawBeforeCursor.lastIndexOf(".");
@@ -279,14 +301,14 @@ export function getStageCompletionContext(
 		match.start + (lastDotIndex === -1 ? 0 : lastDotIndex + 1);
 	const replaceRange = Range.create(
 		document.positionAt(replaceStartOffset),
-		cursorPos,
+		cursorPos
 	);
 
 	const normalizedBeforeCursor = rawBeforeCursor.startsWith("$")
 		? rawBeforeCursor.slice(1)
 		: rawBeforeCursor;
 	const rawSegments = normalizedBeforeCursor.split(".");
-	const fullSegments = rawSegments.filter(part => part);
+	const fullSegments = rawSegments.filter((part) => part);
 	const hasTrailingDot = normalizedBeforeCursor.endsWith(".");
 	const prefix = hasTrailingDot
 		? ""
@@ -308,20 +330,24 @@ export function updateGlobalMap(documentTextArray: string[]) {
 		lineNumber++
 	) {
 		const currentLine = documentTextArray[lineNumber];
-		const setVarExec = /setVar:\s*(\w+)\s*=\s*([^;]*\S+);?/g.exec(currentLine);
+		const setVarExec = /setVar:\s*(\w+)\s*=\s*([^;]*\S+);?/g.exec(
+			currentLine
+		);
 		const labelExec = /label:\s*(\S+);/g.exec(currentLine);
 		const getUserInputExec = /getUserInput:\s*([^\s;]+)/g.exec(currentLine);
 		const chooseExec = /choose:\s*([^\s;]+)/g.exec(currentLine);
 		if (setVarExec != null) {
-			const currentVariablePool = (GlobalMap.setVar[setVarExec[1]] ??= []);
-			const isGlobal = currentLine.indexOf("-global") == -1 ? false : true;
+			const currentVariablePool = (GlobalMap.setVar[setVarExec[1]] ??=
+				[]);
+			const isGlobal =
+				currentLine.indexOf("-global") == -1 ? false : true;
 			currentVariablePool.push({
 				word: setVarExec[1],
 				value: setVarExec[2],
 				input: setVarExec.input,
 				isGlobal,
 				isGetUserInput: false,
-				position: Position.create(lineNumber, setVarExec.index + 7),
+				position: Position.create(lineNumber, setVarExec.index + 7)
 			} as IVToken);
 
 			/* 获取变量描述 */
@@ -332,7 +358,7 @@ export function updateGlobalMap(documentTextArray: string[]) {
 				const _v_line = _v_pos?.line ? _v_pos.line : -1;
 				currentVariableLatest.desc = getVariableTypeDesc(
 					documentTextArray,
-					_v_line,
+					_v_line
 				);
 			}
 		} else if (labelExec !== null) {
@@ -340,7 +366,7 @@ export function updateGlobalMap(documentTextArray: string[]) {
 				word: labelExec[1],
 				value: labelExec.input,
 				input: labelExec.input,
-				position: Position.create(lineNumber, 6),
+				position: Position.create(lineNumber, 6)
 			} as IVToken);
 		} else if (getUserInputExec !== null) {
 			(GlobalMap.setVar[getUserInputExec[1]] ??= []).push({
@@ -348,7 +374,7 @@ export function updateGlobalMap(documentTextArray: string[]) {
 				value: getUserInputExec.input,
 				input: getUserInputExec.input,
 				isGetUserInput: true,
-				position: Position.create(lineNumber, 13),
+				position: Position.create(lineNumber, 13)
 			} as IVToken);
 		} else if (chooseExec !== null) {
 			const options: IVChooseToken["options"] = [];
@@ -357,12 +383,12 @@ export function updateGlobalMap(documentTextArray: string[]) {
 				const sliceArray = machChooseOption.split(":");
 				options.push({
 					text: sliceArray[0]?.trim(),
-					value: sliceArray[1]?.trim(),
+					value: sliceArray[1]?.trim()
 				});
 			}
 			GlobalMap.choose[lineNumber] = {
 				options,
-				line: lineNumber,
+				line: lineNumber
 			} as IVChooseToken;
 		}
 	}
@@ -371,7 +397,7 @@ export function updateGlobalMap(documentTextArray: string[]) {
 export const defaultSettings = {
 	maxNumberOfProblems: 1000,
 	isShowWarning: true,
-	isShowHint: "变量名后",
+	isShowHint: "变量名后"
 } satisfies ServerSettings;
 
 export const documentSettings: Map<
@@ -382,7 +408,7 @@ export const documentSettings: Map<
 export const StateConfig = {
 	hasConfigurationCapability: false, // 是否支持配置能力
 	hasWorkspaceFolderCapability: false, // 是否支持工作区文件夹能力
-	hasDiagnosticRelatedInformationCapability: false, // 是否支持诊断相关信息的能力
+	hasDiagnosticRelatedInformationCapability: false // 是否支持诊断相关信息的能力
 };
 
 export let globalSettings: ServerSettings = defaultSettings;
@@ -393,7 +419,7 @@ export function setGlobalSettings(settings: ServerSettings) {
 // 获取文档设置
 export function getDocumentSettings(
 	connection: Connection,
-	url: string,
+	url: string
 ): Thenable<ServerSettings> {
 	if (!StateConfig.hasConfigurationCapability) {
 		return Promise.resolve(globalSettings);
@@ -402,7 +428,7 @@ export function getDocumentSettings(
 	if (!result) {
 		result = connection.workspace.getConfiguration({
 			scopeUri: url,
-			section: "WEBGAL Language Server",
+			section: "WEBGAL Language Server"
 		});
 		documentSettings.set(url, result);
 	}
@@ -412,7 +438,7 @@ export function getDocumentSettings(
 // 校验内容
 export async function validateTextDocument(
 	connection: Connection,
-	textDocument: TextDocument,
+	textDocument: TextDocument
 ): Promise<Diagnostic[]> {
 	const settings = await getDocumentSettings(connection, textDocument.uri);
 	if (!settings?.isShowWarning) {
@@ -448,24 +474,24 @@ export async function validateTextDocument(
 			problems++;
 			const range = {
 				start: textDocument.positionAt(m.index),
-				end: textDocument.positionAt(m.index + m[0].length),
+				end: textDocument.positionAt(m.index + m[0].length)
 			};
 			const diagnostic: Diagnostic = {
 				severity: DiagnosticSeverity.Warning,
 				range,
 				// message: message(i, m[0].trim()),
 				message: `(${i})${m[0].trim()}`,
-				source,
+				source
 			};
 			if (StateConfig.hasDiagnosticRelatedInformationCapability) {
 				diagnostic.relatedInformation = [
 					{
 						location: {
 							uri: textDocument.uri,
-							range: Object.assign({}, diagnostic.range),
+							range: Object.assign({}, diagnostic.range)
 						},
-						message: getDiagnosticInformation(i),
-					},
+						message: getDiagnosticInformation(i)
+					}
 				];
 			}
 			diagnostics.push(diagnostic);
@@ -485,7 +511,7 @@ export async function validateTextDocument(
 					textDocument,
 					_line_text,
 					_newarr.length,
-					_sp.slice(0, _line_index),
+					_sp.slice(0, _line_index)
 				);
 				if (typeof _custom_res === "object" && _custom_res !== null) {
 					diagnostics.push(_custom_res);
@@ -504,24 +530,26 @@ export async function validateTextDocument(
 				problems++;
 				const range = {
 					start: textDocument.positionAt(_newarr.length + 1),
-					end: textDocument.positionAt(_newarr.length + m.input.length),
+					end: textDocument.positionAt(
+						_newarr.length + m.input.length
+					)
 				};
 				const diagnostic: Diagnostic = {
 					severity: DiagnosticSeverity.Warning,
 					range,
 					// message: message(i, m.input.trim()),\
 					message: `(${i})${m.input.trim()}`,
-					source: "WebGal Script",
+					source: "WebGal Script"
 				};
 				if (StateConfig.hasDiagnosticRelatedInformationCapability) {
 					diagnostic.relatedInformation = [
 						{
 							location: {
 								uri: textDocument.uri,
-								range: Object.assign({}, diagnostic.range),
+								range: Object.assign({}, diagnostic.range)
 							},
-							message: getDiagnosticInformation(i),
-						},
+							message: getDiagnosticInformation(i)
+						}
 					];
 				}
 				diagnostics.push(diagnostic);

@@ -7,12 +7,14 @@ export default <ConnectionHandler>function (_, connection) {
 		if (StateConfig.hasConfigurationCapability) {
 			connection.client.register(
 				DidChangeConfigurationNotification.type,
-				undefined,
+				undefined
 			);
 		}
 		if (StateConfig.hasWorkspaceFolderCapability) {
-			connection.workspace.onDidChangeWorkspaceFolders(_event => {
-				connection.console.log("Workspace folder change event received.");
+			connection.workspace.onDidChangeWorkspaceFolders((_event) => {
+				connection.console.log(
+					"Workspace folder change event received."
+				);
 			});
 		}
 

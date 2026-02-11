@@ -21,12 +21,12 @@ const handlers: ConnectionHandler[] = [
 	onInitialize,
 	onInitialized,
 	onDiagnostics,
-	onDid,
+	onDid
 ];
 
 export default function (
 	documents: ConnectionDocumentsType,
-	connection: Connection,
+	connection: Connection
 ) {
 	for (const handler of handlers) {
 		handler(documents, connection);

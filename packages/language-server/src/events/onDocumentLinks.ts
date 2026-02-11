@@ -4,7 +4,7 @@ import {
 	DocumentLinkParams,
 	DocumentLink,
 	Range,
-	Position,
+	Position
 } from "@volar/language-server";
 
 // 链接定义
@@ -13,13 +13,15 @@ export default <ConnectionHandler>function (documents, connection) {
 		async (textDocumentLinkParams: DocumentLinkParams) => {
 			const uri: string = textDocumentLinkParams.textDocument.uri;
 			const doc = documents.get(uri);
-			if (!doc) {return [];}
+			if (!doc) {
+				return [];
+			}
 			const text = doc.getText();
 			const documentTextArray = text.split("\n");
 			const _textDocument = textDocumentLinkParams.textDocument;
 			const pathArray = _textDocument.uri.split("/");
 			const currentDirectory = await connection.sendRequest<string>(
-				"client/currentDirectory",
+				"client/currentDirectory"
 			);
 			let documentLinks: DocumentLink[] = [];
 			for (let i = 0; i < documentTextArray.length; i++) {
@@ -28,7 +30,7 @@ export default <ConnectionHandler>function (documents, connection) {
 					0,
 					currentLine.indexOf(":") !== -1
 						? currentLine.indexOf(":")
-						: currentLine.indexOf(";"),
+						: currentLine.indexOf(";")
 				);
 				startText = startText.startsWith(";")
 					? startText.substring(1)
@@ -37,7 +39,9 @@ export default <ConnectionHandler>function (documents, connection) {
 				const regex = /\$?\{?(\w+)\.(\w+)\}?/g;
 
 				while ((match = regex.exec(currentLine))) {
-					if (match[0].startsWith("$")) {continue;}
+					if (match[0].startsWith("$")) {
+						continue;
+					}
 					const matchText = match[0];
 					const pathName =
 						pathArray[
@@ -50,44 +54,47 @@ export default <ConnectionHandler>function (documents, connection) {
 						pathArray[pathArray.length - 2] === "game" &&
 						pathName === pathArray[pathArray.length - 3];
 
-					const command = match.input.substring(0, match.input.indexOf(":"));
+					const command = match.input.substring(
+						0,
+						match.input.indexOf(":")
+					);
 					const dirResources = getTypeDirectory(command, matchText); // 路径类型
 					let targetPath: string;
 					if (isConfig) {
 						targetPath = await connection.sendRequest<string>(
 							"client/FJoin",
-							currentDirectory + "/",
+							currentDirectory + "/"
 						);
 					} else {
 						targetPath = await connection.sendRequest<string>(
 							"client/FJoin",
-							currentDirectory + "/" + dirResources,
+							currentDirectory + "/" + dirResources
 						);
 					}
 					let basePath = await connection.sendRequest<string>(
 						"client/FJoin",
-						targetPath + "/" + matchText,
+						targetPath + "/" + matchText
 					);
 
 					const stat = await connection.sendRequest<string>(
 						"client/FStat",
-						basePath,
+						basePath
 					);
 					// 如果文件找不到，则尝试全局搜索
 					if (!stat) {
-						basePath = await connection.sendRequest<string>("client/findFile", [
-							currentDirectory,
-							matchText,
-						]);
+						basePath = await connection.sendRequest<string>(
+							"client/findFile",
+							[currentDirectory, matchText]
+						);
 					}
 
 					documentLinks.push({
 						target: "file:///" + basePath,
 						range: Range.create(
 							Position.create(i, match.index),
-							Position.create(i, match.index + matchText.length),
+							Position.create(i, match.index + matchText.length)
 						),
-						tooltip: basePath,
+						tooltip: basePath
 					} as DocumentLink);
 
 					if (regex.lastIndex === match.index) {
@@ -97,9 +104,9 @@ export default <ConnectionHandler>function (documents, connection) {
 			}
 
 			return [...documentLinks];
-		},
+		}
 	);
 	connection.onDocumentLinkResolve(
-		(documentLink: DocumentLink) => documentLink,
+		(documentLink: DocumentLink) => documentLink
 	);
 };

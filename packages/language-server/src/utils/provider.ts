@@ -3,7 +3,7 @@ import {
 	CompletionItemKind,
 	MarkupKind,
 	MarkupContent,
-	InsertTextFormat,
+	InsertTextFormat
 } from "@volar/language-server";
 
 export const WebGALCommandPrefix =
@@ -48,7 +48,7 @@ export enum commandType {
 	getUserInput,
 	applyStyle,
 	wait,
-	callSteam,
+	callSteam
 }
 
 export type CommandName = Extract<keyof typeof commandType, string>;
@@ -84,7 +84,7 @@ export const argsMap = {
 		\`\`\`
 		a>1时跳转到场景2`,
 		detail: `option -when=<condition>`,
-		insertText: "when=",
+		insertText: "when="
 	},
 	next: {
 		arg: "next",
@@ -93,7 +93,7 @@ export const argsMap = {
 		kind: CompletionItemKind.Constant,
 		documentation: `连续执行本句和下一句`,
 		detail: `option -next`,
-		insertText: "next",
+		insertText: "next"
 	},
 	notend: {
 		arg: "notend",
@@ -102,7 +102,7 @@ export const argsMap = {
 		kind: CompletionItemKind.Constant,
 		documentation: `用于对话，表示该对话未结束`,
 		detail: `option -notend`,
-		insertText: "notend",
+		insertText: "notend"
 	},
 	concat: {
 		arg: "concat",
@@ -111,7 +111,7 @@ export const argsMap = {
 		kind: CompletionItemKind.Constant,
 		documentation: `用于对话，将该对话与上一句连接`,
 		detail: `option -concat`,
-		insertText: "concat",
+		insertText: "concat"
 	},
 	hold: {
 		arg: "hold",
@@ -120,7 +120,7 @@ export const argsMap = {
 		kind: CompletionItemKind.Constant,
 		documentation: `结束后保持`,
 		detail: `option -hold`,
-		insertText: "hold",
+		insertText: "hold"
 	},
 	title: {
 		arg: "title",
@@ -129,7 +129,7 @@ export const argsMap = {
 		kind: CompletionItemKind.Constant,
 		documentation: `设置标题`,
 		detail: `option -title=<titleText>`,
-		insertText: "title=",
+		insertText: "title="
 	},
 	buttonText: {
 		arg: "buttonText",
@@ -138,7 +138,7 @@ export const argsMap = {
 		kind: CompletionItemKind.Constant,
 		documentation: `设置按钮文字`,
 		detail: `option -buttonText=<text>`,
-		insertText: "buttonText=",
+		insertText: "buttonText="
 	},
 	defaultValue: {
 		arg: "defaultValue",
@@ -147,7 +147,7 @@ export const argsMap = {
 		kind: CompletionItemKind.Constant,
 		documentation: `设置默认文字`,
 		detail: `option -defaultValue=<text>`,
-		insertText: "defaultValue=",
+		insertText: "defaultValue="
 	},
 	left: {
 		arg: "left",
@@ -156,7 +156,7 @@ export const argsMap = {
 		kind: CompletionItemKind.Constant,
 		documentation: `立绘设置在左侧`,
 		detail: `option -left`,
-		insertText: "left",
+		insertText: "left"
 	},
 	right: {
 		arg: "right",
@@ -165,7 +165,7 @@ export const argsMap = {
 		kind: CompletionItemKind.Constant,
 		documentation: `立绘设置在右侧`,
 		detail: `option -right`,
-		insertText: "right",
+		insertText: "right"
 	},
 	id: {
 		arg: "id",
@@ -174,7 +174,7 @@ export const argsMap = {
 		kind: CompletionItemKind.Constant,
 		documentation: `设置立绘 ID`,
 		detail: `option -id=<figureId>`,
-		insertText: "id=",
+		insertText: "id="
 	},
 	zIndex: {
 		arg: "zIndex",
@@ -183,7 +183,7 @@ export const argsMap = {
 		kind: CompletionItemKind.Constant,
 		documentation: `设置立绘层级`,
 		detail: `option -zIndex=<number>`,
-		insertText: "zIndex=",
+		insertText: "zIndex="
 	},
 	none: {
 		arg: "none",
@@ -192,7 +192,7 @@ export const argsMap = {
 		kind: CompletionItemKind.Constant,
 		documentation: `将语句内容替换为空字符串`,
 		detail: `option -none`,
-		insertText: "none",
+		insertText: "none"
 	},
 	animationFlag: {
 		arg: "animationFlag",
@@ -201,7 +201,7 @@ export const argsMap = {
 		kind: CompletionItemKind.Constant,
 		documentation: `设置动画标识`,
 		detail: `option -animationFlag=<flag>`,
-		insertText: "animationFlag=",
+		insertText: "animationFlag="
 	},
 	mouthOpen: {
 		arg: "mouthOpen",
@@ -210,7 +210,7 @@ export const argsMap = {
 		kind: CompletionItemKind.Constant,
 		documentation: `设置立绘张嘴立绘差分`,
 		detail: `option -mouthOpen=<fileName>`,
-		insertText: "mouthOpen=",
+		insertText: "mouthOpen="
 	},
 	mouthHalfOpen: {
 		arg: "mouthHalfOpen",
@@ -219,7 +219,7 @@ export const argsMap = {
 		kind: CompletionItemKind.Constant,
 		documentation: `设置立绘半张嘴立绘差分`,
 		detail: `option -mouthHalfOpen=<fileName>`,
-		insertText: "mouthHalfOpen=",
+		insertText: "mouthHalfOpen="
 	},
 	mouthClose: {
 		arg: "mouthClose",
@@ -228,7 +228,7 @@ export const argsMap = {
 		kind: CompletionItemKind.Constant,
 		documentation: `设置立绘闭嘴立绘差分`,
 		detail: `option -mouthClose=<fileName>`,
-		insertText: "mouthClose=",
+		insertText: "mouthClose="
 	},
 	eyesOpen: {
 		arg: "eyesOpen",
@@ -237,7 +237,7 @@ export const argsMap = {
 		kind: CompletionItemKind.Constant,
 		documentation: `设置立绘睁眼立绘差分`,
 		detail: `option -eyesOpen=<fileName>`,
-		insertText: "eyesOpen=",
+		insertText: "eyesOpen="
 	},
 	eyesClose: {
 		arg: "eyesClose",
@@ -246,7 +246,7 @@ export const argsMap = {
 		kind: CompletionItemKind.Constant,
 		documentation: `设置立绘闭眼立绘差分`,
 		detail: `option -eyesClose=<fileName>`,
-		insertText: "eyesClose=",
+		insertText: "eyesClose="
 	},
 	motion: {
 		arg: "motion",
@@ -255,7 +255,7 @@ export const argsMap = {
 		kind: CompletionItemKind.Constant,
 		documentation: `设置立绘动作`,
 		detail: `option -motion=<motionName>`,
-		insertText: "motion=",
+		insertText: "motion="
 	},
 	expression: {
 		arg: "expression",
@@ -264,7 +264,7 @@ export const argsMap = {
 		kind: CompletionItemKind.Constant,
 		documentation: `设置立绘表情`,
 		detail: `option -expression=<expressionName>`,
-		insertText: "expression=",
+		insertText: "expression="
 	},
 	bounds: {
 		arg: "bounds",
@@ -273,7 +273,7 @@ export const argsMap = {
 		kind: CompletionItemKind.Constant,
 		documentation: `拓展或收缩立绘的显示区域`,
 		detail: `option -bounds=<boundsValue>`,
-		insertText: "bounds=",
+		insertText: "bounds="
 	},
 	series: {
 		arg: "series",
@@ -282,7 +282,7 @@ export const argsMap = {
 		kind: CompletionItemKind.Constant,
 		documentation: `收录到指定名称的系列中`,
 		detail: `option -series=<seriesName>`,
-		insertText: "series=",
+		insertText: "series="
 	},
 	transform: {
 		arg: "transform",
@@ -291,7 +291,7 @@ export const argsMap = {
 		kind: CompletionItemKind.Constant,
 		documentation: `设置一些变换和滤镜效果`,
 		detail: `option -transform`,
-		insertText: "transform",
+		insertText: "transform"
 	},
 	duration: {
 		arg: "duration",
@@ -300,7 +300,7 @@ export const argsMap = {
 		kind: CompletionItemKind.Constant,
 		documentation: `设置持续时间`,
 		detail: `option -duration=<number>`,
-		insertText: "duration=",
+		insertText: "duration="
 	},
 	volume: {
 		arg: "volume",
@@ -309,7 +309,7 @@ export const argsMap = {
 		kind: CompletionItemKind.Constant,
 		documentation: `调整它的音量，默认值 100`,
 		detail: `option -volume`,
-		insertText: "volume",
+		insertText: "volume"
 	},
 	skipOff: {
 		arg: "skipOff",
@@ -318,7 +318,7 @@ export const argsMap = {
 		kind: CompletionItemKind.Constant,
 		documentation: `阻止用户跳过视频`,
 		detail: `option -skipOff`,
-		insertText: "skipOff",
+		insertText: "skipOff"
 	},
 	enter: {
 		arg: "enter",
@@ -327,7 +327,7 @@ export const argsMap = {
 		kind: CompletionItemKind.Constant,
 		documentation: `进行淡入播放`,
 		detail: `option -enter`,
-		insertText: "enter",
+		insertText: "enter"
 	},
 	global: {
 		arg: "global",
@@ -336,7 +336,7 @@ export const argsMap = {
 		kind: CompletionItemKind.Constant,
 		documentation: `设置长效（全局）变量`,
 		detail: `option -global`,
-		insertText: "global",
+		insertText: "global"
 	},
 	exit: {
 		arg: "exit",
@@ -345,7 +345,7 @@ export const argsMap = {
 		kind: CompletionItemKind.Constant,
 		documentation: `进行淡出播放`,
 		detail: `option -exit`,
-		insertText: "exit",
+		insertText: "exit"
 	},
 	ease: {
 		arg: "ease",
@@ -354,7 +354,7 @@ export const argsMap = {
 		kind: CompletionItemKind.Constant,
 		documentation: `设置缓动类型`,
 		detail: `option -ease=<easeType>`,
-		insertText: "ease=",
+		insertText: "ease="
 	},
 	unlockname: {
 		arg: "unlockname",
@@ -363,7 +363,7 @@ export const argsMap = {
 		kind: CompletionItemKind.Constant,
 		documentation: `鉴赏将收录该音乐`,
 		detail: `option -unlockname=<name>`,
-		insertText: "unlockname=",
+		insertText: "unlockname="
 	},
 	speaker: {
 		arg: "speaker",
@@ -372,7 +372,7 @@ export const argsMap = {
 		kind: CompletionItemKind.Constant,
 		documentation: `设置说话者`,
 		detail: `option -speaker=<speakerName>`,
-		insertText: "speaker=",
+		insertText: "speaker="
 	},
 	clear: {
 		arg: "clear",
@@ -381,7 +381,7 @@ export const argsMap = {
 		kind: CompletionItemKind.Constant,
 		documentation: `清除说话者`,
 		detail: `option -clear`,
-		insertText: "clear",
+		insertText: "clear"
 	},
 	vocal: {
 		arg: "vocal",
@@ -390,7 +390,7 @@ export const argsMap = {
 		kind: CompletionItemKind.Constant,
 		documentation: `说话时将播放该声音文件`,
 		detail: `option -vocal=<audioFile>`,
-		insertText: "vocal=",
+		insertText: "vocal="
 	},
 	fontSize: {
 		arg: "fontSize",
@@ -399,7 +399,7 @@ export const argsMap = {
 		kind: CompletionItemKind.Constant,
 		documentation: `文字大小`,
 		detail: `option -fontSize`,
-		insertText: "fontSize",
+		insertText: "fontSize"
 	},
 	fontColor: {
 		arg: "fontColor",
@@ -408,7 +408,7 @@ export const argsMap = {
 		kind: CompletionItemKind.Constant,
 		documentation: `字体颜色`,
 		detail: `option -fontColor`,
-		insertText: "fontColor",
+		insertText: "fontColor"
 	},
 	backgroundColor: {
 		arg: "backgroundColor",
@@ -417,7 +417,7 @@ export const argsMap = {
 		kind: CompletionItemKind.Constant,
 		documentation: `背景颜色`,
 		detail: `option -backgroundColor`,
-		insertText: "backgroundColor",
+		insertText: "backgroundColor"
 	},
 	backgroundImage: {
 		arg: "backgroundImage",
@@ -426,7 +426,7 @@ export const argsMap = {
 		kind: CompletionItemKind.Constant,
 		documentation: `设置背景图片`,
 		detail: `option -backgroundImage=<imageFile>`,
-		insertText: "backgroundImage=",
+		insertText: "backgroundImage="
 	},
 	animation: {
 		arg: "animation",
@@ -435,7 +435,7 @@ export const argsMap = {
 		kind: CompletionItemKind.Constant,
 		documentation: `过渡动画`,
 		detail: `option -animation`,
-		insertText: "animation",
+		insertText: "animation"
 	},
 	delay: {
 		arg: "delay",
@@ -444,7 +444,7 @@ export const argsMap = {
 		kind: CompletionItemKind.Constant,
 		documentation: `动画延迟时间`,
 		detail: `option -delay`,
-		insertText: "delay",
+		insertText: "delay"
 	},
 	useForward: {
 		arg: "useForward",
@@ -453,7 +453,7 @@ export const argsMap = {
 		kind: CompletionItemKind.Constant,
 		documentation: `需要用户手动点击屏幕`,
 		detail: `option -useForward`,
-		insertText: "useForward",
+		insertText: "useForward"
 	},
 	center: {
 		arg: "center",
@@ -462,7 +462,7 @@ export const argsMap = {
 		kind: CompletionItemKind.Constant,
 		documentation: `驱动中间立绘张嘴说话`,
 		detail: `option -center`,
-		insertText: "center",
+		insertText: "center"
 	},
 	figureId: {
 		arg: "figureId",
@@ -471,7 +471,7 @@ export const argsMap = {
 		kind: CompletionItemKind.Constant,
 		documentation: `驱动对应 id 的立绘张嘴说话`,
 		detail: `option -figureId=<id>`,
-		insertText: "figureId=",
+		insertText: "figureId="
 	},
 	target: {
 		arg: "target",
@@ -480,7 +480,7 @@ export const argsMap = {
 		kind: CompletionItemKind.Constant,
 		documentation: `设置动画目标 ID`,
 		detail: `option -target=<targetId>`,
-		insertText: "target=",
+		insertText: "target="
 	},
 	name: {
 		arg: "name",
@@ -489,7 +489,7 @@ export const argsMap = {
 		kind: CompletionItemKind.Constant,
 		documentation: `设置名称`,
 		detail: `option -name`,
-		insertText: "name=",
+		insertText: "name="
 	},
 	writeDefault: {
 		arg: "writeDefault",
@@ -498,7 +498,7 @@ export const argsMap = {
 		kind: CompletionItemKind.Constant,
 		documentation: `变换与效果属性写入默认值`,
 		detail: `option -writeDefault`,
-		insertText: "writeDefault",
+		insertText: "writeDefault"
 	},
 	keep: {
 		arg: "keep",
@@ -507,7 +507,7 @@ export const argsMap = {
 		kind: CompletionItemKind.Constant,
 		documentation: `将该动画转换为跨语句动画`,
 		detail: `option -keep`,
-		insertText: "keep",
+		insertText: "keep"
 	},
 	achievementId: {
 		arg: "achievementId",
@@ -516,8 +516,8 @@ export const argsMap = {
 		kind: CompletionItemKind.Constant,
 		documentation: `设置成就ID`,
 		detail: `option -achievementId=<achievementId>`,
-		insertText: "achievementId=",
-	},
+		insertText: "achievementId="
+	}
 } as Record<string, IArgs & Partial<CompletionItem>>;
 
 // 通用全局参数
@@ -526,7 +526,7 @@ export const globalArgs = [
 	argsMap.next,
 	argsMap.notend,
 	argsMap.concat,
-	argsMap.hold,
+	argsMap.hold
 ];
 
 export const commandURL =
@@ -550,7 +550,7 @@ export const WebGALKeywords = {
 			argsMap.figureId,
 			argsMap.center,
 			argsMap.left,
-			argsMap.right,
+			argsMap.right
 		],
 		label: "say",
 		kind: CompletionItemKind.Function,
@@ -559,7 +559,7 @@ export const WebGALKeywords = {
 		say:你好;
 		\`\`\``,
 		detail: `say:<content> [...args];`,
-		insertText: "say:$1;$2",
+		insertText: "say:$1;$2"
 	},
 	changeBg: {
 		type: commandType.changeBg,
@@ -571,7 +571,7 @@ export const WebGALKeywords = {
 			argsMap.duration,
 			argsMap.ease,
 			argsMap.unlockname,
-			argsMap.series,
+			argsMap.series
 		],
 		label: "changeBg",
 		kind: CompletionItemKind.Function,
@@ -580,7 +580,7 @@ export const WebGALKeywords = {
 		changeBg:testBG03.jpg -next;
 		\`\`\``,
 		detail: `changeBg:<fileName> [-next];`,
-		insertText: "changeBg:$1;$2",
+		insertText: "changeBg:$1;$2"
 	},
 	changeFigure: {
 		type: commandType.changeFigure,
@@ -604,7 +604,7 @@ export const WebGALKeywords = {
 			argsMap.eyesClose,
 			argsMap.motion,
 			argsMap.expression,
-			argsMap.bounds,
+			argsMap.bounds
 		],
 		label: "changeFigure",
 		kind: CompletionItemKind.Function,
@@ -613,7 +613,7 @@ export const WebGALKeywords = {
 		changeFigure:testFigure03.png -left -next;
 		\`\`\``,
 		detail: `changeFigure:<fileName> [-left] [-right] [id=figureId] [-next];`,
-		insertText: "changeFigure:$1;$2",
+		insertText: "changeFigure:$1;$2"
 	},
 	bgm: {
 		type: commandType.bgm,
@@ -622,7 +622,7 @@ export const WebGALKeywords = {
 			argsMap.volume,
 			argsMap.duration,
 			argsMap.series,
-			argsMap.unlockname,
+			argsMap.unlockname
 		],
 		label: "bgm",
 		kind: CompletionItemKind.Function,
@@ -631,7 +631,7 @@ export const WebGALKeywords = {
 		bgm:夏影.mp3;
 		\`\`\``,
 		detail: `bgm:<fileName>;`,
-		insertText: "bgm:$1;$2",
+		insertText: "bgm:$1;$2"
 	},
 	playVideo: {
 		type: commandType.video,
@@ -644,7 +644,7 @@ export const WebGALKeywords = {
 		playVideo:OP.mp4;
 		\`\`\``,
 		detail: `playVideo:<fileName>;`,
-		insertText: "playVideo:$1;$2",
+		insertText: "playVideo:$1;$2"
 	},
 	pixiPerform: {
 		type: commandType.pixi,
@@ -655,7 +655,7 @@ export const WebGALKeywords = {
 		documentation: `初始化 Pixi 特效
 		注意：特效作用后，如果没有初始化，特效会一直运行。`,
 		detail: `pixiPerform:<performName>;`,
-		insertText: "pixiPerform:$1;$2",
+		insertText: "pixiPerform:$1;$2"
 	},
 	pixiInit: {
 		type: commandType.pixiInit,
@@ -667,7 +667,7 @@ export const WebGALKeywords = {
 		1.如果你要使用特效，那么你必须先运行这个命令来初始化 Pixi。
 		2.如果你想要消除已经作用的效果，你可以使用这个语法来清空效果。`,
 		detail: `pixiInit;`,
-		insertText: "pixiInit;",
+		insertText: "pixiInit;"
 	},
 	intro: {
 		type: commandType.intro,
@@ -679,7 +679,7 @@ export const WebGALKeywords = {
 			argsMap.backgroundImage,
 			argsMap.animation,
 			argsMap.delay,
-			argsMap.useForward,
+			argsMap.useForward
 		],
 		label: "intro",
 		kind: CompletionItemKind.Function,
@@ -691,7 +691,7 @@ export const WebGALKeywords = {
 		intro:回忆不需要适合的剧本，|反正一说出口，|都成了戏言。;
 		\`\`\``,
 		detail: `intro:<text> [|<text of line 2>] ...;`,
-		insertText: "intro:$1;$2",
+		insertText: "intro:$1;$2"
 	},
 	miniAvatar: {
 		type: commandType.miniAvatar,
@@ -707,7 +707,7 @@ export const WebGALKeywords = {
 		miniAvatar:none;关闭
 		\`\`\``,
 		detail: `miniAvatar:<fileName>;`,
-		insertText: "miniAvatar",
+		insertText: "miniAvatar"
 	},
 	changeScene: {
 		type: commandType.changeScene,
@@ -721,7 +721,7 @@ export const WebGALKeywords = {
 		changeScene:Chapter-2.txt;
 		\`\`\``,
 		detail: `changeScene:<newSceneFileName>;`,
-		insertText: "changeScene:$1;$2",
+		insertText: "changeScene:$1;$2"
 	},
 	choose: {
 		type: commandType.choose,
@@ -736,7 +736,7 @@ export const WebGALKeywords = {
 		choose:叫住她:Chapter-2.txt|回家:Chapter-3.txt;
 		\`\`\``,
 		detail: `choose:<chooseText:newSceneName> [|<chooseText:newSceneName>] ...;`,
-		insertText: "choose:$1|$2;",
+		insertText: "choose:$1|$2;"
 	},
 	end: {
 		type: commandType.end,
@@ -749,7 +749,7 @@ export const WebGALKeywords = {
 		end;
 		\`\`\``,
 		detail: `end;`,
-		insertText: "end;",
+		insertText: "end;"
 	},
 	setComplexAnimation: {
 		type: commandType.setComplexAnimation,
@@ -766,7 +766,7 @@ export const WebGALKeywords = {
 		setComplexAnimation:universalSoftIn -target=aaa -duration=1000;
 		\`\`\``,
 		detail: `setComplexAnimation:<name> [-target=...|-duration=...];`,
-		insertText: "setComplexAnimation:$1;$2",
+		insertText: "setComplexAnimation:$1;$2"
 	},
 	label: {
 		type: commandType.label,
@@ -776,7 +776,7 @@ export const WebGALKeywords = {
 		kind: CompletionItemKind.Function,
 		documentation: `定义标签`,
 		detail: `label:<Name>;`,
-		insertText: "label:$1;$2",
+		insertText: "label:$1;$2"
 	},
 	jumpLabel: {
 		type: commandType.jumpLabel,
@@ -786,7 +786,7 @@ export const WebGALKeywords = {
 		kind: CompletionItemKind.Function,
 		documentation: `跳转到指定标签`,
 		detail: `jumpLabel:<Laebl Name>;`,
-		insertText: "jumpLabel:$1;$2",
+		insertText: "jumpLabel:$1;$2"
 	},
 	setVar: {
 		type: commandType.setVar,
@@ -801,7 +801,7 @@ export const WebGALKeywords = {
 		setVar:a=人物名称;可以设置字符串
 		\`\`\``,
 		detail: `setVar:<expression>;`,
-		insertText: "setVar:$1;$2",
+		insertText: "setVar:$1;$2"
 	},
 	callScene: {
 		type: commandType.callScene,
@@ -815,7 +815,7 @@ export const WebGALKeywords = {
 		callScene:Chapter-2.txt;
 		\`\`\``,
 		detail: `callScene:<newSceneFileName>;`,
-		insertText: "callScene:$1;$2",
+		insertText: "callScene:$1;$2"
 	},
 	showVars: {
 		type: commandType.showVars,
@@ -828,7 +828,7 @@ export const WebGALKeywords = {
 		showVars;
 		\`\`\``,
 		detail: `showVars;`,
-		insertText: "showVars;",
+		insertText: "showVars;"
 	},
 	unlockCg: {
 		type: commandType.unlockCg,
@@ -841,7 +841,7 @@ export const WebGALKeywords = {
 		unlockCg:xgmain.jpeg -name=星光咖啡馆与死神之蝶 -series=1;
 		\`\`\``,
 		detail: `unlockCg:<fileName> -name=cgName -series=serisId;`,
-		insertText: "unlockCg:$1;$2",
+		insertText: "unlockCg:$1;$2"
 	},
 	unlockBgm: {
 		type: commandType.unlockBgm,
@@ -854,7 +854,7 @@ export const WebGALKeywords = {
 		unlockBgm:s_Title.mp3 -name=Smiling-Swinging!!;
 		\`\`\``,
 		detail: `unlockBgm:<fileName> -name=bgmName;`,
-		insertText: "unlockBgm:$1;$2",
+		insertText: "unlockBgm:$1;$2"
 	},
 	filmMode: {
 		type: commandType.filmMode,
@@ -869,7 +869,7 @@ export const WebGALKeywords = {
 		filmMode:none;
 		\`\`\``,
 		detail: `filmMode:[on|none];`,
-		insertText: "filmMode:$1;$2",
+		insertText: "filmMode:$1;$2"
 	},
 	setTextbox: {
 		type: commandType.setTextbox,
@@ -883,7 +883,7 @@ export const WebGALKeywords = {
 		setTextbox:on;开启文本框，可以是除 hide 以外的任意值。
 		\`\`\``,
 		detail: `setTextbox:[hide] [others];`,
-		insertText: "setTextbox:$1;$2",
+		insertText: "setTextbox:$1;$2"
 	},
 	setAnimation: {
 		type: commandType.setAnimation,
@@ -896,7 +896,7 @@ export const WebGALKeywords = {
 		setAnimation:enter-from-bottom -target=fig-center -next;为中间立绘设置一个从下方进入的动画，并转到下一句。
 		\`\`\``,
 		detail: `setAnimation:<animationName> -target=targetId;`,
-		insertText: "setAnimation",
+		insertText: "setAnimation"
 	},
 	playEffect: {
 		type: commandType.playEffect,
@@ -909,7 +909,7 @@ export const WebGALKeywords = {
 		playEffect:xxx.mp3;
 		\`\`\``,
 		detail: `playEffect:<fileName>;`,
-		insertText: "playEffect:$1;$2",
+		insertText: "playEffect:$1;$2"
 	},
 	setTempAnimation: {
 		type: commandType.setTempAnimation,
@@ -932,7 +932,7 @@ export const WebGALKeywords = {
 		\`\`\`
 		`,
 		detail: `setTempAnimation:<name>|<JSON> [-target=...|-writeDefault...|-keep=...];";`,
-		insertText: "setTempAnimation:$1;$2",
+		insertText: "setTempAnimation:$1;$2"
 	},
 	setTransform: {
 		type: commandType.setTransform,
@@ -941,13 +941,13 @@ export const WebGALKeywords = {
 			argsMap.target,
 			argsMap.duration,
 			argsMap.writeDefault,
-			argsMap.keep,
+			argsMap.keep
 		],
 		label: "setTransform",
 		kind: CompletionItemKind.Function,
 		documentation: `设置效果`,
 		detail: `setTransform:<expression>;`,
-		insertText: "setTransform:",
+		insertText: "setTransform:"
 	},
 	setTransition: {
 		type: commandType.setTransition,
@@ -967,7 +967,7 @@ export const WebGALKeywords = {
 		角色A: 再见！
 		\`\`\``,
 		detail: `setTransition:[name] [-target=...|-enter=...|-exit=...];`,
-		insertText: "setTransition:$1;$2",
+		insertText: "setTransition:$1;$2"
 	},
 	getUserInput: {
 		type: commandType.getUserInput,
@@ -984,7 +984,7 @@ export const WebGALKeywords = {
 		\`\`\`
 `,
 		detail: `getUserInput:[...args];`,
-		insertText: "getUserInput:$1;$2",
+		insertText: "getUserInput:$1;$2"
 	},
 	applyStyle: {
 		type: commandType.applyStyle,
@@ -1007,7 +1007,7 @@ export const WebGALKeywords = {
 		applyStyle:原样式名->新样式名2;
 		\`\`\``,
 		detail: `applyStyle:<old_style_name>-><new_style_name>;`,
-		insertText: "applyStyle:$1;$2",
+		insertText: "applyStyle:$1;$2"
 	},
 	wait: {
 		type: commandType.wait,
@@ -1024,7 +1024,7 @@ export const WebGALKeywords = {
 		角色A:想不出来，算了。;
 		\`\`\``,
 		detail: `wait:<number>;`,
-		insertText: "wait:$1;$2",
+		insertText: "wait:$1;$2"
 	},
 	callSteam: {
 		type: commandType.callSteam,
@@ -1037,29 +1037,31 @@ export const WebGALKeywords = {
 		callSteam:xxx;
 		\`\`\``,
 		detail: `callSteam: <...arguments>;`,
-		insertText: "callSteam:$1;$2",
-	},
+		insertText: "callSteam:$1;$2"
+	}
 };
 export const WebGALKeywordsKeys = Object.keys(
-	WebGALKeywords,
+	WebGALKeywords
 ) as CommandNameSpecial[];
 
 /* server可用补全Map */
 export const WebgGALKeywordsCompletionMap = WebGALKeywordsKeys.map(
-	v =>
+	(v) =>
 		({
 			label: WebGALKeywords[v]?.label || v,
 			kind: WebGALKeywords[v]?.kind || CompletionItemKind.Keyword,
 			documentation: {
 				kind: MarkupKind.Markdown,
 				value:
-					(WebGALKeywords[v].documentation as string)?.replace(/\t+/g, "") ||
-					WebGALKeywords[v].desc,
+					(WebGALKeywords[v].documentation as string)?.replace(
+						/\t+/g,
+						""
+					) || WebGALKeywords[v].desc
 			} as MarkupContent,
 			detail: WebGALKeywords[v]?.detail || WebGALKeywords[v].desc,
 			insertText: WebGALKeywords[v]?.insertText || v,
-			insertTextFormat: InsertTextFormat.Snippet,
-		}) satisfies CompletionItem,
+			insertTextFormat: InsertTextFormat.Snippet
+		}) satisfies CompletionItem
 );
 
 export interface WebGALConfigToken extends Partial<CompletionItem> {
@@ -1070,35 +1072,35 @@ export interface WebGALConfigToken extends Partial<CompletionItem> {
 export const WebGALConfigMap: Record<string, WebGALConfigToken> = {
 	Game_name: {
 		desc: "游戏名称",
-		require: true,
+		require: true
 	},
 	Game_key: {
 		desc: "游戏识别码，长度 6-10 字符，不要与别的游戏重复",
-		require: true,
+		require: true
 	},
 	Title_img: {
 		desc: "标题图片，放在 background 文件夹",
-		require: true,
+		require: true
 	},
 	Title_bgm: {
 		desc: "标题背景音乐，放在 bgm 文件夹",
-		require: true,
+		require: true
 	},
 	Game_Logo: {
-		desc: "游戏 Logo，可以显示多个，用 | 分割",
+		desc: "游戏 Logo，可以显示多个，用 | 分割"
 	},
 	Enable_Appreciation: {
-		desc: "是否启用鉴赏功能，包括 CG 和背景音乐鉴赏。",
+		desc: "是否启用鉴赏功能，包括 CG 和背景音乐鉴赏。"
 	},
 	Default_Language: {
-		desc: "默认语言，可设置为 'zh_CN', 'zh_TW', 'en', 'ja', 'fr', 'de'",
+		desc: "默认语言，可设置为 'zh_CN', 'zh_TW', 'en', 'ja', 'fr', 'de'"
 	},
 	Show_panic: {
-		desc: "是否启用紧急回避功能，设置为 true 或 false",
+		desc: "是否启用紧急回避功能，设置为 true 或 false"
 	},
 	Legacy_Expression_Blend_Mode: {
-		desc: "是否启用 Live2D 的旧表情混合模式，设置为 true 或 false",
-	},
+		desc: "是否启用 Live2D 的旧表情混合模式，设置为 true 或 false"
+	}
 };
 
 export const WebGALConfigCompletionMap = Object.fromEntries(
@@ -1115,8 +1117,8 @@ export const WebGALConfigCompletionMap = Object.fromEntries(
 			documentation,
 			detail,
 			insertText,
-			insertTextFormat: InsertTextFormat.Snippet,
+			insertTextFormat: InsertTextFormat.Snippet
 		};
 		return [key, completion];
-	}),
+	})
 ) as Record<string, WebGALConfigToken & CompletionItem>;

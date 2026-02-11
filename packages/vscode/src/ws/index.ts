@@ -2,7 +2,7 @@ import { DebugSession, Range, TextEditorDecorationType, window } from "vscode";
 import {
 	disableGameStatus,
 	enableGameStatus,
-	setGameData,
+	setGameData
 } from "@/utils/utils";
 import EventEmitter from "events";
 import WebSocket, { WebSocket as WS } from "ws";
@@ -11,11 +11,11 @@ import {
 	DebugCommand,
 	FileAccessor,
 	IDebugMessage,
-	RuntimeVariable,
+	RuntimeVariable
 } from "@webgal/language-core";
 
 export function timeout(ms: number) {
-	return new Promise(resolve => setTimeout(resolve, ms));
+	return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 export default class XRRuntime extends EventEmitter {
@@ -23,13 +23,13 @@ export default class XRRuntime extends EventEmitter {
 	public variables = new Map<string, Map<string, RuntimeVariable>>([
 		["local", new Map<string, RuntimeVariable>()],
 		["env", new Map<string, RuntimeVariable>()],
-		["scene", new Map<string, RuntimeVariable>()],
+		["scene", new Map<string, RuntimeVariable>()]
 	]);
 	private _config: any;
 	public _clearFunc!: Function;
 	constructor(
 		public _ADP: DebugSession,
-		public fileAccessor: FileAccessor,
+		public fileAccessor: FileAccessor
 	) {
 		super();
 	}
@@ -40,11 +40,11 @@ export default class XRRuntime extends EventEmitter {
 				command: DebugCommand.JUMP,
 				sceneMsg: {
 					scene: this._config.program,
-					sentence: Line,
+					sentence: Line
 				}, // @ts-ignore
 				stageSyncMsg: {},
-				message: "Sync",
-			},
+				message: "Sync"
+			}
 		};
 		this._WS.send(JSON.stringify(msg));
 	}
@@ -53,25 +53,25 @@ export default class XRRuntime extends EventEmitter {
 			case "env": {
 				return Array.from(
 					this.variables.get("env") as Map<string, RuntimeVariable>,
-					([name, value]) => value,
+					([name, value]) => value
 				);
 			}
 			case "scene": {
 				return Array.from(
 					this.variables.get("scene") as Map<string, RuntimeVariable>,
-					([name, value]) => value,
+					([name, value]) => value
 				);
 			}
 			case "var": {
 				return Array.from(
 					this.variables.get("local") as Map<string, RuntimeVariable>,
-					([name, value]) => value,
+					([name, value]) => value
 				);
 			}
 			default: {
 				return Array.from(
 					this.variables.get("local") as Map<string, RuntimeVariable>,
-					([name, value]) => value,
+					([name, value]) => value
 				);
 			}
 		}
@@ -133,11 +133,11 @@ function createWS(_ADP: DebugSession, self: XRRuntime) {
 					command: DebugCommand.JUMP,
 					sceneMsg: {
 						scene: config.program,
-						sentence: 0,
+						sentence: 0
 					}, // @ts-ignore
 					stageSyncMsg: {},
-					message: "徐然",
-				},
+					message: "徐然"
+				}
 			};
 			sock.send(JSON.stringify(msg));
 			window.showInformationMessage("(webgal)调试连接到：" + _ws_host);
@@ -167,11 +167,11 @@ function createWS(_ADP: DebugSession, self: XRRuntime) {
 					command: DebugCommand.EXE_COMMAND,
 					sceneMsg: {
 						scene: config.program,
-						sentence: 1,
+						sentence: 1
 					},
 					stageSyncMsg: {},
-					message: e,
-				},
+					message: e
+				}
 			};
 			sock.send(JSON.stringify(msg));
 		}
@@ -203,7 +203,7 @@ function createWS(_ADP: DebugSession, self: XRRuntime) {
 		let newv = new Map<string, Map<string, RuntimeVariable>>([
 			["local", new Map<string, RuntimeVariable>()],
 			["env", new Map<string, RuntimeVariable>()],
-			["scene", new Map<string, RuntimeVariable>()],
+			["scene", new Map<string, RuntimeVariable>()]
 		]);
 		for (let _var in _data.data.stageSyncMsg.GameVar) {
 			const _val = _data.data.stageSyncMsg.GameVar[_var];
@@ -230,17 +230,25 @@ function createWS(_ADP: DebugSession, self: XRRuntime) {
 		self.variables = newv;
 		// self._ADP.customRequest("updatevar");
 		setGameData(_data);
-		if (!editor || !editor.document) {return;}
+		if (!editor || !editor.document) {
+			return;
+		}
 		const _fname = String(editor.document.fileName || "");
 		const _dname = String(sceneMsg.scene || "");
 		const _now = _fname.substring(_fname.lastIndexOf("\\") + 1);
 		const _target = _dname.substring(_dname.lastIndexOf("\\") + 1);
-		if (!_now || !_target) {return;}
-		if (sceneMsg && last_line_num !== sceneMsg.sentence && _now === _target) {
+		if (!_now || !_target) {
+			return;
+		}
+		if (
+			sceneMsg &&
+			last_line_num !== sceneMsg.sentence &&
+			_now === _target
+		) {
 			clearDecorationType();
 			decorationType = window.createTextEditorDecorationType({
 				backgroundColor: "rgba(150, 0, 0, 0.3)",
-				isWholeLine: true,
+				isWholeLine: true
 			});
 			last_line_num = sceneMsg.sentence;
 			const _num = Math.max(last_line_num - 1, 0);
@@ -248,7 +256,7 @@ function createWS(_ADP: DebugSession, self: XRRuntime) {
 				_num,
 				0,
 				_num,
-				editor.document.lineAt(_num).text.length,
+				editor.document.lineAt(_num).text.length
 			);
 			editor.setDecorations(decorationType, [range]);
 		}

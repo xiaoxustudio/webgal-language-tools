@@ -8,7 +8,7 @@ enum ResourceType {
 	scene = "scene",
 	tex = "tex",
 	video = "video",
-	vocal = "vocal",
+	vocal = "vocal"
 }
 
 export const resourceExtsMap = {
@@ -19,7 +19,7 @@ export const resourceExtsMap = {
 	scene: ["txt"],
 	tex: ["png", "webp"],
 	video: ["mp4", "webm", "mkv"],
-	vocal: ["mp3", "ogg", "wav"],
+	vocal: ["mp3", "ogg", "wav"]
 };
 
 export const resourcesMap = {
@@ -34,7 +34,7 @@ export const resourcesMap = {
 	[WebGALKeywords.playEffect.label!]: ResourceType.vocal,
 	[WebGALKeywords.changeScene.label!]: ResourceType.scene,
 	[WebGALKeywords.callScene.label!]: ResourceType.scene,
-	[WebGALKeywords.choose.label!]: ResourceType.scene,
+	[WebGALKeywords.choose.label!]: ResourceType.scene
 };
 
 /* 根据指令返回资源目录名称 */

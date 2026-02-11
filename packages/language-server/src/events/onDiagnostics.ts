@@ -1,22 +1,22 @@
 import {
 	DocumentDiagnosticReportKind,
-	DocumentDiagnosticReport,
+	DocumentDiagnosticReport
 } from "@volar/language-server";
 import { ConnectionHandler } from "@/types";
 import { validateTextDocument } from "@/utils";
 
 export default <ConnectionHandler>function (documents, connection) {
-	connection.languages.diagnostics.on(async params => {
+	connection.languages.diagnostics.on(async (params) => {
 		const document = documents.get(params.textDocument.uri);
 		if (document !== undefined) {
 			return {
 				kind: DocumentDiagnosticReportKind.Full,
-				items: await validateTextDocument(connection, document),
+				items: await validateTextDocument(connection, document)
 			} satisfies DocumentDiagnosticReport;
 		} else {
 			return {
 				kind: DocumentDiagnosticReportKind.Full,
-				items: [],
+				items: []
 			} satisfies DocumentDiagnosticReport;
 		}
 	});

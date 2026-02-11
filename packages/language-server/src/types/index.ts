@@ -10,5 +10,5 @@ export type ConnectionDocumentsType = TextDocuments<TextDocument>;
 
 export type ConnectionHandler = (
 	documents: ConnectionDocumentsType,
-	connection: Connection,
+	connection: Connection
 ) => void;

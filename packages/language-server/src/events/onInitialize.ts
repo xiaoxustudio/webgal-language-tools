@@ -3,7 +3,7 @@ import { StateConfig } from "@/utils";
 import {
 	InitializeParams,
 	InitializeResult,
-	TextDocumentSyncKind,
+	TextDocumentSyncKind
 } from "@volar/language-server";
 
 export default <ConnectionHandler>function (_, connection) {
@@ -25,26 +25,26 @@ export default <ConnectionHandler>function (_, connection) {
 			capabilities: {
 				textDocumentSync: TextDocumentSyncKind.Incremental,
 				completionProvider: {
-					triggerCharacters: [".", ":", "-", "/"],
+					triggerCharacters: [".", ":", "-", "/"]
 				},
 				hoverProvider: true,
 				diagnosticProvider: {
 					identifier: "webgal-diagnostics",
 					interFileDependencies: false,
-					workspaceDiagnostics: false,
+					workspaceDiagnostics: false
 				},
 				documentLinkProvider: {
-					resolveProvider: true,
+					resolveProvider: true
 				},
 				foldingRangeProvider: true,
-				definitionProvider: true,
-			},
+				definitionProvider: true
+			}
 		};
 		if (StateConfig.hasWorkspaceFolderCapability) {
 			result.capabilities.workspace = {
 				workspaceFolders: {
-					supported: true,
-				},
+					supported: true
+				}
 			};
 		}
 		return result;

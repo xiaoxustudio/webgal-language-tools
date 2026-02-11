@@ -1,7 +1,7 @@
 import {
 	createConnection,
 	createServer,
-	TextDocuments,
+	TextDocuments
 } from "@volar/language-server/node";
 import { TextDocument } from "vscode-languageserver-textdocument";
 import events from "./events";

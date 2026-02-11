@@ -2,14 +2,16 @@ import { ConnectionHandler } from "@/types";
 import {
 	FoldingRangeParams,
 	FoldingRange,
-	FoldingRangeKind,
+	FoldingRangeKind
 } from "@volar/language-server";
 
 // 折叠
 export default <ConnectionHandler>function (documents, connection) {
 	connection.onFoldingRanges((params: FoldingRangeParams) => {
 		const doc = documents.get(params.textDocument.uri);
-		if (!doc) {return [];}
+		if (!doc) {
+			return [];
+		}
 
 		const docText = doc.getText();
 		const foldingRanges: FoldingRange[] = [];
@@ -37,8 +39,9 @@ export default <ConnectionHandler>function (documents, connection) {
 						startLine: startLine,
 						endLine: endLine,
 						collapsedText:
-							match[1].split("\n")[0].replace(/;/g, "").trim() || "...",
-						kind: FoldingRangeKind.Region,
+							match[1].split("\n")[0].replace(/;/g, "").trim() ||
+							"...",
+						kind: FoldingRangeKind.Region
 					});
 				}
 			}

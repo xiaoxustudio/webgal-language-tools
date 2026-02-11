@@ -4,14 +4,14 @@ import {
 	getPatternAtPosition,
 	getStageCompletionContext,
 	getWordAtPosition,
-	updateGlobalMap,
+	updateGlobalMap
 } from "@/utils";
 import {
 	CommandNameSpecial,
 	globalArgs,
 	WebGALConfigCompletionMap,
 	WebGALKeywords,
-	WebgGALKeywordsCompletionMap,
+	WebgGALKeywordsCompletionMap
 } from "@/utils/provider";
 import { StateMap } from "@/utils/providerState";
 import { resourcesMap } from "@/utils/resources";
@@ -19,7 +19,7 @@ import {
 	TextDocumentPositionParams,
 	CompletionItem,
 	CompletionItemKind,
-	Position,
+	Position
 } from "@volar/language-server";
 import { GlobalMap } from "@webgal/language-core";
 
@@ -27,16 +27,20 @@ import { GlobalMap } from "@webgal/language-core";
 export default <ConnectionHandler>function (documents, connection) {
 	connection.onCompletion(
 		async (
-			_textDocumentPosition: TextDocumentPositionParams,
+			_textDocumentPosition: TextDocumentPositionParams
 		): Promise<CompletionItem[]> => {
-			const document = documents.get(_textDocumentPosition.textDocument.uri);
-			if (!document) {return [];}
+			const document = documents.get(
+				_textDocumentPosition.textDocument.uri
+			);
+			if (!document) {
+				return [];
+			}
 			const file_name = document.uri;
 			const documentTextArray = document.getText().split("\n");
 
 			const { token } = findTokenRange(
 				document,
-				_textDocumentPosition.position,
+				_textDocumentPosition.position
 			);
 
 			const CompletionItemSuggestions: CompletionItem[] = [];
@@ -57,10 +61,10 @@ export default <ConnectionHandler>function (documents, connection) {
 			const findWordWithPattern = getPatternAtPosition(
 				document,
 				_textDocumentPosition.position,
-				/\$(stage|userData)(?:\.[\w-]*)*/,
+				/\$(stage|userData)(?:\.[\w-]*)*/
 			);
 			const isStateMap = (
-				value: StateMap | Record<string, StateMap>,
+				value: StateMap | Record<string, StateMap>
 			): value is StateMap => {
 				return (
 					typeof (value as StateMap).key === "string" &&
@@ -74,13 +78,13 @@ export default <ConnectionHandler>function (documents, connection) {
 					getStageCompletionContext(
 						document,
 						_textDocumentPosition.position,
-						findWordWithPattern,
+						findWordWithPattern
 					);
 				let info = await connection.sendRequest<
 					StateMap | Record<string, StateMap>
 				>(
 					"client/goPropertyDoc",
-					querySegments.length ? querySegments : fullSegments,
+					querySegments.length ? querySegments : fullSegments
 				);
 
 				if (info) {
@@ -89,7 +93,9 @@ export default <ConnectionHandler>function (documents, connection) {
 					delete info.__WG$description;
 					if (!isStateMap(info)) {
 						for (const key in info) {
-							if (prefix && !key.includes(prefix)) {continue;}
+							if (prefix && !key.includes(prefix)) {
+								continue;
+							}
 							const current = info[key] as StateMap;
 							CompletionItemSuggestions.push({
 								label: key,
@@ -98,8 +104,8 @@ export default <ConnectionHandler>function (documents, connection) {
 								filterText: key,
 								textEdit: {
 									range: replaceRange,
-									newText: key,
-								},
+									newText: key
+								}
 							} satisfies CompletionItem);
 						}
 					} else {
@@ -113,8 +119,8 @@ export default <ConnectionHandler>function (documents, connection) {
 							filterText: info.key,
 							textEdit: {
 								range: replaceRange,
-								newText: info.key,
-							},
+								newText: info.key
+							}
 						} satisfies CompletionItem);
 					}
 				}
@@ -123,7 +129,7 @@ export default <ConnectionHandler>function (documents, connection) {
 
 			const wordMeta = getWordAtPosition(
 				document,
-				Position.create(_textDocumentPosition.position.line, 0),
+				Position.create(_textDocumentPosition.position.line, 0)
 			); // 获得当前单词
 
 			const currentLine =
@@ -132,9 +138,10 @@ export default <ConnectionHandler>function (documents, connection) {
 				0,
 				currentLine.indexOf(":") !== -1
 					? currentLine.indexOf(":")
-					: currentLine.indexOf(";"),
+					: currentLine.indexOf(";")
 			);
-			const isSayCommandType = !resourcesMap[commandType as CommandNameSpecial];
+			const isSayCommandType =
+				!resourcesMap[commandType as CommandNameSpecial];
 
 			// 资源文件路径
 			if (
@@ -149,7 +156,7 @@ export default <ConnectionHandler>function (documents, connection) {
 				if (resourceBaseDir) {
 					const dirs = await connection.sendRequest<any>(
 						"client/getResourceDirectory",
-						[resourceBaseDir, token],
+						[resourceBaseDir, token]
 					);
 					if (dirs) {
 						for (const dir of dirs) {
@@ -157,7 +164,7 @@ export default <ConnectionHandler>function (documents, connection) {
 								label: dir.name,
 								kind: dir.isDirectory
 									? CompletionItemKind.Folder
-									: CompletionItemKind.File,
+									: CompletionItemKind.File
 							} satisfies CompletionItem);
 						}
 					}
@@ -169,19 +176,22 @@ export default <ConnectionHandler>function (documents, connection) {
 						WebGALKeywords[wordMeta.word as CommandNameSpecial] ??
 						WebGALKeywords["say"];
 
-					const data = [...keyData.args, ...globalArgs].map(arg => {
+					const data = [...keyData.args, ...globalArgs].map((arg) => {
 						return {
 							label: arg.arg,
 							kind: CompletionItemKind.Constant,
 							documentation: arg.desc,
-							detail: arg.desc,
+							detail: arg.desc
 						};
 					}) as CompletionItem[];
 
 					// 去除重复项
 					const uniqueData = data.filter(
 						(parentItem, index, self) =>
-							index === self.findIndex(item => item.label === parentItem.label),
+							index ===
+							self.findIndex(
+								(item) => item.label === parentItem.label
+							)
 					);
 					CompletionItemSuggestions.push(...uniqueData);
 				}
@@ -195,11 +205,13 @@ export default <ConnectionHandler>function (documents, connection) {
 				for (const key in currentPool) {
 					if (key.includes(token)) {
 						const latest =
-							GlobalMap.setVar[key][GlobalMap.setVar[key].length - 1];
+							GlobalMap.setVar[key][
+								GlobalMap.setVar[key].length - 1
+							];
 						CompletionItemSuggestions.push({
 							label: key,
 							kind: CompletionItemKind.Variable,
-							documentation: latest.desc,
+							documentation: latest.desc
 						} satisfies CompletionItem);
 					}
 				}
@@ -217,14 +229,14 @@ export default <ConnectionHandler>function (documents, connection) {
 			CompletionItemSuggestions.push(
 				{
 					label: "$stage",
-					kind: CompletionItemKind.Variable,
+					kind: CompletionItemKind.Variable
 				},
 				{
 					label: "$userData",
-					kind: CompletionItemKind.Variable,
-				},
+					kind: CompletionItemKind.Variable
+				}
 			);
 			return CompletionItemSuggestions;
-		},
+		}
 	);
 };
