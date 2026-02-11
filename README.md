@@ -1,4 +1,4 @@
-# webgal-alnguage--tools
+# webgal-language-tools
 
 > ⚡Provide language support for webgal script based-on Volar.js [Volar.js](https://volarjs.dev/)
 

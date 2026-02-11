@@ -18,7 +18,6 @@ const documents = server.documents;
 const webgalLanguagePlugin: LanguagePlugin<URI> = {
 	getLanguageId(scriptId) {
 		const path = scriptId.path.toLowerCase();
-		console.log(`徐然 ${path}`);
 		if (path.endsWith("/game/config.txt")) {
 			return "webgal-config";
 		}
