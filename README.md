@@ -14,7 +14,7 @@ Install the [webgal-for-vscode](https://marketplace.visualstudio.com/items?itemN
 | :---------------------------------------------------- | :------------------------------------------ |
 | [@webgal/language-core](./packages/language-core)     | Contains some configurations and core tools |
 | [@webgal/language-server](./packages/language-server) | LSP Language Service                        |
-| [vscode](./packages/language-core)                    | vscode extension                            |
+| [vscode](./packages/vscode-extension)                 | vscode extension                            |
 
 ## License
 
