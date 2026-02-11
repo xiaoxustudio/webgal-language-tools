@@ -1,11 +1,11 @@
 {
 	"name": "@webgal/language-server",
 	"version": "0.0.1",
-	"main": "out/index.js",
+	"main": "build/index.js",
 	"license": "MIT",
 	"files": [
-		"out/**/*.js",
-		"out/**/*.d.ts",
+		"build/**/*.js",
+		"build/**/*.d.ts",
 		"bin"
 	],
 	"bin": {
