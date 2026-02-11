@@ -187,7 +187,9 @@
 		"build": "node scripts/build -- --minify",
 		"watch": "pnpm run build -- --watch",
 		"pack": "pnpm run build && vsce package --pre-release",
-		"release": "pnpm run build && vsce publish --pre-release"
+		"release": "pnpm run build && vsce publish --pre-release",
+		"format": " prettier --write \"src/**/*.ts\"",
+		"lint": "eslint src --ext ts --fix"
 	},
 	"devDependencies": {
 		"@types/js-beautify": "^1.14.3",

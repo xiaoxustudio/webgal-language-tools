@@ -9,7 +9,7 @@ import {
 export default <ConnectionHandler>function (documents, connection) {
 	connection.onFoldingRanges((params: FoldingRangeParams) => {
 		const doc = documents.get(params.textDocument.uri);
-		if (!doc) return [];
+		if (!doc) {return [];}
 
 		const docText = doc.getText();
 		const foldingRanges: FoldingRange[] = [];

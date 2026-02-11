@@ -14,8 +14,10 @@
 	"scripts": {
 		"build": "tsc -p tsconfig.json & tsc-alias -p tsconfig.json",
 		"gen": "tsx scripts/gen.ts",
-		"dev": "node bin/webgal-language-server.js --stdio"
-	}, 
+		"dev": "node bin/webgal-language-server.js --stdio",
+		"format": " prettier --write \"src/**/*.ts\"",
+		"lint": "eslint src --ext ts --fix"
+	},
 	"dependencies": {
 		"@volar/language-core": "~2.4.0",
 		"@volar/language-server": "~2.4.0",

@@ -30,7 +30,7 @@ export default <ConnectionHandler>function (documents, connection) {
 			_textDocumentPosition: TextDocumentPositionParams,
 		): Promise<CompletionItem[]> => {
 			const document = documents.get(_textDocumentPosition.textDocument.uri);
-			if (!document) return [];
+			if (!document) {return [];}
 			const file_name = document.uri;
 			const documentTextArray = document.getText().split("\n");
 
@@ -89,7 +89,7 @@ export default <ConnectionHandler>function (documents, connection) {
 					delete info.__WG$description;
 					if (!isStateMap(info)) {
 						for (const key in info) {
-							if (prefix && !key.includes(prefix)) continue;
+							if (prefix && !key.includes(prefix)) {continue;}
 							const current = info[key] as StateMap;
 							CompletionItemSuggestions.push({
 								label: key,

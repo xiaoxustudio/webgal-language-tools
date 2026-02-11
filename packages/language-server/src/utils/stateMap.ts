@@ -3105,4 +3105,4 @@ export default {
         __WG$key: "IUserData",
         __WG$description: "\n@interface IUserData 用户数据接口\n/"
     }
-}
+};

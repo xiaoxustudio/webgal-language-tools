@@ -6,7 +6,7 @@ import { LanguageClient } from "vscode-languageclient/node";
 const getAllTextWithScene = (client: LanguageClient) =>
 	client.onRequest("client/getAllTextWithScene", async () => {
 		try {
-			if (!workspace.workspaceFolders) return null;
+			if (!workspace.workspaceFolders) {return null;}
 			const currentDirectory = workspace.workspaceFolders[0].uri.fsPath;
 			const dir = path.join(currentDirectory, "scene");
 			const dirents = readdirSync(dir, {

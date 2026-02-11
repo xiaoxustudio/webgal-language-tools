@@ -15,7 +15,7 @@ export interface StateMap {
 let index = 0;
 // 获取属性 xxxx.xxxx.xxx
 export const getState = (propertiesArray: string[], prev: any = definedMap) => {
-	if (!propertiesArray || propertiesArray.length === 0) return undefined;
+	if (!propertiesArray || propertiesArray.length === 0) {return undefined;}
 
 	for (const curr of propertiesArray) {
 		const result = prev[curr as keyof typeof prev];

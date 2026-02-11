@@ -9,7 +9,7 @@ export const SCHEME = "webgal-virtual-doc";
 export const GlobalMap: IDefinetionMap = {
 	label: {},
 	setVar: {},
-	choose: {},
+	choose: {}
 };
 
 export const cleartGlobalMapAll = () => {
@@ -25,7 +25,7 @@ export const fsAccessor: FileAccessor = {
 	},
 	writeFile(path: string, contents: Buffer): Promise<void> {
 		return fs.writeFile(path, contents.toString());
-	},
+	}
 };
 
 export const runCode = (text: string, ops?: expressions.CompileFuncOptions) => {

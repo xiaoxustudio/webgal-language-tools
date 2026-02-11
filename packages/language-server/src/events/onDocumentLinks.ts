@@ -13,7 +13,7 @@ export default <ConnectionHandler>function (documents, connection) {
 		async (textDocumentLinkParams: DocumentLinkParams) => {
 			const uri: string = textDocumentLinkParams.textDocument.uri;
 			const doc = documents.get(uri);
-			if (!doc) return [];
+			if (!doc) {return [];}
 			const text = doc.getText();
 			const documentTextArray = text.split("\n");
 			const _textDocument = textDocumentLinkParams.textDocument;
@@ -37,7 +37,7 @@ export default <ConnectionHandler>function (documents, connection) {
 				const regex = /\$?\{?(\w+)\.(\w+)\}?/g;
 
 				while ((match = regex.exec(currentLine))) {
-					if (match[0].startsWith("$")) continue;
+					if (match[0].startsWith("$")) {continue;}
 					const matchText = match[0];
 					const pathName =
 						pathArray[

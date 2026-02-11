@@ -53,11 +53,11 @@ export function getWordAtPosition(
 ): { word: string; start: number; end: number } | null {
 	const text = doc.getText();
 	const offset = doc.offsetAt(pos);
-	if (offset < 0 || offset > text.length) return null;
+	if (offset < 0 || offset > text.length) {return null;}
 
 	// 如果没有提供 charRegex，使用默认
 	const testChar = (ch: string) => {
-		if (!charRegex) return /[\p{L}\p{N}_]_?[\p{L}\p{N}_]*/u.test(ch);
+		if (!charRegex) {return /[\p{L}\p{N}_]_?[\p{L}\p{N}_]*/u.test(ch);}
 		// 为避免全局标志的问题，使用新的无 g 的正则来测试单个字符
 		const flags = (charRegex.flags || "").replace("g", "");
 		const r = new RegExp(charRegex.source, flags);
@@ -65,14 +65,14 @@ export function getWordAtPosition(
 	};
 
 	let i = offset - 1;
-	while (i >= 0 && testChar(text.charAt(i))) i--;
+	while (i >= 0 && testChar(text.charAt(i))) {i--;}
 	const start = i + 1;
 
 	let j = offset;
-	while (j < text.length && testChar(text.charAt(j))) j++;
+	while (j < text.length && testChar(text.charAt(j))) {j++;}
 	const end = j;
 
-	if (start >= end) return null;
+	if (start >= end) {return null;}
 	const word = text.slice(start, end);
 	return { word, start, end };
 }
@@ -92,7 +92,7 @@ export function getPatternAtPosition(
 } | null {
 	const text = doc.getText();
 	const offset = doc.offsetAt(pos);
-	if (offset < 0 || offset > text.length) return null;
+	if (offset < 0 || offset > text.length) {return null;}
 
 	const cleanFlags = (pattern.flags || "").replace(/[gy]/g, "");
 	const re = new RegExp(pattern.source, cleanFlags + "g");
@@ -151,14 +151,14 @@ export function getTokenOrPatternAtPosition(
 		// 如果 basic 匹配整个 pattern，则返回 basic（有时 basic 包含大括号）
 		const flags = (pattern.flags || "").replace("g", "");
 		const full = new RegExp(`^(?:${pattern.source})$`, flags);
-		if (full.test(basic.word)) return basic;
+		if (full.test(basic.word)) {return basic;}
 	}
-	if (basic) return basic;
+	if (basic) {return basic;}
 
 	// 否则尝试全文模式查找（pattern 提供时）
 	if (pattern) {
 		const found = getPatternAtPosition(doc, pos, pattern);
-		if (found) return { word: found.text, start: found.start, end: found.end };
+		if (found) {return { word: found.text, start: found.start, end: found.end };}
 	}
 	return null;
 }
@@ -175,10 +175,10 @@ export function findTokenRange(
 	const text = doc.getText();
 	const offset = doc.offsetAt(pos);
 	let i = offset - 1;
-	while (i >= 0 && isPathChar(text.charAt(i))) i--;
+	while (i >= 0 && isPathChar(text.charAt(i))) {i--;}
 	const start = i + 1;
 	let j = offset;
-	while (j < text.length && isPathChar(text.charAt(j))) j++;
+	while (j < text.length && isPathChar(text.charAt(j))) {j++;}
 	const end = j;
 	const token = text.slice(start, end);
 	return { startOffset: start, endOffset: end, token };

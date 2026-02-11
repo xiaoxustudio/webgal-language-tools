@@ -230,12 +230,12 @@ function createWS(_ADP: DebugSession, self: XRRuntime) {
 		self.variables = newv;
 		// self._ADP.customRequest("updatevar");
 		setGameData(_data);
-		if (!editor || !editor.document) return;
+		if (!editor || !editor.document) {return;}
 		const _fname = String(editor.document.fileName || "");
 		const _dname = String(sceneMsg.scene || "");
 		const _now = _fname.substring(_fname.lastIndexOf("\\") + 1);
 		const _target = _dname.substring(_dname.lastIndexOf("\\") + 1);
-		if (!_now || !_target) return;
+		if (!_now || !_target) {return;}
 		if (sceneMsg && last_line_num !== sceneMsg.sentence && _now === _target) {
 			clearDecorationType();
 			decorationType = window.createTextEditorDecorationType({
