@@ -8,7 +8,7 @@
 
 Install the [webgal-for-vscode](https://marketplace.visualstudio.com/items?itemName=Xuran1783558957.webgal-for-vscode) extension.
 
-### For Monaco Users
+### For Monaco Users (Ideal state, currently not achieved)
 
 We have two startup modes: 
 
@@ -82,13 +82,14 @@ export function WebgalEditor() {
 
 ## Packages
 
-| Package                                               | Description                                 |
-| :---------------------------------------------------- | :------------------------------------------ |
-| [@webgal/language-core](./packages/language-core)     | Contains some configurations and core tools |
-| [@webgal/language-server](./packages/language-server) | LSP Language Service                        |
-| [@webgal/language-client](./packages/language-server) | LSP Language Client                         |
-| [vscode](./packages/vscode-extension)                 | vscode extension                            |
+| Package                                                 | Description                                 |
+| :------------------------------------------------------ | :------------------------------------------ |
+| [@webgal/language-core](./packages/language-core)       | Contains some configurations and core tools |
+| [@webgal/language-server](./packages/language-server)   | LSP Language Server                         |
+| [@webgal/language-service](./packages/language-service) | LSP Language Service                        |
+| [playground](./packages/playground)                     | Playground                                  |
+| [vscode](./packages/vscode-extension)                   | vscode extension                            |
 
 ## License
 
-[MIT](./LICENSE) License
+[MPL 2.0](./LICENSE) License
