@@ -23,7 +23,7 @@ import {
 } from "@volar/language-service";
 import { TextDocument } from "vscode-languageserver-textdocument";
 import type { URI } from "vscode-uri";
-import type { VirtualFileSystem } from "@webgal/language-client";
+import type { VirtualFileSystem } from "@webgal/language-service";
 import { getState } from "./providerState";
 
 type SendRequestConnection = {

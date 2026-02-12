@@ -49,6 +49,7 @@ export function createWebgalService(connection: Connection) {
 			definitionProvider: true
 		},
 		create() {
+			console.log("provideCompletionItems");
 			return {
 				async provideCompletionItems(
 					document: TextDocument,

@@ -1,46 +1,109 @@
-// lsp-client.ts
+import * as vscode from "vscode";
 import { WebSocketMessageReader } from "vscode-ws-jsonrpc";
 import {
 	CloseAction,
 	ErrorAction,
-	MessageTransports
+	MessageTransports,
+	type InitializeParams
 } from "vscode-languageclient/browser.js";
 import { WebSocketMessageWriter } from "vscode-ws-jsonrpc";
 import { toSocket } from "vscode-ws-jsonrpc";
 import { MonacoLanguageClient } from "monaco-languageclient";
+import * as monaco from "monaco-editor";
+import {
+	createMemoryFileSystem,
+	createWebgalClientHandlers,
+	registerWebgalClientHandlers
+} from "@webgal/language-service";
 
-export const initWebSocketAndStartClient = (url: string): WebSocket => {
+export const initWebSocketAndStartClient = (
+	url: string,
+	editor: monaco.editor.IStandaloneCodeEditor
+): { webSocket: WebSocket; vfs: ReturnType<typeof createMemoryFileSystem> } => {
 	const webSocket = new WebSocket(url);
+	const vfs = createMemoryFileSystem({ root: "file:///game" });
+	vfs.writeFile("file:///game/scene/start.txt", "xuran");
+	vfs.writeFile("file:///game/config.txt", "");
+
 	webSocket.onopen = () => {
 		// creating messageTransport
 		const socket = toSocket(webSocket);
 		const reader = new WebSocketMessageReader(socket);
 		const writer = new WebSocketMessageWriter(socket);
+
 		// creating language client
-		const languageClient = createLanguageClient({
-			reader,
-			writer
-		});
+		const languageClient = createLanguageClient(
+			{
+				reader,
+				writer
+			},
+			{ editor, vfs }
+		);
 		languageClient.start();
+
 		reader.onClose(() => languageClient.stop());
 	};
-	return webSocket;
+	return { webSocket, vfs };
 };
+
 const createLanguageClient = (
-	messageTransports: MessageTransports
+	messageTransports: MessageTransports,
+	options: {
+		editor: monaco.editor.IStandaloneCodeEditor;
+		vfs: ReturnType<typeof createMemoryFileSystem>;
+	}
 ): MonacoLanguageClient => {
-	return new MonacoLanguageClient({
-		name: "Sample Language Client",
+	const handlers = createWebgalClientHandlers({
+		vfs: options.vfs
+	});
+	const client = new MonacoLanguageClient({
+		name: "WebGAL Language Client",
 		clientOptions: {
 			// use a language id as a document selector
-			documentSelector: ["python"],
+			documentSelector: [
+				{ scheme: "file", language: "webgal" },
+				{ scheme: "file", language: "webgal-config" }
+			],
 			// disable the default error handler
 			errorHandler: {
 				error: () => ({ action: ErrorAction.Continue }),
 				closed: () => ({ action: CloseAction.DoNotRestart })
+			},
+			synchronize: {
+				configurationSection: ["webgal", "http"],
+				fileEvents: vscode.workspace.createFileSystemWatcher("**/.txt")
+			},
+			initializationOptions() {
+				const model = options.editor.getModel();
+				const initParams: InitializeParams = {
+					processId: Math.random(),
+					rootPath: "file:///game",
+					rootUri: "file:///game",
+					capabilities: {
+						textDocument: {
+							publishDiagnostics: { relatedInformation: true }
+						}
+					},
+					workspaceFolders: [
+						{
+							uri: "file:///game",
+							name: "example"
+						}
+					],
+					...(model
+						? { textDocument: { uri: model.uri.toString() } }
+						: {})
+				};
+				return initParams;
 			}
 		},
 		// create a language client connection from the JSON RPC connection on demand
 		messageTransports
 	});
+	client.onRequest("client/showTip", (message: string) => {
+		console.log(message);
+	});
+	registerWebgalClientHandlers(client, handlers);
+
+	return client;
 };

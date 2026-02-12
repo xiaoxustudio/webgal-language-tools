@@ -1,5 +1,5 @@
 rimraf node_modules package-lock.yaml
-cd ./packages/language-client
+cd ./packages/language-service
 rimraf node_modules
 cd ../language-server
 rimraf node_modules

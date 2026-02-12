@@ -3,7 +3,7 @@ import Editor from "@monaco-editor/react";
 import * as Monaco from "monaco-editor";
 import type { EditorProps } from "@monaco-editor/react";
 import "./App.css";
-import "./init";
+import init from "./init";
 
 type IStandaloneCodeEditor<T = EditorProps["onMount"]> = T extends (
 	...args: infer A
@@ -13,12 +13,19 @@ type IStandaloneCodeEditor<T = EditorProps["onMount"]> = T extends (
 
 function App() {
 	const editorRef = useRef<IStandaloneCodeEditor>(null);
+
 	function handleEditorDidMount(
 		editor: IStandaloneCodeEditor,
 		monaco: typeof Monaco
 	) {
 		editorRef.current = editor;
-		console.log(monaco);
+		monaco.languages.register({ id: "webgal" });
+		const { vfs } = init(editor);
+		editor.onDidChangeModelContent(() => {
+			vfs.writeFile("file:///game/scene/start.txt", editor.getValue());
+			console.log("徐然", vfs.readFile("file:///game/scene/start.txt"));
+			console.log("徐然", editor.getModel()!.getLanguageId());
+		});
 	}
 
 	return (
@@ -26,6 +33,7 @@ function App() {
 			Editor
 			<Editor
 				height="90vh"
+				defaultLanguage="webgal"
 				width="600px"
 				onMount={handleEditorDidMount}
 				language="webgal"

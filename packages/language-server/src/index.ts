@@ -4,8 +4,6 @@ import {
 	createSimpleProject
 } from "@volar/language-server/node";
 import type { InitializeParams } from "@volar/language-server";
-import { LanguagePlugin } from "@volar/language-core";
-import { URI } from "vscode-uri";
 import {
 	createConnection as createVscodeConnection,
 	type Connection
@@ -82,40 +80,14 @@ function startServer(connection: Connection) {
 	const documents = server.documents;
 	bindCoreFileAccessorToClientVfs(connection);
 
-	const webgalLanguagePlugin: LanguagePlugin<URI> = {
-		getLanguageId(scriptId) {
-			const path = scriptId.path.toLowerCase();
-			if (scriptId.scheme !== "file") {
-				if (
-					path.endsWith("/game/config.txt") ||
-					path.endsWith("config.txt")
-				) {
-					return "webgal-config";
-				}
-				if (path.endsWith(".txt")) {
-					return "webgal";
-				}
-				return "webgal";
-			}
-			if (path.endsWith("/game/config.txt")) {
-				return "webgal-config";
-			}
-			if (path.endsWith(".txt") && path.includes("/game/scene/")) {
-				return "webgal";
-			}
-			return undefined;
-		}
-	};
-
 	registerConnectionHandlers(documents, connection);
 
 	connection.onInitialize((params: InitializeParams) => {
 		applyClientCapabilities(params);
-		const result = server.initialize(
-			params,
-			createSimpleProject([webgalLanguagePlugin]),
-			[createWebgalService(connection)]
-		);
+		const result = server.initialize(params, createSimpleProject([]), [
+			createWebgalService(connection)
+		]);
+
 		applyServerCapabilities(result);
 		return result;
 	});

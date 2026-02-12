@@ -139,19 +139,16 @@ importers:
         version: 26.1.1
       '@monaco-editor/react':
         specifier: ^4.7.0
-        version: 4.7.0(monaco-editor@0.55.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        version: 4.7.0(@codingame/monaco-vscode-editor-api@26.1.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@volar/monaco':
         specifier: ^2.4.28
         version: 2.4.28
-      '@webgal/language-server':
-        specifier: workspace:*
-        version: link:../language-server
       '@webgal/language-service':
         specifier: workspace:*
         version: link:../language-service
       monaco-editor:
-        specifier: ^0.55.1
-        version: 0.55.1
+        specifier: npm:@codingame/monaco-vscode-editor-api@^26.1.1
+        version: '@codingame/monaco-vscode-editor-api@26.1.1'
       monaco-editor-core:
         specifier: ^0.55.1
         version: 0.55.1
@@ -164,6 +161,9 @@ importers:
       react-dom:
         specifier: ^19.2.0
         version: 19.2.4(react@19.2.4)
+      vscode:
+        specifier: npm:@codingame/monaco-vscode-extension-api@^26.1.1
+        version: '@codingame/monaco-vscode-extension-api@26.1.1'
       vscode-languageclient:
         specifier: ^9.0.1
         version: 9.0.1
@@ -444,6 +444,9 @@ packages:
   '@codingame/monaco-vscode-editor-api@25.1.2':
     resolution: {integrity: sha512-dVXoBLRN8vyFHsLY6iYISaNetZ3ispXLut0qL+jvN0e0CEFkUv1F/3EAE7myptrJSS/N1AptrRIxATT3lwFP+Q==}
 
+  '@codingame/monaco-vscode-editor-api@26.1.1':
+    resolution: {integrity: sha512-hfVkIE0AWt+MVSPFaUfm5MWJ68GbNObqK2qAnVUYd0Nmi/b5zBddKUrbRyogXAh+3umK7DN+tdPvP//5Qo16rQ==}
+
   '@codingame/monaco-vscode-editor-service-override@25.1.2':
     resolution: {integrity: sha512-EadvDCyWdgxOPmaIvbcVVDNjTUYuKdjYWwKbPbbcTs9t4z1/DjdE7mV3ZdT6aGh5m6zkEEUOi143l27Y5eRt+Q==}
 
@@ -455,6 +458,9 @@ packages:
 
   '@codingame/monaco-vscode-extension-api@25.1.2':
     resolution: {integrity: sha512-SJW/YOhjo+9MXEyzMwQMUWdJVR3Llc6pTq5JQqs6Y30v73gTrpLqtzbd9FNdCuQR8S6bUk5ScH8GL4QrVuL5FA==}
+
+  '@codingame/monaco-vscode-extension-api@26.1.1':
+    resolution: {integrity: sha512-fl1Q5PIVz3rDXFISDEtHK1ZRj8PCne6FUI0sX4Mj2iy1XvG+zkZPtXocD3TVdYjnqsvl8Vhv/L54/+bRsTUmWA==}
 
   '@codingame/monaco-vscode-extensions-service-override@25.1.2':
     resolution: {integrity: sha512-rTTZW2biPxcg+JumhVf2L+38C5ptvNNxiJlwz39VfXFEh6qOHtAsIMy7vIXa0uGg5/y8DNp0SnOQJP/RKhLYZA==}
@@ -2280,9 +2286,6 @@ packages:
   monaco-editor-core@0.55.1:
     resolution: {integrity: sha512-UTk7U9VkSFy2qruSYC70+vHHo5DffN164QGkDn4vTaaO40a1UMSNHVqS2MF6Z+s0LWOeAzez/Kp85oAPZG2d0g==}
 
-  monaco-editor@0.55.1:
-    resolution: {integrity: sha512-jz4x+TJNFHwHtwuV9vA9rMujcZRb0CEilTEwG2rRSpe/A7Jdkuj8xPKttCgOh+v/lkHy7HsZ64oj+q3xoAFl9A==}
-
   monaco-languageclient@10.7.0:
     resolution: {integrity: sha512-oA5cOFixkF4bspVL2zMSn48LvlNR/Cu3vJ8MCVam3PdjobSULGgHtOASuZIi3FgWK42X1z8/6hrG0LCjvNu1Hw==}
     engines: {node: '>=20.10.0', npm: '>=10.2.3'}
@@ -3197,6 +3200,10 @@ snapshots:
     dependencies:
       '@codingame/monaco-vscode-api': 25.1.2
 
+  '@codingame/monaco-vscode-editor-api@26.1.1':
+    dependencies:
+      '@codingame/monaco-vscode-api': 26.1.1
+
   '@codingame/monaco-vscode-editor-service-override@25.1.2':
     dependencies:
       '@codingame/monaco-vscode-api': 25.1.2
@@ -3213,6 +3220,11 @@ snapshots:
     dependencies:
       '@codingame/monaco-vscode-api': 25.1.2
       '@codingame/monaco-vscode-extensions-service-override': 25.1.2
+
+  '@codingame/monaco-vscode-extension-api@26.1.1':
+    dependencies:
+      '@codingame/monaco-vscode-api': 26.1.1
+      '@codingame/monaco-vscode-extensions-service-override': 26.1.1
 
   '@codingame/monaco-vscode-extensions-service-override@25.1.2':
     dependencies:
@@ -3683,10 +3695,10 @@ snapshots:
     dependencies:
       state-local: 1.0.7
 
-  '@monaco-editor/react@4.7.0(monaco-editor@0.55.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
+  '@monaco-editor/react@4.7.0(@codingame/monaco-vscode-editor-api@26.1.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
     dependencies:
       '@monaco-editor/loader': 1.7.0
-      monaco-editor: 0.55.1
+      monaco-editor: '@codingame/monaco-vscode-editor-api@26.1.1'
       react: 19.2.4
       react-dom: 19.2.4(react@19.2.4)
 
@@ -5124,11 +5136,6 @@ snapshots:
   mkdirp@1.0.4: {}
 
   monaco-editor-core@0.55.1:
-    dependencies:
-      dompurify: 3.2.7
-      marked: 14.0.0
-
-  monaco-editor@0.55.1:
     dependencies:
       dompurify: 3.2.7
       marked: 14.0.0

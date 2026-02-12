@@ -1,6 +1,8 @@
 import { initialize } from "@codingame/monaco-vscode-api";
+import * as monaco from "monaco-editor";
 
 // we need to import this so monaco-languageclient can use vscode-api
+import "vscode/localExtensionHost";
 import { initWebSocketAndStartClient } from "./lsp-client";
 
 // everything else is the same except the last line
@@ -45,4 +47,9 @@ await initialize({
 	...getLanguagesServiceOverride()
 });
 
-initWebSocketAndStartClient("ws://localhost:3001/");
+export default function (editor: monaco.editor.IStandaloneCodeEditor) {
+	return initWebSocketAndStartClient(
+		"ws://localhost:3001/webgal-lsp",
+		editor
+	);
+}
