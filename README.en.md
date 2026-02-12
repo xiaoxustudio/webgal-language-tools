@@ -1,20 +1,18 @@
 # webgal-language-tools
 
-[English](./README.en.md) | 中文
+> ⚡Provide language support for WebGAL script based on Volar.js [Volar.js](https://volarjs.dev/)
 
-> ⚡提供 WebGAL 脚本的语言支持，基于 Volar.js [Volar.js](https://volarjs.dev/)
+## Quick Start
 
-## 快速开始
+### VSCode Users
 
-### VSCode 用户
+Install the [webgal-for-vscode](https://marketplace.visualstudio.com/items?itemName=Xuran1783558957.webgal-for-vscode) extension.
 
-安装 [webgal-for-vscode](https://marketplace.visualstudio.com/items?itemName=Xuran1783558957.webgal-for-vscode) 扩展。
+### Monaco Users
 
-### Monaco 用户
+We provide two ways to run the WebGAL language service in Monaco. Examples are based on monaco-editor and @monaco-editor/react.
 
-我们提供在 Monaco 中使用 WebGAL 语言服务的两种启动方式。示例基于 monaco-editor 与 @monaco-editor/react。
-
-- 前置初始化（必读）：在页面加载后先初始化 WebGAL 的 Monaco 语言配置与语法高亮。
+- Pre-initialization: initialize Monaco language configuration and syntax highlighting after page load.
 
 ```ts
 import { initWebgalMonaco } from "@webgal/language-service/monaco-init";
@@ -22,15 +20,15 @@ import { initWebgalMonaco } from "@webgal/language-service/monaco-init";
 await initWebgalMonaco();
 ```
 
-- WebSocket 模式：通过 WebSocket 连接到本地语言服务器。
+- WebSocket Mode: connect to a local language server via WebSocket.
 
-启动语言服务器：
+Start the language server:
 
 ```bash
 pnpm --filter @webgal/language-server run dev:ws
 ```
 
-前端示例（使用 @monaco-editor/react）：
+Frontend example (@monaco-editor/react):
 
 ```ts
 import { useEffect, useRef } from "react";
@@ -44,17 +42,16 @@ export function WebgalEditor() {
   const clientRef = useRef<{ webSocket: WebSocket } | null>(null);
   const vfsRef = useRef(
     createMemoryFileSystem({
-      root: "file:///project",
+      root: "file:///game",
     })
   );
 
   useEffect(() => {
     void initWebgalMonaco();
     void vfsRef.current.applyChanges([
-      { type: "mkdir", path: "file:///project/game" },
-      { type: "mkdir", path: "file:///project/game/scene" },
-      { type: "writeFile", path: "file:///project/game/config.txt", content: "Game_name:Demo\n" },
-      { type: "writeFile", path: "file:///project/game/scene/start.txt", content: "setVar:heroine=WebGAL;\n" },
+      { type: "mkdir", path: "file:///game/scene" },
+      { type: "writeFile", path: "file:///game/config.txt", content: "Game_name:Demo\n" },
+      { type: "writeFile", path: "file:///game/scene/start.txt", content: "setVar:heroine=WebGAL;\n" },
     ]);
     return () => {
       clientRef.current?.webSocket?.close();
@@ -65,7 +62,7 @@ export function WebgalEditor() {
     <Editor
       height="70vh"
       defaultLanguage="webgal"
-      path="file:///project/game/scene/start.txt"
+      path="file:///game/scene/start.txt"
       defaultValue={"setVar:heroine=WebGAL;\n"}
       onMount={async (editor: monaco.editor.IStandaloneCodeEditor) => {
         if (clientRef.current) return;
@@ -80,9 +77,9 @@ export function WebgalEditor() {
 }
 ```
 
-- 浏览器模式：通过 Web Worker 在浏览器中启动语言服务器，并与前端语言客户端通信。
+- Browser (Worker) Mode: start the language server in a Web Worker and communicate with the frontend language client.
 
-步骤一：创建本地 Worker 入口文件（例如 src/webgal-lsp.worker.ts）
+Step 1: Create a local Worker entry file (e.g., src/webgal-lsp.worker.ts)
 
 ```ts
 import { startServer } from "@webgal/language-server/browser";
@@ -90,7 +87,7 @@ import { startServer } from "@webgal/language-server/browser";
 startServer();
 ```
 
-步骤二：前端示例（使用 @monaco-editor/react）
+Step 2: Frontend example (@monaco-editor/react)
 
 ```ts
 import { useEffect, useRef } from "react";
@@ -143,18 +140,18 @@ export function WebgalEditor() {
 }
 ```
 
-说明：initWebgalMonaco 具有幂等特性，可在多处安全调用；使用本地 Worker 入口可避免构建工具对包路径的 MIME 误判。
+Note: initWebgalMonaco is idempotent and can be safely called multiple times. Using a local Worker entry avoids MIME type issues that may arise with package entry URLs.
 
-## 包
+## Packages
 
-| 包                                                      | 描述                   |
-| :------------------------------------------------------ | :--------------------- |
-| [@webgal/language-core](./packages/language-core)       | 包含部分配置与核心工具 |
-| [@webgal/language-server](./packages/language-server)   | LSP 语言服务器         |
-| [@webgal/language-service](./packages/language-service) | LSP 语言服务           |
-| [playground](./packages/playground)                     | 演示                   |
-| [vscode](./packages/vscode-extension)                   | VSCode 扩展            |
+| Package                                                 | Description                                 |
+| :------------------------------------------------------ | :------------------------------------------ |
+| [@webgal/language-core](./packages/language-core)       | Contains configurations and core tools      |
+| [@webgal/language-server](./packages/language-server)   | LSP Language Server                         |
+| [@webgal/language-service](./packages/language-service) | LSP Language Service                        |
+| [playground](./packages/playground)                     | Playground                                  |
+| [vscode](./packages/vscode-extension)                   | VSCode extension                            |
 
-## 许可证
+## License
 
-[MPL 2.0](./LICENSE) 许可证
+[MPL 2.0](./LICENSE) License

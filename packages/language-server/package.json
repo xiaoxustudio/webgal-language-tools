@@ -25,6 +25,11 @@
 			"types": "./build/browser.d.mts",
 			"import": "./build/browser.mjs",
 			"require": "./build/browser.cjs"
+		},
+		"./browser-worker": {
+			"types": "./build/browser.worker.d.mts",
+			"import": "./build/browser.worker.mjs",
+			"require": "./build/browser.worker.cjs"
 		}
 	},
 	"bin": {

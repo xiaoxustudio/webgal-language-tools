@@ -48,8 +48,6 @@ export function startServer() {
 		}
 	};
 
-	registerConnectionHandlers(documents, connection);
-
 	connection.onInitialize((params: InitializeParams) => {
 		applyClientCapabilities(params);
 		const result = server.initialize(
@@ -62,6 +60,7 @@ export function startServer() {
 	});
 
 	connection.onInitialized(() => {
+		registerConnectionHandlers(documents, connection);
 		server.initialized();
 	});
 

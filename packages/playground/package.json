@@ -20,6 +20,7 @@
 		"@monaco-editor/react": "^4.7.0",
 		"@volar/monaco": "^2.4.28",
 		"@webgal/language-service": "workspace:*",
+		"@webgal/language-server": "workspace:*",
 		"monaco-editor": "npm:@codingame/monaco-vscode-editor-api@^26.1.1",
 		"monaco-editor-core": "^0.55.1",
 		"monaco-languageclient": "^10.7.0",

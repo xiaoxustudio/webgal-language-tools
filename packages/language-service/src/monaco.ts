@@ -7,6 +7,8 @@ import {
 	CloseAction,
 	ErrorAction,
 	MessageTransports,
+	BrowserMessageReader,
+	BrowserMessageWriter,
 	type InitializeParams
 } from "vscode-languageclient/browser.js";
 import { MonacoLanguageClient } from "monaco-languageclient";
@@ -58,6 +60,44 @@ export const createWebgalMonacoLanguageClient = (
 	};
 
 	return { webSocket, vfs };
+};
+
+export interface CreateWebgalMonacoLanguageClientWorkerOptions {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	editor: any;
+	worker: Worker;
+	virtualFileSystem?: ReturnType<typeof createMemoryFileSystem>;
+}
+
+export const createWebgalMonacoLanguageClientWithWorker = (
+	options: CreateWebgalMonacoLanguageClientWorkerOptions
+): { worker: Worker; vfs: ReturnType<typeof createMemoryFileSystem> } => {
+	const { worker, editor } = options;
+	const editorInstance = editor as monaco.editor.IStandaloneCodeEditor;
+	const vfs =
+		options.virtualFileSystem ||
+		createMemoryFileSystem({ root: "file:///game" });
+
+	if (!options.virtualFileSystem) {
+		vfs.writeFile("file:///game/scene/start.txt", "WebGal:Start;");
+		vfs.writeFile("file:///game/config.txt", "");
+	}
+
+	const reader = new BrowserMessageReader(worker);
+	const writer = new BrowserMessageWriter(worker);
+
+	const languageClient = createLanguageClient(
+		{
+			reader,
+			writer
+		},
+		{ editor: editorInstance, vfs }
+	);
+	languageClient.start();
+
+	(worker as any).onerror = () => languageClient.stop();
+	(worker as any).onmessageerror = () => languageClient.stop();
+	return { worker, vfs };
 };
 
 const createLanguageClient = (

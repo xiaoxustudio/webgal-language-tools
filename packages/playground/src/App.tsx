@@ -2,7 +2,9 @@ import { useRef } from "react";
 import Editor, { loader } from "@monaco-editor/react";
 import * as Monaco from "monaco-editor";
 import type { EditorProps } from "@monaco-editor/react";
-import init from "./init";
+import initWS from "./init";
+import initWorker from "./init-worker";
+import type { VirtualFileSystem } from "@webgal/language-service";
 import "./App.css";
 
 Monaco.editor.setTheme("webgal-dark");
@@ -16,20 +18,53 @@ type IStandaloneCodeEditor<T = EditorProps["onMount"]> = T extends (
 
 function App() {
 	const editorRef = useRef<IStandaloneCodeEditor>(null);
+	const vfsRef = useRef<VirtualFileSystem | null>(null);
 
 	async function handleEditorDidMount(editor: IStandaloneCodeEditor) {
 		editorRef.current = editor;
-		const { vfs } = init(editor);
+		const { vfs } = initWorker(editor);
+		vfsRef.current = vfs;
 		const content = await vfs.readFile("file:///game/scene/start.txt");
 		editor.setValue(content || "");
 		editor.onDidChangeModelContent(() => {
-			vfs.writeFile("file:///game/scene/start.txt", editor.getValue());
+			vfsRef.current?.writeFile(
+				"file:///game/scene/start.txt",
+				editor.getValue()
+			);
 		});
 	}
 
 	return (
 		<>
 			Editor
+			<div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
+				<button
+					onClick={async () => {
+						if (!editorRef.current) return;
+						const { vfs } = initWorker(editorRef.current);
+						vfsRef.current = vfs;
+						const content = await vfs.readFile(
+							"file:///game/scene/start.txt"
+						);
+						editorRef.current.setValue(content || "");
+					}}
+				>
+					Worker 模式
+				</button>
+				<button
+					onClick={async () => {
+						if (!editorRef.current) return;
+						const { vfs } = initWS(editorRef.current);
+						vfsRef.current = vfs;
+						const content = await vfs.readFile(
+							"file:///game/scene/start.txt"
+						);
+						editorRef.current.setValue(content || "");
+					}}
+				>
+					WebSocket 模式
+				</button>
+			</div>
 			<Editor
 				height="90vh"
 				defaultLanguage="webgal"

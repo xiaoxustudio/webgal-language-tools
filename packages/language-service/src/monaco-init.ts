@@ -35,7 +35,13 @@ const workerLoaders: Partial<Record<string, WorkerLoader>> = {
 		)
 };
 
+let initPromise: Promise<void> | null = null;
+
 export async function initWebgalMonaco() {
+	if (initPromise) {
+		return initPromise;
+	}
+	initPromise = (async () => {
 	const { registerFileUrl } = registerExtension(
 		{
 			name: "webgal",
@@ -167,4 +173,6 @@ export async function initWebgalMonaco() {
 		...getThemeServiceOverride(),
 		...getLanguagesServiceOverride()
 	});
+	})();
+	return initPromise;
 }
