@@ -55,6 +55,8 @@ export async function createWebgalMonocaLanguageClient(
 	const languageIds = options.languageIds ?? defaultLanguageIds;
 	registerWebgalLanguages(options.monaco, languageIds);
 	const mode = options.mode ?? (options.languageServerUrl ? "ws" : "worker");
+	const vfs =
+		options.virtualFileSystem ?? createMemoryFileSystem({ root: "/" });
 
 	let reader: MessageReader;
 	let writer: MessageWriter;
@@ -103,18 +105,16 @@ export async function createWebgalMonocaLanguageClient(
 		messageTransports: { reader, writer }
 	};
 	const languageClient = new MonacoLanguageClient(languageClientOptions);
-	languageClient.start();
-	reader.onClose(() => {
-		stopServer?.();
-		languageClient.stop();
-	});
-	const vfs =
-		options.virtualFileSystem ?? createMemoryFileSystem({ root: "/" });
 	const handlers = createWebgalClientHandlers({
 		vfs,
 		overrides: options.clientHandlers
 	});
 	registerWebgalClientHandlers(languageClient, handlers);
+	languageClient.start();
+	reader.onClose(() => {
+		stopServer?.();
+		languageClient.stop();
+	});
 	return languageClient;
 }
 
