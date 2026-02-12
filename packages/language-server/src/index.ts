@@ -80,19 +80,17 @@ function startServer(connection: Connection) {
 	const documents = server.documents;
 	bindCoreFileAccessorToClientVfs(connection);
 
-	registerConnectionHandlers(documents, connection);
-
 	connection.onInitialize((params: InitializeParams) => {
 		applyClientCapabilities(params);
 		const result = server.initialize(params, createSimpleProject([]), [
 			createWebgalService(connection)
 		]);
-
 		applyServerCapabilities(result);
 		return result;
 	});
 
 	connection.onInitialized(() => {
+		registerConnectionHandlers(documents, connection);
 		server.initialized();
 	});
 

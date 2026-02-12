@@ -16,5 +16,6 @@
 			"@webgal/language-core": ["packages/language-core/src"],
 			"@webgal/language-client": ["packages/language-client/src"]
 		}
-	}
+	},
+	"exclude": ["node_modules", "dist", "build", "coverage", "test", "scripts"]
 }

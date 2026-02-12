@@ -59,8 +59,13 @@ export async function createClient(
 		goPropertyDoc: async (pathSegments: string[]) => {
 			const { getState } = await import("@webgal/language-server/utils");
 			return getState(pathSegments);
+		},
+		overrides: {
+			"client/showTip": (message: string) =>
+				window.showInformationMessage(message)
 		}
 	});
+
 	registerWebgalClientHandlers(client, handlers);
 
 	return client;

@@ -1,4 +1,3 @@
-import * as vscode from "vscode";
 import { WebSocketMessageReader } from "vscode-ws-jsonrpc";
 import {
 	CloseAction,
@@ -54,7 +53,12 @@ const createLanguageClient = (
 	}
 ): MonacoLanguageClient => {
 	const handlers = createWebgalClientHandlers({
-		vfs: options.vfs
+		vfs: options.vfs,
+		overrides: {
+			"client/showTip": function (message) {
+				console.log(message);
+			}
+		}
 	});
 	const client = new MonacoLanguageClient({
 		name: "WebGAL Language Client",
@@ -70,8 +74,7 @@ const createLanguageClient = (
 				closed: () => ({ action: CloseAction.DoNotRestart })
 			},
 			synchronize: {
-				configurationSection: ["webgal", "http"],
-				fileEvents: vscode.workspace.createFileSystemWatcher("**/.txt")
+				configurationSection: ["webgal", "http"]
 			},
 			initializationOptions() {
 				const model = options.editor.getModel();
@@ -81,7 +84,113 @@ const createLanguageClient = (
 					rootUri: "file:///game",
 					capabilities: {
 						textDocument: {
-							publishDiagnostics: { relatedInformation: true }
+							publishDiagnostics: { relatedInformation: true },
+							hover: {
+								contentFormat: ["markdown", "plaintext"]
+							},
+							completion: {
+								completionItem: {
+									snippetSupport: true,
+									deprecatedSupport: true,
+									preselectSupport: true,
+									labelDetailsSupport: true,
+									commitCharactersSupport: true,
+									documentationFormat: [
+										"markdown",
+										"plaintext"
+									],
+									insertReplaceSupport: true,
+									resolveSupport: {
+										properties: ["documentation", "detail"]
+									}
+								},
+								contextSupport: true
+							},
+							documentLink: {
+								tooltipSupport: true,
+								dynamicRegistration: true
+							},
+							inlineCompletion: {
+								dynamicRegistration: true
+							},
+							moniker: {
+								dynamicRegistration: true
+							},
+							foldingRange: {
+								dynamicRegistration: true,
+								lineFoldingOnly: true
+							},
+							definition: {
+								dynamicRegistration: true,
+								linkSupport: true
+							},
+							references: {
+								dynamicRegistration: true
+							},
+							documentSymbol: {
+								dynamicRegistration: true,
+								labelSupport: true,
+								hierarchicalDocumentSymbolSupport: true
+							},
+							codeAction: {
+								dynamicRegistration: true,
+								dataSupport: true,
+								isPreferredSupport: true
+							},
+							formatting: {
+								dynamicRegistration: true
+							},
+							rangeFormatting: {
+								dynamicRegistration: true
+							},
+							selectionRange: {
+								dynamicRegistration: true
+							},
+							linkedEditingRange: {
+								dynamicRegistration: true
+							}
+						},
+						workspace: {
+							applyEdit: true,
+							configuration: true,
+							workspaceFolders: true,
+							codeLens: {
+								refreshSupport: true
+							},
+							diagnostics: {
+								refreshSupport: true
+							},
+							fileOperations: {
+								didCreate: true,
+								didRename: true,
+								didDelete: true,
+								willCreate: true,
+								willRename: true,
+								willDelete: true,
+								dynamicRegistration: true
+							},
+							didChangeConfiguration: {
+								dynamicRegistration: true
+							},
+							didChangeWatchedFiles: {
+								dynamicRegistration: true
+							},
+							semanticTokens: {
+								refreshSupport: true
+							},
+							foldingRange: {
+								refreshSupport: true
+							},
+							inlayHint: {
+								refreshSupport: true
+							},
+							workspaceEdit: {
+								changeAnnotationSupport: {
+									groupsOnLabel: true
+								},
+								documentChanges: true,
+								failureHandling: "textOnlyTransactional"
+							}
 						}
 					},
 					workspaceFolders: [
@@ -99,9 +208,6 @@ const createLanguageClient = (
 		},
 		// create a language client connection from the JSON RPC connection on demand
 		messageTransports
-	});
-	client.onRequest("client/showTip", (message: string) => {
-		console.log(message);
 	});
 	registerWebgalClientHandlers(client, handlers);
 

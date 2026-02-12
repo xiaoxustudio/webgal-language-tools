@@ -11,6 +11,7 @@ import getThemeServiceOverride from "@codingame/monaco-vscode-theme-service-over
 import getTextMateServiceOverride from "@codingame/monaco-vscode-textmate-service-override";
 
 export type WorkerLoader = () => Worker;
+
 const workerLoaders: Partial<Record<string, WorkerLoader>> = {
 	TextEditorWorker: () =>
 		new Worker(
@@ -32,7 +33,6 @@ const workerLoaders: Partial<Record<string, WorkerLoader>> = {
 
 window.MonacoEnvironment = {
 	getWorker: function (_moduleId, label) {
-		console.log("getWorker", _moduleId, label);
 		const workerFactory = workerLoaders[label];
 		if (workerFactory != null) {
 			return workerFactory();

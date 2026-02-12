@@ -8,7 +8,8 @@ import {
 	DocumentLink,
 	FoldingRange,
 	Hover,
-	Position
+	Position,
+	LanguageServicePlugin
 } from "@volar/language-server";
 import { ConnectionDocumentsType } from "@/types";
 import { TextDocument } from "vscode-languageserver-textdocument";
@@ -26,11 +27,13 @@ export function registerConnectionHandlers(
 	documents: ConnectionDocumentsType,
 	connection: Connection
 ) {
-	onDid(documents, connection);
 	onInitialized(documents, connection);
+	onDid(documents, connection);
 }
 
-export function createWebgalService(connection: Connection) {
+export function createWebgalService(
+	connection: Connection
+): LanguageServicePlugin {
 	return {
 		name: "webgal-service",
 		capabilities: {
@@ -49,7 +52,6 @@ export function createWebgalService(connection: Connection) {
 			definitionProvider: true
 		},
 		create() {
-			console.log("provideCompletionItems");
 			return {
 				async provideCompletionItems(
 					document: TextDocument,

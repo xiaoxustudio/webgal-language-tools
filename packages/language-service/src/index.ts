@@ -449,7 +449,6 @@ export function createWebgalClientHandlers(
 		}
 		return change;
 	};
-
 	const baseHandlers: WebgalClientHandlers = {
 		"client/showTip": options.showTip ?? (() => null),
 		"client/currentDirectory": () => options.vfs.currentDirectory(),

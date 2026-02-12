@@ -19,8 +19,9 @@ function App() {
 		monaco: typeof Monaco
 	) {
 		editorRef.current = editor;
-		monaco.languages.register({ id: "webgal" });
 		const { vfs } = init(editor);
+		monaco.languages.register({ id: "webgal" });
+		
 		editor.onDidChangeModelContent(() => {
 			vfs.writeFile("file:///game/scene/start.txt", editor.getValue());
 			console.log("徐然", vfs.readFile("file:///game/scene/start.txt"));
