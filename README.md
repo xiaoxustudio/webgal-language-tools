@@ -10,7 +10,9 @@ Install the [webgal-for-vscode](https://marketplace.visualstudio.com/items?itemN
 
 ### For Monaco Users
 
-The first step is to start the language server with websocket:
+We have two startup modes: 
+
+- **Websocket Mode**: Start the language server with websocket.
 
 ```bash
 pnpm --filter @webgal/language-server run dev:ws
@@ -21,27 +23,61 @@ import * as monaco from "monaco-editor";
 import { createWebgalMonocaLanguageClient } from "@webgal/monoca";
 
 await createWebgalMonocaLanguageClient({
-	monaco,
-	languageServerUrl: "ws://localhost:3001/webgal-lsp"
+  monaco,
+  languageServerUrl: "ws://localhost:3001/webgal-lsp",
+  virtualFileSystem: vfsRef.current,
 });
 ```
 
-You can also use the `clientHandlers` to override the default behavior of the language client.
+- **Browser Mode**: Start the language server with browser.
 
 ```ts
-await createWebgalMonocaLanguageClient({
-	monaco,
-	languageServerUrl: "ws://localhost:3001/webgal-lsp",
-	clientHandlers: {
-		"client/currentDirectory": () => "/project",
-		"client/FJoin": (args) =>
-			Array.isArray(args) ? args.filter(Boolean).join("/") : args,
-		"client/findFile": ([root, name]) => `${root}/${name}`,
-		"client/FStat": () => true,
-		"client/goPropertyDoc": () => null,
-		"client/showTip": () => null
-	}
-});
+import { useEffect, useRef } from "react";
+import Editor from "@monaco-editor/react";
+import { createWebgalMonocaLanguageClient } from "@webgal/monoca";
+import { createMemoryFileSystem } from "@webgal/language-client";
+
+export function WebgalEditor() {
+  const clientRef = useRef<any>(null);
+
+  const vfsRef = useRef(
+    createMemoryFileSystem({
+      root: "/project",
+    })
+  );
+
+  useEffect(() => {
+    void vfsRef.current.applyChanges([
+      { type: "mkdir", path: "/project/game" },
+      { type: "mkdir", path: "/project/game/scene" },
+      { type: "writeFile", path: "/project/game/config.txt", content: "Game_name:Demo\n" },
+      { type: "writeFile", path: "/project/game/scene/start.txt", content: "setVar:heroine=WebGAL;\n" },
+    ]);
+
+    return () => {
+      clientRef.current?.stop?.();
+    };
+  }, []);
+
+  return (
+    <Editor
+      height="70vh"
+      defaultLanguage="webgal"
+      path="file:///project/game/scene/start.txt"
+      defaultValue={"setVar:heroine=WebGAL;\n"}
+      onMount={async (_editor, monaco) => {
+        if (clientRef.current) return;
+        clientRef.current = await createWebgalMonocaLanguageClient({
+          monaco,
+          mode: "worker",
+          virtualFileSystem: vfsRef.current,
+          id: "webgal",
+          name: "WebGAL Language Client",
+        });
+      }}
+    />
+  );
+}
 ```
 
 ## Packages
