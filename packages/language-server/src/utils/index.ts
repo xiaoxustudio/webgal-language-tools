@@ -1,6 +1,3 @@
-import * as fs from "fs/promises";
-import * as path from "path";
-import { fileURLToPath } from "url";
 import { ServerSettings } from "../types";
 import {
 	cleartGlobalMapAll,
@@ -220,6 +217,18 @@ export async function listPathCandidates(
 	token: string
 ): Promise<Array<{ label: string; insertText: string; isDirectory: boolean }>> {
 	try {
+		const isNodeRuntime =
+			typeof process !== "undefined" &&
+			!!process.versions &&
+			!!process.versions.node;
+		if (!isNodeRuntime) {
+			return [];
+		}
+		const [{ fileURLToPath }, path, fs] = await Promise.all([
+			import("url"),
+			import("path"),
+			import("fs/promises")
+		]);
 		let filePath: string | null = null;
 		if (docUri.startsWith("file://")) {
 			filePath = fileURLToPath(docUri);
@@ -237,7 +246,7 @@ export async function listPathCandidates(
 			resolvedBase = path.resolve(maybeDir);
 			partialName = token.endsWith("/") ? "" : path.basename(token);
 		} else if (token.startsWith("~")) {
-			const homedir = process.env.HOME || process.env.USERPROFILE || "";
+		const homedir = process.env.HOME || process.env.USERPROFILE || "";
 			const afterTilde = token === "~" ? "" : token.slice(2); // "~/" 前缀处理
 			const joined = path.join(homedir, afterTilde);
 			resolvedBase = path.dirname(joined);

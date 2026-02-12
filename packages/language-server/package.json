@@ -12,6 +12,7 @@
 	"exports": {
 		".": {
 			"types": "./build/index.d.mts",
+			"browser": "./build/browser.mjs",
 			"import": "./build/index.mjs",
 			"require": "./build/index.cjs"
 		},
@@ -19,6 +20,11 @@
 			"types": "./build/utils.d.mts",
 			"import": "./build/utils.mjs",
 			"require": "./build/utils.cjs"
+		},
+		"./browser": {
+			"types": "./build/browser.d.mts",
+			"import": "./build/browser.mjs",
+			"require": "./build/browser.cjs"
 		}
 	},
 	"bin": {

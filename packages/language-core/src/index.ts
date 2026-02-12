@@ -1,5 +1,4 @@
 import * as expressions from "angular-expressions";
-import * as fs from "fs/promises";
 import { FileAccessor, IDefinetionMap } from "./types";
 
 export const source = "WebGal Script";
@@ -18,13 +17,36 @@ export const cleartGlobalMapAll = () => {
 	GlobalMap.choose = {};
 };
 
+const isNodeRuntime =
+	typeof process !== "undefined" &&
+	!!process.versions &&
+	!!process.versions.node;
+
+const getIsWindows = () => {
+	if (isNodeRuntime && process.platform) {
+		return process.platform === "win32";
+	}
+	if (typeof navigator !== "undefined" && navigator.userAgent) {
+		return /windows/i.test(navigator.userAgent);
+	}
+	return false;
+};
+
 export const fsAccessor: FileAccessor = {
-	isWindows: process.platform === "win32",
-	readFile(path: string): Promise<Buffer> {
+	isWindows: getIsWindows(),
+	async readFile(path: string): Promise<Uint8Array> {
+		if (!isNodeRuntime) {
+			throw new Error("File system is not available");
+		}
+		const fs = await import("fs/promises");
 		return fs.readFile(path);
 	},
-	writeFile(path: string, contents: Buffer): Promise<void> {
-		return fs.writeFile(path, contents.toString());
+	async writeFile(path: string, contents: Uint8Array): Promise<void> {
+		if (!isNodeRuntime) {
+			throw new Error("File system is not available");
+		}
+		const fs = await import("fs/promises");
+		await fs.writeFile(path, contents);
 	}
 };
 

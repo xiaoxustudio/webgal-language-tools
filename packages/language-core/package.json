@@ -9,6 +9,7 @@
 	"exports": {
 		".": {
 			"types": "./build/index.d.ts",
+			"browser": "./build/index.mjs",
 			"import": "./build/index.mjs",
 			"require": "./build/index.cjs"
 		}
