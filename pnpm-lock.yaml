@@ -109,12 +109,27 @@ importers:
 
   packages/language-service:
     dependencies:
+      '@codingame/monaco-vscode-api':
+        specifier: ^26.1.1
+        version: 26.1.1
+      '@codingame/monaco-vscode-languages-service-override':
+        specifier: ^26.1.1
+        version: 26.1.1
+      '@codingame/monaco-vscode-textmate-service-override':
+        specifier: ^26.1.1
+        version: 26.1.1
+      '@codingame/monaco-vscode-theme-service-override':
+        specifier: ^26.1.1
+        version: 26.1.1
       '@volar/language-core':
         specifier: ^2.4.28
         version: 2.4.28
       '@volar/language-service':
         specifier: ^2.4.28
         version: 2.4.28
+      vscode:
+        specifier: npm:@codingame/monaco-vscode-extension-api@26.1.1
+        version: '@codingame/monaco-vscode-extension-api@26.1.1'
     devDependencies:
       '@types/node':
         specifier: ^18.0.0

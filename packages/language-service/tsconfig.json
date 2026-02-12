@@ -4,6 +4,9 @@
 		"outDir": "build",
 		"rootDir": "src",
 		"lib": ["esnext", "dom"],
+		"resolveJsonModule": true,
+		"module": "esnext",
+		"moduleResolution": "bundler",
 		"paths": {
 			"@/*": ["./src/*"]
 		}

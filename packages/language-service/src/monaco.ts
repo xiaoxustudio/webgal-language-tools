@@ -117,6 +117,5 @@ const createLanguageClient = (
 		messageTransports
 	});
 	registerWebgalClientHandlers(client, handlers);
-
 	return client;
 };

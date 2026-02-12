@@ -2,9 +2,10 @@ import { useRef } from "react";
 import Editor, { loader } from "@monaco-editor/react";
 import * as Monaco from "monaco-editor";
 import type { EditorProps } from "@monaco-editor/react";
-import "./App.css";
 import init from "./init";
+import "./App.css";
 
+Monaco.editor.setTheme("webgal-dark");
 loader.config({ monaco: Monaco });
 
 type IStandaloneCodeEditor<T = EditorProps["onMount"]> = T extends (
@@ -16,18 +17,11 @@ type IStandaloneCodeEditor<T = EditorProps["onMount"]> = T extends (
 function App() {
 	const editorRef = useRef<IStandaloneCodeEditor>(null);
 
-	async function handleEditorDidMount(
-		editor: IStandaloneCodeEditor,
-		monaco: typeof Monaco
-	) {
+	async function handleEditorDidMount(editor: IStandaloneCodeEditor) {
 		editorRef.current = editor;
-
-		monaco.languages.register({ id: "webgal" });
 		const { vfs } = init(editor);
 		const content = await vfs.readFile("file:///game/scene/start.txt");
-		console.log("徐然", content);
 		editor.setValue(content || "");
-
 		editor.onDidChangeModelContent(() => {
 			vfs.writeFile("file:///game/scene/start.txt", editor.getValue());
 		});
@@ -43,6 +37,14 @@ function App() {
 				onMount={handleEditorDidMount}
 				language="webgal"
 				path="game/scene/start.txt"
+				theme="vs-dark"
+				options={{
+					quickSuggestions: {
+						other: true,
+						comments: true,
+						strings: true
+					}
+				}}
 			/>
 		</>
 	);

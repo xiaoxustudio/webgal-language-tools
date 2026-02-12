@@ -8,7 +8,7 @@
 
 Install the [webgal-for-vscode](https://marketplace.visualstudio.com/items?itemName=Xuran1783558957.webgal-for-vscode) extension.
 
-### For Monaco Users (Ideal state, currently not achieved)
+### For Monaco Users
 
 We have two startup modes: 
 

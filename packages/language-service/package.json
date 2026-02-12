@@ -25,6 +25,21 @@
 			"types": "./build/monaco.d.mts",
 			"import": "./build/monaco.mjs",
 			"require": "./build/monaco.cjs"
+		},
+		"./monaco-init": {
+			"types": "./build/monaco-init.d.mts",
+			"import": "./build/monaco-init.mjs",
+			"require": "./build/monaco-init.cjs"
+		},
+		"./syntaxes": {
+			"types": "./build/syntaxes.d.mts",
+			"import": "./build/syntaxes.mjs",
+			"require": "./build/syntaxes.cjs"
+		},
+		"./themes": {
+			"types": "./build/themes.d.mts",
+			"import": "./build/themes.mjs",
+			"require": "./build/themes.cjs"
 		}
 	},
 	"scripts": {
@@ -40,7 +55,12 @@
 		"tsdown": "^0.20.3"
 	},
 	"dependencies": {
+		"@codingame/monaco-vscode-api": "^26.1.1",
+		"@codingame/monaco-vscode-languages-service-override": "^26.1.1",
+		"@codingame/monaco-vscode-textmate-service-override": "^26.1.1",
+		"@codingame/monaco-vscode-theme-service-override": "^26.1.1",
 		"@volar/language-core": "^2.4.28",
-		"@volar/language-service": "^2.4.28"
+		"@volar/language-service": "^2.4.28",
+		"vscode": "npm:@codingame/monaco-vscode-extension-api@26.1.1"
 	}
 }
