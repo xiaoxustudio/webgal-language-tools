@@ -1,20 +1,27 @@
 {
 	"name": "@webgal/language-core",
 	"version": "0.0.1",
-	"main": "build/index.js",
+	"main": "build/index.cjs",
+	"module": "build/index.mjs",
+	"types": "build/index.d.ts",
 	"license": "MIT",
-	"files": [
-		"build/**/*.js",
-		"build/**/*.d.ts"
-	],
+	"files": ["build/**/*"],
+	"exports": {
+		".": {
+			"types": "./build/index.d.ts",
+			"import": "./build/index.mjs",
+			"require": "./build/index.cjs"
+		}
+	},
 	"scripts": {
-		"build": "tsc -p tsconfig.json & tsc-alias -p tsconfig.json",
+		"build": "tsdown",
 		"format": " prettier --write \"src/**/*.ts\"",
 		"lint": "eslint src --ext ts --fix"
 	},
 	"devDependencies": {
 		"@types/node": "^18.0.0",
-		"tsc-alias": "^1.8.16"
+		"tsc-alias": "^1.8.16",
+		"tsdown": "^0.20.3"
 	},
 	"dependencies": {
 		"@volar/language-core": "~2.4.0",

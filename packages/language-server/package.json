@@ -1,18 +1,31 @@
 {
 	"name": "@webgal/language-server",
 	"version": "0.0.1",
-	"main": "build/index.js",
+	"main": "build/index.cjs",
+	"module": "build/index.mjs",
+	"types": "build/index.d.mts",
 	"license": "MIT",
 	"files": [
-		"build/**/*.js",
-		"build/**/*.d.ts",
+		"build/**/*",
 		"bin"
 	],
+	"exports": {
+		".": {
+			"types": "./build/index.d.mts",
+			"import": "./build/index.mjs",
+			"require": "./build/index.cjs"
+		},
+		"./utils": {
+			"types": "./build/utils.d.mts",
+			"import": "./build/utils.mjs",
+			"require": "./build/utils.cjs"
+		}
+	},
 	"bin": {
 		"webgal-language-server": "./bin/webgal-language-server.js"
 	},
 	"scripts": {
-		"build": "tsc -p tsconfig.json & tsc-alias -p tsconfig.json",
+		"build": "tsdown",
 		"gen": "tsx scripts/gen.ts",
 		"dev": "node bin/webgal-language-server.js --stdio",
 		"dev:ws": "node bin/webgal-language-server.js --ws=3001",
@@ -35,6 +48,7 @@
 	},
 	"devDependencies": {
 		"@types/ws": "^8.18.1",
-		"tsx": "^4.21.0"
+		"tsx": "^4.21.0",
+		"tsdown": "^0.20.3"
 	}
 }

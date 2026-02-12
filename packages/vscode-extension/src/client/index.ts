@@ -11,7 +11,6 @@ import {
 	registerWebgalClientHandlers
 } from "@webgal/language-client";
 import { createNodeFileSystem } from "@webgal/language-client/node";
-import { getState } from "@webgal/language-server/src/utils/providerState";
 
 export function createClient(context: ExtensionContext): LanguageClient {
 	const serverModule = Uri.joinPath(
@@ -55,7 +54,10 @@ export function createClient(context: ExtensionContext): LanguageClient {
 	const handlers = createWebgalClientHandlers({
 		vfs,
 		showTip: (message) => window.showInformationMessage(message),
-		goPropertyDoc: (pathSegments) => getState(pathSegments)
+		goPropertyDoc: async (pathSegments) => {
+			const { getState } = await import("@webgal/language-server/utils");
+			return getState(pathSegments);
+		}
 	});
 	registerWebgalClientHandlers(client, handlers);
 

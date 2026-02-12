@@ -18,10 +18,15 @@ import {
 	Position,
 	Range
 } from "@volar/language-server";
-import { FileType, type FileStat, type FileSystem } from "@volar/language-service";
+import {
+	FileType,
+	type FileStat,
+	type FileSystem
+} from "@volar/language-service";
 import { TextDocument } from "vscode-languageserver-textdocument";
 import type { URI } from "vscode-uri";
 import type { VirtualFileSystem } from "@webgal/language-client";
+import { getState } from "./providerState";
 
 // 获取变量的描述
 export function getVariableTypeDesc(ALL_ARR: string[], _start_line: number) {
@@ -600,3 +605,5 @@ export function createVolarFileSystemFromVirtualFileSystem(
 		}
 	};
 }
+
+export { getState };
