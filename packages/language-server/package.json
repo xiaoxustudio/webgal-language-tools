@@ -37,14 +37,15 @@
 		"dev:ws": "node bin/webgal-language-server.js --ws=3001",
 		"format": " prettier --write \"src/**/*.ts\"",
 		"lint": "eslint src --ext ts --fix",
-		"typecheck": "tsc --noEmit"
+		"typecheck": "tsc --noEmit",
+		"watch": "tsdown --watch"
 	},
 	"dependencies": {
 		"@volar/language-core": "~2.4.0",
 		"@volar/language-service": "~2.4.0",
 		"@volar/language-server": "~2.4.0",
 		"@volar/typescript": "~2.4.0",
-		"@webgal/language-client": "workspace:*",
+		"@webgal/language-service": "workspace:*",
 		"@webgal/language-core": "workspace:*",
 		"tsc-alias": "^1.8.16",
 		"vscode-languageserver": "^9.0.1",

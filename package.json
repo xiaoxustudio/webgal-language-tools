@@ -6,6 +6,7 @@
 		"url": "https://github.com/volarjs/starter.git"
 	},
 	"scripts": {
+		"dev": "pnpm --filter ./packages/playground run dev",
 		"dev:lsp": "pnpm --filter ./packages/language-server run dev",
 		"dev:lsp-ws": "pnpm --filter ./packages/language-server run dev:ws",
 		"build": "pnpm run build:all",
@@ -23,18 +24,21 @@
 		"lint:core": "pnpm --filter ./packages/language-core run lint",
 		"lint:client": "pnpm --filter ./packages/language-client run lint",
 		"lint:server": "pnpm --filter ./packages/language-server run lint",
+		"lint:palyground": "pnpm --filter ./packages/palyground run lint",
 		"format": "pnpm run format:all",
 		"format:all": "pnpm run format:vsc && pnpm run format:core && pnpm run format:client && pnpm run format:server",
 		"format:vsc": "pnpm --filter ./packages/vscode-extension run format",
 		"format:core": "pnpm --filter ./packages/language-core run format",
 		"format:client": "pnpm --filter ./packages/language-client run format",
 		"format:server": "pnpm --filter ./packages/language-server run format",
+		"format:palyground": "pnpm --filter ./packages/palyground run format",
 		"typecheck": "pnpm run typecheck:all",
 		"typecheck:all": "pnpm run typecheck:vsc && pnpm run typecheck:core && pnpm run typecheck:client && pnpm run typecheck:server",
 		"typecheck:vsc": "pnpm --filter ./packages/vscode-extension run typecheck",
 		"typecheck:core": "pnpm --filter ./packages/language-core run typecheck",
 		"typecheck:client": "pnpm --filter ./packages/language-client run typecheck",
-		"typecheck:server": "pnpm --filter ./packages/language-server run typecheck"
+		"typecheck:server": "pnpm --filter ./packages/language-server run typecheck",
+		"typecheck:palyground": "pnpm --filter ./packages/palyground run typecheck"
 	},
 	"devDependencies": {
 		"@types/node": "latest",

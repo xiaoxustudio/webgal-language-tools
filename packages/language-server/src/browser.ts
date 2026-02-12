@@ -3,7 +3,7 @@ import {
 	createServer,
 	createSimpleProject
 } from "@volar/language-server/browser";
-import type { Connection, InitializeParams } from "@volar/language-server";
+import type { InitializeParams } from "@volar/language-server";
 import { LanguagePlugin } from "@volar/language-core";
 import { URI } from "vscode-uri";
 import { createWebgalService, registerConnectionHandlers } from "./events";
@@ -13,10 +13,8 @@ import {
 } from "./events/onInitialize";
 import { bindCoreFileAccessorToClientVfs } from "@/utils";
 
-const connection = createConnection();
-startServer(connection);
-
-export function startServer(connection: Connection) {
+export function startServer() {
+	const connection = createConnection();
 	const server = createServer(connection);
 	const documents = server.documents;
 	bindCoreFileAccessorToClientVfs(connection);
@@ -66,4 +64,5 @@ export function startServer(connection: Connection) {
 	connection.onShutdown(server.shutdown);
 
 	connection.listen();
+	return connection;
 }

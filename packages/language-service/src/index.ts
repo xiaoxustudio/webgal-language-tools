@@ -72,9 +72,10 @@ export type WebgalClientHandlers = {
 	}) => MaybePromise<unknown>;
 	"client/vfs/deletePath": (path: string) => MaybePromise<unknown>;
 	"client/vfs/mkdir": (path: string) => MaybePromise<unknown>;
-	"client/vfs/rename": (args: { from: string; to: string }) => MaybePromise<
-		unknown
-	>;
+	"client/vfs/rename": (args: {
+		from: string;
+		to: string;
+	}) => MaybePromise<unknown>;
 	"client/vfs/applyChanges": (
 		changes: VirtualFileSystemChange[]
 	) => MaybePromise<unknown>;
@@ -183,6 +184,7 @@ export function createMemoryFileSystem(options?: {
 
 	const getEntry = (path: string): VirtualEntry | null => {
 		const segments = resolveToSegments(path);
+
 		let current: VirtualEntry = rootEntry;
 		for (const segment of segments) {
 			if (current.type !== "dir") {
@@ -323,7 +325,9 @@ export function createMemoryFileSystem(options?: {
 		const parentEntry =
 			parentSegments.length === 0
 				? rootEntry
-				: (getEntry(joinPaths(root, ...parentSegments)) as VirtualEntry);
+				: (getEntry(
+						joinPaths(root, ...parentSegments)
+					) as VirtualEntry);
 		if (!parentEntry || parentEntry.type !== "dir") {
 			return;
 		}
@@ -360,7 +364,9 @@ export function createMemoryFileSystem(options?: {
 		const toName = toSegments[toSegments.length - 1]!;
 		const toParent = ensureDirectoryEntry(toSegments.slice(0, -1));
 		toParent.children[toName] = entry;
-		emit([{ type: "rename", from: normalizePath(from), to: normalizePath(to) }]);
+		emit([
+			{ type: "rename", from: normalizePath(from), to: normalizePath(to) }
+		]);
 	};
 
 	const applyChanges = async (changes: VirtualFileSystemChange[]) => {
@@ -463,7 +469,8 @@ export function createWebgalClientHandlers(
 		"client/vfs/readFile": (path) => options.vfs.readFile(toVfsPath(path)),
 		"client/vfs/writeFile": ({ path, content }) =>
 			options.vfs.writeFile(toVfsPath(path), content),
-		"client/vfs/deletePath": (path) => options.vfs.deletePath(toVfsPath(path)),
+		"client/vfs/deletePath": (path) =>
+			options.vfs.deletePath(toVfsPath(path)),
 		"client/vfs/mkdir": (path) => options.vfs.mkdir(toVfsPath(path)),
 		"client/vfs/rename": ({ from, to }) =>
 			options.vfs.rename(toVfsPath(from), toVfsPath(to)),
@@ -483,4 +490,4 @@ export function registerWebgalClientHandlers(
 	for (const [method, handler] of Object.entries(handlers)) {
 		client.onRequest(method, handler as never);
 	}
-} 
+}

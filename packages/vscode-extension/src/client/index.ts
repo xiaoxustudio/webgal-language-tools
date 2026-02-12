@@ -46,9 +46,9 @@ export async function createClient(
 	);
 
 	const { createWebgalClientHandlers, registerWebgalClientHandlers } =
-		await import("@webgal/language-client");
+		await import("@webgal/language-service");
 	const { createNodeFileSystem } =
-		await import("@webgal/language-client/node");
+		await import("@webgal/language-service/node");
 
 	const rootPath =
 		workspace.workspaceFolders?.[0]?.uri.fsPath ?? process.cwd();
