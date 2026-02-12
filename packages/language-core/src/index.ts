@@ -34,7 +34,7 @@ const getIsWindows = () => {
 	return false;
 };
 
-export const fsAccessor: FileAccessor = {
+export let fsAccessor: FileAccessor = {
 	isWindows: getIsWindows(),
 	async readFile(path: string): Promise<Uint8Array> {
 		if (!isNodeRuntime) {
@@ -50,6 +50,10 @@ export const fsAccessor: FileAccessor = {
 		const fs = await import("fs/promises");
 		await fs.writeFile(path, contents);
 	}
+};
+
+export const setFsAccessor = (accessor: FileAccessor) => {
+	fsAccessor = accessor;
 };
 
 export const runCode = (text: string, ops?: expressions.CompileFuncOptions) => {

@@ -17,6 +17,7 @@ import {
 	applyClientCapabilities,
 	applyServerCapabilities
 } from "./events/onInitialize";
+import { bindCoreFileAccessorToClientVfs } from "@/utils";
 
 type WsOptions = {
 	port: number;
@@ -79,6 +80,7 @@ function getWsOptions(argv: string[]): WsOptions {
 function startServer(connection: Connection) {
 	const server = createServer(connection);
 	const documents = server.documents;
+	bindCoreFileAccessorToClientVfs(connection);
 
 	const webgalLanguagePlugin: LanguagePlugin<URI> = {
 		getLanguageId(scriptId) {

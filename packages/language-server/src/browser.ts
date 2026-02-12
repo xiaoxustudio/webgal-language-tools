@@ -11,6 +11,7 @@ import {
 	applyClientCapabilities,
 	applyServerCapabilities
 } from "./events/onInitialize";
+import { bindCoreFileAccessorToClientVfs } from "@/utils";
 
 const connection = createConnection();
 startServer(connection);
@@ -18,6 +19,7 @@ startServer(connection);
 export function startServer(connection: Connection) {
 	const server = createServer(connection);
 	const documents = server.documents;
+	bindCoreFileAccessorToClientVfs(connection);
 
 	const webgalLanguagePlugin: LanguagePlugin<URI> = {
 		getLanguageId(scriptId) {

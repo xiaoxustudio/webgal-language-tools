@@ -1,6 +1,7 @@
 import { ServerSettings } from "../types";
 import {
 	cleartGlobalMapAll,
+	fsAccessor,
 	GlobalMap,
 	IVChooseToken,
 	IVToken,
@@ -24,6 +25,43 @@ import { TextDocument } from "vscode-languageserver-textdocument";
 import type { URI } from "vscode-uri";
 import type { VirtualFileSystem } from "@webgal/language-client";
 import { getState } from "./providerState";
+
+type SendRequestConnection = {
+	sendRequest: (method: string, ...params: any[]) => Promise<any>;
+};
+
+export function bindCoreFileAccessorToClientVfs(
+	connection: SendRequestConnection
+) {
+	const isWindows =
+		typeof process !== "undefined" &&
+		!!process.platform &&
+		process.platform === "win32";
+	const encoder = new TextEncoder();
+	const decoder = new TextDecoder();
+
+	fsAccessor.isWindows = isWindows;
+	fsAccessor.readFile = async (path: string): Promise<Uint8Array> => {
+		const content = (await connection.sendRequest(
+			"client/vfs/readFile",
+			path
+		)) as string | null;
+		if (content === null) {
+			throw new Error("File not found");
+		}
+		return encoder.encode(content);
+	};
+	fsAccessor.writeFile = async (
+		path: string,
+		contents: Uint8Array
+	): Promise<void> => {
+		const content = decoder.decode(contents);
+		await connection.sendRequest("client/vfs/writeFile", {
+			path,
+			content
+		});
+	};
+}
 
 // 获取变量的描述
 export function getVariableTypeDesc(ALL_ARR: string[], _start_line: number) {

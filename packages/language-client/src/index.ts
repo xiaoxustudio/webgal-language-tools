@@ -65,6 +65,7 @@ export type WebgalClientHandlers = {
 	"client/getResourceDirectory": (urls: string[]) => MaybePromise<unknown>;
 	"client/vfs/getTree": () => MaybePromise<VirtualEntry>;
 	"client/vfs/setTree": (tree: VirtualEntry) => MaybePromise<unknown>;
+	"client/vfs/readFile": (path: string) => MaybePromise<string | null>;
 	"client/vfs/writeFile": (args: {
 		path: string;
 		content: string;
@@ -459,6 +460,7 @@ export function createWebgalClientHandlers(
 			options.vfs.getResourceDirectory(urls),
 		"client/vfs/getTree": () => options.vfs.getTree(),
 		"client/vfs/setTree": (tree) => options.vfs.setTree(tree),
+		"client/vfs/readFile": (path) => options.vfs.readFile(toVfsPath(path)),
 		"client/vfs/writeFile": ({ path, content }) =>
 			options.vfs.writeFile(toVfsPath(path), content),
 		"client/vfs/deletePath": (path) => options.vfs.deletePath(toVfsPath(path)),
@@ -481,4 +483,4 @@ export function registerWebgalClientHandlers(
 	for (const [method, handler] of Object.entries(handlers)) {
 		client.onRequest(method, handler as never);
 	}
-}
+} 
