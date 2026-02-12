@@ -16,22 +16,20 @@ type IStandaloneCodeEditor<T = EditorProps["onMount"]> = T extends (
 function App() {
 	const editorRef = useRef<IStandaloneCodeEditor>(null);
 
-	function handleEditorDidMount(
+	async function handleEditorDidMount(
 		editor: IStandaloneCodeEditor,
 		monaco: typeof Monaco
 	) {
 		editorRef.current = editor;
-		const model = editor.getModel();
-		console.log("Current Model URI:", model?.uri.toString());
-		console.log("Current Language ID:", model?.getLanguageId());
-		
+
 		monaco.languages.register({ id: "webgal" });
 		const { vfs } = init(editor);
+		const content = await vfs.readFile("file:///game/scene/start.txt");
+		console.log("徐然", content);
+		editor.setValue(content || "");
 
 		editor.onDidChangeModelContent(() => {
 			vfs.writeFile("file:///game/scene/start.txt", editor.getValue());
-			console.log("徐然", vfs.readFile("file:///game/scene/start.txt"));
-			console.log("徐然", editor.getModel()!.getLanguageId());
 		});
 	}
 

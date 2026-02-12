@@ -1,24 +1,30 @@
 {
 	"name": "@webgal/language-service",
 	"version": "0.0.1",
+	"type": "module",
 	"main": "build/index.cjs",
 	"module": "build/index.mjs",
-	"types": "build/index.d.cts",
+	"types": "build/index.d.mts",
 	"license": "MIT",
 	"files": [
 		"build/**/*"
 	],
 	"exports": {
 		".": {
-			"types": "./build/index.d.cts",
+			"types": "./build/index.d.mts",
 			"browser": "./build/index.mjs",
 			"import": "./build/index.mjs",
 			"require": "./build/index.cjs"
 		},
 		"./node": {
-			"types": "./build/node.d.cts",
+			"types": "./build/node.d.mts",
 			"import": "./build/node.mjs",
 			"require": "./build/node.cjs"
+		},
+		"./monaco": {
+			"types": "./build/monaco.d.mts",
+			"import": "./build/monaco.mjs",
+			"require": "./build/monaco.cjs"
 		}
 	},
 	"scripts": {
@@ -30,10 +36,11 @@
 	},
 	"devDependencies": {
 		"@types/node": "^18.0.0",
+		"monaco-editor": "^0.55.1",
 		"tsdown": "^0.20.3"
 	},
 	"dependencies": {
-		"@volar/language-service": "^2.4.28",
-		"@volar/language-core": "^2.4.28"
+		"@volar/language-core": "^2.4.28",
+		"@volar/language-service": "^2.4.28"
 	}
 }

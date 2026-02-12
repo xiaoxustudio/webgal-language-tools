@@ -3,6 +3,7 @@
 	"compilerOptions": {
 		"outDir": "build",
 		"rootDir": "src",
+		"lib": ["esnext", "dom"],
 		"paths": {
 			"@/*": ["./src/*"]
 		}

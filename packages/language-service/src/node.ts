@@ -7,7 +7,7 @@ import {
 	type VirtualFileSystem,
 	type VirtualFileSystemChange,
 	type VirtualFileSystemChangeListener
-} from "./index";
+} from "./index.js";
 
 export type NodeFileSystemOptions = {
 	root: string;
@@ -358,7 +358,7 @@ export function createNodeFileSystem(
 			}
 			return Object.entries(entry.children).map(([name, child]) => ({
 				name,
-				isDirectory: child.type === "dir"
+				isDirectory: (child as any).type === "dir"
 			}));
 		}
 		return listDirectory(absolute);
