@@ -11,13 +11,17 @@ import {
 	applyClientCapabilities,
 	applyServerCapabilities
 } from "./events/onInitialize";
-import { bindCoreFileAccessorToClientVfs } from "@/utils";
+import {
+	bindCoreFileAccessorToClientVfs,
+	createClientVfsFileSystem
+} from "@/utils";
 
 export function startServer() {
 	const connection = createConnection();
 	const server = createServer(connection);
 	const documents = server.documents;
 	bindCoreFileAccessorToClientVfs(connection);
+	server.fileSystem.install("file", createClientVfsFileSystem(connection));
 
 	const webgalLanguagePlugin: LanguagePlugin<URI> = {
 		getLanguageId(scriptId) {

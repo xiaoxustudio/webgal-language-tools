@@ -4,6 +4,8 @@ import {
 	createSimpleProject
 } from "@volar/language-server/node";
 import type { InitializeParams } from "@volar/language-server";
+import { LanguagePlugin } from "@volar/language-core";
+import { URI } from "vscode-uri";
 import {
 	createConnection as createVscodeConnection,
 	type Connection
@@ -15,7 +17,10 @@ import {
 	applyClientCapabilities,
 	applyServerCapabilities
 } from "./events/onInitialize";
-import { bindCoreFileAccessorToClientVfs } from "@/utils";
+import {
+	bindCoreFileAccessorToClientVfs,
+	createClientVfsFileSystem
+} from "@/utils";
 
 type WsOptions = {
 	port: number;
@@ -27,7 +32,7 @@ const useWs = args.some((arg) => arg === "--ws" || arg.startsWith("--ws="));
 if (useWs) {
 	void startWebSocketServer(getWsOptions(args));
 } else {
-	startServer(createConnection());
+	startServer(createConnection(), false);
 }
 
 async function startWebSocketServer(options: WsOptions) {
@@ -44,7 +49,7 @@ async function startWebSocketServer(options: WsOptions) {
 		const reader = new WebSocketMessageReader(toSocket(socket));
 		const writer = new WebSocketMessageWriter(toSocket(socket));
 		const connection = createVscodeConnection(reader, writer);
-		startServer(connection);
+		startServer(connection, true);
 		reader.onClose(() => connection.dispose());
 	});
 }
@@ -75,16 +80,45 @@ function getWsOptions(argv: string[]): WsOptions {
 	};
 }
 
-function startServer(connection: Connection) {
+function startServer(connection: Connection, useClientVfs: boolean) {
 	const server = createServer(connection);
 	const documents = server.documents;
 	bindCoreFileAccessorToClientVfs(connection);
+	if (useClientVfs) {
+		server.fileSystem.install("file", createClientVfsFileSystem(connection));
+	}
 
 	connection.onInitialize((params: InitializeParams) => {
 		applyClientCapabilities(params);
-		const result = server.initialize(params, createSimpleProject([]), [
-			createWebgalService(connection)
-		]);
+		const webgalLanguagePlugin: LanguagePlugin<URI> = {
+			getLanguageId(scriptId) {
+				const path = scriptId.path.toLowerCase();
+				if (scriptId.scheme !== "file") {
+					if (
+						path.endsWith("/game/config.txt") ||
+						path.endsWith("config.txt")
+					) {
+						return "webgal-config";
+					}
+					if (path.endsWith(".txt")) {
+						return "webgal";
+					}
+					return "webgal";
+				}
+				if (path.endsWith("/game/config.txt")) {
+					return "webgal-config";
+				}
+				if (path.endsWith(".txt") && path.includes("/game/scene/")) {
+					return "webgal";
+				}
+				return undefined;
+			}
+		};
+		const result = server.initialize(
+			params,
+			createSimpleProject([webgalLanguagePlugin]),
+			[createWebgalService(connection)]
+		);
 		applyServerCapabilities(result);
 		return result;
 	});
