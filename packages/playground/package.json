@@ -12,7 +12,9 @@
 	},
 	"dependencies": {
 		"@codingame/monaco-vscode-api": "^26.1.1",
+		"@codingame/monaco-vscode-files-service-override": "^26.1.1",
 		"@codingame/monaco-vscode-languages-service-override": "^26.1.1",
+		"@codingame/monaco-vscode-model-service-override": "^26.1.1",
 		"@codingame/monaco-vscode-textmate-service-override": "^26.1.1",
 		"@codingame/monaco-vscode-theme-service-override": "^26.1.1",
 		"@monaco-editor/react": "^4.7.0",

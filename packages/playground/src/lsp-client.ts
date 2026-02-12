@@ -66,7 +66,9 @@ const createLanguageClient = (
 			// use a language id as a document selector
 			documentSelector: [
 				{ scheme: "file", language: "webgal" },
-				{ scheme: "file", language: "webgal-config" }
+				{ scheme: "file", language: "webgal-config" },
+				{ scheme: "inmemory", language: "webgal" },
+				{ scheme: "inmemory", language: "webgal-config" }
 			],
 			// disable the default error handler
 			errorHandler: {

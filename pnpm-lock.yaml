@@ -128,7 +128,13 @@ importers:
       '@codingame/monaco-vscode-api':
         specifier: ^26.1.1
         version: 26.1.1
+      '@codingame/monaco-vscode-files-service-override':
+        specifier: ^26.1.1
+        version: 26.1.1
       '@codingame/monaco-vscode-languages-service-override':
+        specifier: ^26.1.1
+        version: 26.1.1
+      '@codingame/monaco-vscode-model-service-override':
         specifier: ^26.1.1
         version: 26.1.1
       '@codingame/monaco-vscode-textmate-service-override':
@@ -545,6 +551,9 @@ packages:
 
   '@codingame/monaco-vscode-model-service-override@25.1.2':
     resolution: {integrity: sha512-MGz/eV1CxibLvnl6WzK6idUHJCXJOVepJvKM6Trkv5050vRe+f/o1TjCiG8PaznAypYqZvnwkTG0B7/OTizCpQ==}
+
+  '@codingame/monaco-vscode-model-service-override@26.1.1':
+    resolution: {integrity: sha512-bG7Tygl5wmp3Iwk5CufpgCsvhHONZtusz3/2hGG4kPGYEKintp1DSVf7wVNCM34ABpQcJh/zfIzI76wkOvN3Fg==}
 
   '@codingame/monaco-vscode-monarch-service-override@25.1.2':
     resolution: {integrity: sha512-akyNHOJQRS7YHyk6kf0Encnkt+shlR+bIB84UJRUHFgSeF8s5gkDkQuFJph0YeUDWJWat+yBLUSZx2nHomdbHQ==}
@@ -3343,6 +3352,10 @@ snapshots:
   '@codingame/monaco-vscode-model-service-override@25.1.2':
     dependencies:
       '@codingame/monaco-vscode-api': 25.1.2
+
+  '@codingame/monaco-vscode-model-service-override@26.1.1':
+    dependencies:
+      '@codingame/monaco-vscode-api': 26.1.1
 
   '@codingame/monaco-vscode-monarch-service-override@25.1.2':
     dependencies:
