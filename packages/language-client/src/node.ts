@@ -37,7 +37,9 @@ const findFileInDirectory = async (
 				targetName,
 				ignoreDirs
 			);
-			if (result) {return result;}
+			if (result) {
+				return result;
+			}
 		}
 	}
 	return null;
@@ -65,8 +67,7 @@ export function createNodeFileSystem(
 				return null;
 			}
 		},
-		readDirectory: async (targetPath: string) =>
-			listDirectory(targetPath),
+		readDirectory: async (targetPath: string) => listDirectory(targetPath),
 		readFile: async (targetPath: string) => {
 			try {
 				return await fs.readFile(targetPath, "utf-8");
@@ -97,7 +98,9 @@ export function createNodeFileSystem(
 			} catch {
 				entries = null;
 			}
-			if (!entries) {return null;}
+			if (!entries) {
+				return null;
+			}
 			const result: Record<
 				string,
 				{ path: string; name: string; text: string; fullPath: string }

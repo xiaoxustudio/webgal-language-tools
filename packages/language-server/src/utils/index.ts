@@ -246,7 +246,7 @@ export async function listPathCandidates(
 			resolvedBase = path.resolve(maybeDir);
 			partialName = token.endsWith("/") ? "" : path.basename(token);
 		} else if (token.startsWith("~")) {
-		const homedir = process.env.HOME || process.env.USERPROFILE || "";
+			const homedir = process.env.HOME || process.env.USERPROFILE || "";
 			const afterTilde = token === "~" ? "" : token.slice(2); // "~/" 前缀处理
 			const joined = path.join(homedir, afterTilde);
 			resolvedBase = path.dirname(joined);

@@ -28,13 +28,10 @@ export type VirtualFileSystem = {
 	readFile: (path: string) => Promise<string | null>;
 	findFile: (startPath: string, targetName: string) => Promise<string | null>;
 	getResourceDirectory: (urls: string[]) => Promise<DirectoryEntry[] | null>;
-	getAllTextWithScene: () => Promise<
-		| Record<
-				string,
-				{ path: string; name: string; text: string; fullPath: string }
-		  >
-		| null
-	>;
+	getAllTextWithScene: () => Promise<Record<
+		string,
+		{ path: string; name: string; text: string; fullPath: string }
+	> | null>;
 };
 
 export type WebgalClientHandlers = {
@@ -62,9 +59,15 @@ export type CreateWebgalClientHandlersOptions = {
 
 const normalizePath = (input: string) => {
 	let path = input.replace(/\\/g, "/").replace(/\/+/g, "/");
-	if (path === "") {return "/";}
-	if (!path.startsWith("/")) {path = "/" + path;}
-	if (path.length > 1 && path.endsWith("/")) {path = path.slice(0, -1);}
+	if (path === "") {
+		return "/";
+	}
+	if (!path.startsWith("/")) {
+		path = "/" + path;
+	}
+	if (path.length > 1 && path.endsWith("/")) {
+		path = path.slice(0, -1);
+	}
 	return path;
 };
 
@@ -96,7 +99,9 @@ export function createMemoryFileSystem(options?: {
 		if (root !== "/" && resolved.startsWith(root)) {
 			resolved = resolved.slice(root.length);
 		}
-		if (resolved.startsWith("/")) {resolved = resolved.slice(1);}
+		if (resolved.startsWith("/")) {
+			resolved = resolved.slice(1);
+		}
 		return resolved ? resolved.split("/") : [];
 	};
 
@@ -104,10 +109,14 @@ export function createMemoryFileSystem(options?: {
 		const segments = resolveToSegments(path);
 		let current: VirtualEntry = rootEntry;
 		for (const segment of segments) {
-			if (current.type !== "dir") {return null;}
+			if (current.type !== "dir") {
+				return null;
+			}
 			const directory = current as VirtualDirectoryEntry;
 			const next: VirtualEntry | undefined = directory.children[segment];
-			if (!next) {return null;}
+			if (!next) {
+				return null;
+			}
 			current = next;
 		}
 		return current;
@@ -115,7 +124,9 @@ export function createMemoryFileSystem(options?: {
 
 	const readDirectory = async (path: string) => {
 		const entry = getEntry(path);
-		if (!entry || entry.type !== "dir") {return null;}
+		if (!entry || entry.type !== "dir") {
+			return null;
+		}
 		return Object.entries(entry.children).map(([name, child]) => ({
 			name,
 			isDirectory: child.type === "dir"
@@ -124,13 +135,17 @@ export function createMemoryFileSystem(options?: {
 
 	const readFile = async (path: string) => {
 		const entry = getEntry(path);
-		if (!entry || entry.type !== "file") {return null;}
+		if (!entry || entry.type !== "file") {
+			return null;
+		}
 		return entry.content;
 	};
 
 	const stat = async (path: string) => {
 		const entry = getEntry(path);
-		if (!entry) {return null;}
+		if (!entry) {
+			return null;
+		}
 		return {
 			isFile: entry.type === "file",
 			isDirectory: entry.type === "dir"
@@ -139,13 +154,17 @@ export function createMemoryFileSystem(options?: {
 
 	const findFile = async (startPath: string, targetName: string) => {
 		const startEntry = getEntry(startPath);
-		if (!startEntry || startEntry.type !== "dir") {return null;}
+		if (!startEntry || startEntry.type !== "dir") {
+			return null;
+		}
 		const stack: Array<{ path: string; entry: VirtualEntry }> = [
 			{ path: normalizePath(startPath), entry: startEntry }
 		];
 		while (stack.length) {
 			const current = stack.pop();
-			if (!current) {break;}
+			if (!current) {
+				break;
+			}
 			if (current.entry.type === "dir") {
 				for (const [name, child] of Object.entries(
 					current.entry.children
@@ -171,7 +190,9 @@ export function createMemoryFileSystem(options?: {
 	const getAllTextWithScene = async () => {
 		const scenePath = joinPaths(root, "scene");
 		const sceneEntry = getEntry(scenePath);
-		if (!sceneEntry || sceneEntry.type !== "dir") {return null;}
+		if (!sceneEntry || sceneEntry.type !== "dir") {
+			return null;
+		}
 		const map: Record<
 			string,
 			{ path: string; name: string; text: string; fullPath: string }

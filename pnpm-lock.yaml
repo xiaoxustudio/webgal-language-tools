@@ -121,6 +121,9 @@ importers:
       '@webgal/language-client':
         specifier: workspace:*
         version: link:../language-client
+      '@webgal/language-server':
+        specifier: workspace:*
+        version: link:../language-server
       monaco-editor:
         specifier: ^0.55.0
         version: 0.55.1
@@ -130,6 +133,9 @@ importers:
       vscode:
         specifier: npm:@codingame/monaco-vscode-api@>=1.85.0 <1.86.0
         version: '@codingame/monaco-vscode-api@1.85.6'
+      vscode-jsonrpc:
+        specifier: ^8.2.1
+        version: 8.2.1
       vscode-languageclient:
         specifier: ^9.0.1
         version: 9.0.1

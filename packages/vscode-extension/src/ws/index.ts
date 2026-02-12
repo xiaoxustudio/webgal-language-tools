@@ -2,17 +2,20 @@ import { DebugSession, Range, TextEditorDecorationType, window } from "vscode";
 import {
 	disableGameStatus,
 	enableGameStatus,
+	is_JSON,
 	setGameData
 } from "@/utils/utils";
 import EventEmitter from "events";
 import WebSocket, { WebSocket as WS } from "ws";
-import { is_JSON } from "@/utils/utils_novsc";
-import {
-	DebugCommand,
+import type {
 	FileAccessor,
 	IDebugMessage,
 	RuntimeVariable
-} from "@webgal/language-core";
+} from "@webgal/language-core" with { "resolution-mode": "import" };
+
+type LanguageCore = typeof import("@webgal/language-core", {
+	with: { "resolution-mode": "import" }
+});
 
 export function timeout(ms: number) {
 	return new Promise((resolve) => setTimeout(resolve, ms));
@@ -20,6 +23,7 @@ export function timeout(ms: number) {
 
 export default class XRRuntime extends EventEmitter {
 	private _WS!: WS;
+	private _core: LanguageCore | null = null;
 	public variables = new Map<string, Map<string, RuntimeVariable>>([
 		["local", new Map<string, RuntimeVariable>()],
 		["env", new Map<string, RuntimeVariable>()],
@@ -34,10 +38,14 @@ export default class XRRuntime extends EventEmitter {
 		super();
 	}
 	public setRunLine(Line: number = 1) {
+		const core = this._core;
+		if (!core) {
+			return;
+		}
 		const msg: IDebugMessage = {
 			event: "message",
 			data: {
-				command: DebugCommand.JUMP,
+				command: core.DebugCommand.JUMP,
 				sceneMsg: {
 					scene: this._config.program,
 					sentence: Line
@@ -53,25 +61,25 @@ export default class XRRuntime extends EventEmitter {
 			case "env": {
 				return Array.from(
 					this.variables.get("env") as Map<string, RuntimeVariable>,
-					([name, value]) => value
+					([, value]) => value
 				);
 			}
 			case "scene": {
 				return Array.from(
 					this.variables.get("scene") as Map<string, RuntimeVariable>,
-					([name, value]) => value
+					([, value]) => value
 				);
 			}
 			case "var": {
 				return Array.from(
 					this.variables.get("local") as Map<string, RuntimeVariable>,
-					([name, value]) => value
+					([, value]) => value
 				);
 			}
 			default: {
 				return Array.from(
 					this.variables.get("local") as Map<string, RuntimeVariable>,
-					([name, value]) => value
+					([, value]) => value
 				);
 			}
 		}
@@ -79,23 +87,11 @@ export default class XRRuntime extends EventEmitter {
 	getWS() {
 		return this._WS;
 	}
-	private normalizePathAndCasing(path: string) {
-		if (this.fileAccessor.isWindows) {
-			return (
-				this._ADP.workspaceFolder?.uri.path.substring(3) +
-				"/game/scene/" +
-				path.replace(/\//g, "\\").toLowerCase()
-			);
-		} else {
-			return (
-				this._ADP.workspaceFolder?.uri.path! +
-				"/game/scene/" +
-				path.replace(/\\/g, "/")
-			);
-		}
-	}
 	async start(program: string) {
-		const _obj = createWS(this._ADP, this);
+		void program;
+		const core = await import("@webgal/language-core");
+		this._core = core;
+		const _obj = createWS(this._ADP, this, core);
 		this._WS = _obj.sock;
 		this._config = _obj.config;
 		this._clearFunc = _obj.clearDecorationType;
@@ -107,7 +103,7 @@ export default class XRRuntime extends EventEmitter {
 	}
 }
 
-function createWS(_ADP: DebugSession, self: XRRuntime) {
+function createWS(_ADP: DebugSession, self: XRRuntime, core: LanguageCore) {
 	const config = _ADP.configuration;
 	const _ws_host = config.ws || "ws://localhost:3001/api/webgalsync";
 	const sock = new WebSocket(_ws_host);
@@ -130,7 +126,7 @@ function createWS(_ADP: DebugSession, self: XRRuntime) {
 			const msg: IDebugMessage = {
 				event: "message",
 				data: {
-					command: DebugCommand.JUMP,
+					command: core.DebugCommand.JUMP,
 					sceneMsg: {
 						scene: config.program,
 						sentence: 0
@@ -164,7 +160,7 @@ function createWS(_ADP: DebugSession, self: XRRuntime) {
 			const msg: IDebugMessage = {
 				event: "message",
 				data: {
-					command: DebugCommand.EXE_COMMAND,
+					command: core.DebugCommand.EXE_COMMAND,
 					sceneMsg: {
 						scene: config.program,
 						sentence: 1
@@ -209,14 +205,14 @@ function createWS(_ADP: DebugSession, self: XRRuntime) {
 			const _val = _data.data.stageSyncMsg.GameVar[_var];
 			const _local = newv.get("local");
 			if (_local) {
-				_local.set(_var, new RuntimeVariable(_var, _val));
+				_local.set(_var, new core.RuntimeVariable(_var, _val));
 			}
 		}
 		for (let _var in _data.data.stageSyncMsg) {
 			const _val = _data.data.stageSyncMsg[_var];
 			const _env = newv.get("env");
 			if (_env && _var !== "GameVar") {
-				_env.set(_var, new RuntimeVariable(_var, _val));
+				_env.set(_var, new core.RuntimeVariable(_var, _val));
 			}
 		}
 		const sceneMsg: Record<string, any> = _data.data.sceneMsg;
@@ -224,7 +220,7 @@ function createWS(_ADP: DebugSession, self: XRRuntime) {
 			const _val = sceneMsg[_var];
 			const _scene = newv.get("scene");
 			if (_scene) {
-				_scene.set(_var, new RuntimeVariable(_var, _val));
+				_scene.set(_var, new core.RuntimeVariable(_var, _val));
 			}
 		}
 		self.variables = newv;

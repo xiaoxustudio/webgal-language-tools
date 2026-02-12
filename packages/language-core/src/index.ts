@@ -26,7 +26,9 @@ const getIsWindows = () => {
 	if (isNodeRuntime && process.platform) {
 		return process.platform === "win32";
 	}
+	// @ts-ignore
 	if (typeof navigator !== "undefined" && navigator.userAgent) {
+		// @ts-ignore
 		return /windows/i.test(navigator.userAgent);
 	}
 	return false;

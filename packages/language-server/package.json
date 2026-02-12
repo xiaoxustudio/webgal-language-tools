@@ -36,7 +36,8 @@
 		"dev": "node bin/webgal-language-server.js --stdio",
 		"dev:ws": "node bin/webgal-language-server.js --ws=3001",
 		"format": " prettier --write \"src/**/*.ts\"",
-		"lint": "eslint src --ext ts --fix"
+		"lint": "eslint src --ext ts --fix",
+		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
 		"@volar/language-core": "~2.4.0",

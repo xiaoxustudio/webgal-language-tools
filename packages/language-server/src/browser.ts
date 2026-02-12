@@ -23,7 +23,10 @@ export function startServer(connection: Connection) {
 		getLanguageId(scriptId) {
 			const path = scriptId.path.toLowerCase();
 			if (scriptId.scheme !== "file") {
-				if (path.endsWith("/game/config.txt") || path.endsWith("config.txt")) {
+				if (
+					path.endsWith("/game/config.txt") ||
+					path.endsWith("config.txt")
+				) {
 					return "webgal-config";
 				}
 				if (path.endsWith(".txt")) {

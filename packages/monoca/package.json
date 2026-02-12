@@ -3,7 +3,7 @@
 	"version": "0.0.1",
 	"main": "build/index.cjs",
 	"module": "build/index.mjs",
-	"types": "build/index.d.ts",
+	"types": "build/index.d.mts",
 	"type": "module",
 	"license": "MIT",
 	"files": [
@@ -11,7 +11,7 @@
 	],
 	"exports": {
 		".": {
-			"types": "./build/index.d.ts",
+			"types": "./build/index.d.mts",
 			"import": "./build/index.mjs",
 			"require": "./build/index.cjs"
 		}
@@ -19,12 +19,15 @@
 	"scripts": {
 		"build": "tsdown",
 		"format": " prettier --write \"src/**/*.ts\"",
-		"lint": "eslint src --ext ts --fix"
+		"lint": "eslint src --ext ts --fix",
+		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
 		"@webgal/language-client": "workspace:*",
+		"@webgal/language-server": "workspace:*",
 		"monaco-editor": "^0.55.0",
 		"monaco-languageclient": "^10.7.0",
+		"vscode-jsonrpc": "^8.2.1",
 		"vscode-languageclient": "^9.0.1",
 		"vscode-ws-jsonrpc": "^3.0.2",
 		"vscode": "npm:@codingame/monaco-vscode-api@>=1.85.0 <1.86.0"

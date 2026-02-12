@@ -7,7 +7,7 @@ import { createClient } from "./client";
 let client: BaseLanguageClient;
 
 export async function activate(context: vscode.ExtensionContext) {
-	client = createClient(context);
+	client = await createClient(context);
 	await client.start();
 
 	activateAutoInsertion("webgal", client);

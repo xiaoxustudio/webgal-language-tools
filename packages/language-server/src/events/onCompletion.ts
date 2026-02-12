@@ -129,7 +129,9 @@ export async function provideCompletionItems(
 		Object.keys(resourcesMap).includes(commandType) ||
 		token.startsWith("-")
 	) {
-		const resourceBaseDir = isSayCommandType ? "vocal" : resourcesMap[commandType];
+		const resourceBaseDir = isSayCommandType
+			? "vocal"
+			: resourcesMap[commandType];
 		if (resourceBaseDir) {
 			const dirs = await connection.sendRequest<any>(
 				"client/getResourceDirectory",
@@ -163,7 +165,8 @@ export async function provideCompletionItems(
 
 			const uniqueData = data.filter(
 				(parentItem, index, self) =>
-					index === self.findIndex((item) => item.label === parentItem.label)
+					index ===
+					self.findIndex((item) => item.label === parentItem.label)
 			);
 			CompletionItemSuggestions.push(...uniqueData);
 		}
@@ -186,7 +189,10 @@ export async function provideCompletionItems(
 		}
 	}
 
-	if ((!wordMeta && position.character === 0) || (token && !~currentLine.indexOf(":"))) {
+	if (
+		(!wordMeta && position.character === 0) ||
+		(token && !~currentLine.indexOf(":"))
+	) {
 		CompletionItemSuggestions.push(...WebgGALKeywordsCompletionMap);
 	}
 

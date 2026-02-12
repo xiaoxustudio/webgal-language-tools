@@ -27,7 +27,9 @@ export async function provideDocumentLinks(
 				? currentLine.indexOf(":")
 				: currentLine.indexOf(";")
 		);
-		startText = startText.startsWith(";") ? startText.substring(1) : startText;
+		startText = startText.startsWith(";")
+			? startText.substring(1)
+			: startText;
 		let match: RegExpExecArray | null;
 		const regex = /\$?\{?(\w+)\.(\w+)\}?/g;
 
@@ -38,7 +40,9 @@ export async function provideDocumentLinks(
 			const matchText = match[0];
 			const pathName =
 				pathArray[
-					pathArray.length - 3 > 0 ? pathArray.length - 3 : pathArray.length - 2
+					pathArray.length - 3 > 0
+						? pathArray.length - 3
+						: pathArray.length - 2
 				];
 			const isConfig =
 				pathArray[pathArray.length - 1] === "config.txt" &&

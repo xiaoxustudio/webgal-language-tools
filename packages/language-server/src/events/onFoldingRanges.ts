@@ -24,7 +24,8 @@ export function provideFoldingRanges(doc: TextDocument): FoldingRange[] {
 					startLine: startLine,
 					endLine: endLine,
 					collapsedText:
-						match[1].split("\n")[0].replace(/;/g, "").trim() || "...",
+						match[1].split("\n")[0].replace(/;/g, "").trim() ||
+						"...",
 					kind: FoldingRangeKind.Region
 				});
 			}

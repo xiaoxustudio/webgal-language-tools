@@ -1,7 +1,4 @@
-import {
-	Connection,
-	Diagnostic
-} from "@volar/language-server";
+import { Connection, Diagnostic } from "@volar/language-server";
 import { validateTextDocument } from "@/utils";
 import { TextDocument } from "vscode-languageserver-textdocument";
 

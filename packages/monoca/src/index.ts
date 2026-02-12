@@ -1,14 +1,13 @@
 import {
-	initServices,
 	MonacoLanguageClient,
-	wasVscodeApiInitialized
+	type MonacoLanguageClientOptions
 } from "monaco-languageclient";
 import { CloseAction, ErrorAction } from "vscode-languageclient";
 import {
-	toSocket,
-	WebSocketMessageReader,
-	WebSocketMessageWriter
-} from "vscode-ws-jsonrpc";
+	BrowserMessageReader,
+	BrowserMessageWriter
+} from "vscode-jsonrpc/browser.js";
+import type { MessageReader, MessageWriter } from "vscode-jsonrpc";
 import {
 	createMemoryFileSystem,
 	createWebgalClientHandlers,
@@ -16,7 +15,10 @@ import {
 	type VirtualFileSystem,
 	type WebgalClientHandlers
 } from "@webgal/language-client";
-export type { VirtualFileSystem, WebgalClientHandlers } from "@webgal/language-client";
+export type {
+	VirtualFileSystem,
+	WebgalClientHandlers
+} from "@webgal/language-client";
 
 export type MonacoLike = {
 	languages: {
@@ -26,15 +28,17 @@ export type MonacoLike = {
 
 export type WebgalMonocaClientOptions = {
 	monaco: MonacoLike;
-	languageServerUrl: string;
+	mode?: "worker" | "ws";
+	languageServerUrl?: string;
 	languageIds?: string[];
 	name?: string;
+	id?: string;
 	virtualFileSystem?: VirtualFileSystem;
 	clientHandlers?: Partial<WebgalClientHandlers>;
+	worker?: Worker;
 };
 
 export const defaultLanguageIds = ["webgal", "webgal-config"];
-let initPromise: Promise<void> | null = null;
 
 export function registerWebgalLanguages(
 	monacoInstance: MonacoLike,
@@ -50,18 +54,44 @@ export async function createWebgalMonocaLanguageClient(
 ) {
 	const languageIds = options.languageIds ?? defaultLanguageIds;
 	registerWebgalLanguages(options.monaco, languageIds);
-	if (!wasVscodeApiInitialized()) {
-		if (!initPromise) {
-			initPromise = initServices().finally(() => {
-				initPromise = null;
-			});
+	const mode = options.mode ?? (options.languageServerUrl ? "ws" : "worker");
+
+	let reader: MessageReader;
+	let writer: MessageWriter;
+	let stopServer: (() => void) | null = null;
+
+	if (mode === "ws") {
+		if (!options.languageServerUrl) {
+			throw new Error("languageServerUrl is required in ws mode");
 		}
-		await initPromise;
+		const { toSocket, WebSocketMessageReader, WebSocketMessageWriter } =
+			await import("vscode-ws-jsonrpc");
+		const socket = await connectWebSocket(options.languageServerUrl);
+		reader = new WebSocketMessageReader(toSocket(socket));
+		writer = new WebSocketMessageWriter(toSocket(socket));
+	} else {
+		if (typeof Worker === "undefined") {
+			throw new Error("Worker is not available");
+		}
+		const workerUrl =
+			import.meta.url.includes("/deps/") ||
+			import.meta.url.includes("\\deps\\")
+				? new URL(
+						"@webgal/monoca/build/serverWorker.mjs",
+						import.meta.url
+					)
+				: new URL("./serverWorker.mjs", import.meta.url);
+		const worker =
+			options.worker ??
+			new Worker(workerUrl, {
+				type: "module"
+			});
+		stopServer = () => worker.terminate();
+		reader = new BrowserMessageReader(worker);
+		writer = new BrowserMessageWriter(worker);
 	}
-	const socket = await connectWebSocket(options.languageServerUrl);
-	const reader = new WebSocketMessageReader(toSocket(socket));
-	const writer = new WebSocketMessageWriter(toSocket(socket));
-	const languageClient = new MonacoLanguageClient({
+	const languageClientOptions: MonacoLanguageClientOptions = {
+		id: options.id,
 		name: options.name ?? "WebGAL Language Client",
 		clientOptions: {
 			documentSelector: languageIds.map((language) => ({ language })),
@@ -70,12 +100,14 @@ export async function createWebgalMonocaLanguageClient(
 				closed: () => ({ action: CloseAction.Restart })
 			}
 		},
-		connectionProvider: {
-			get: () => Promise.resolve({ reader, writer })
-		}
-	});
+		messageTransports: { reader, writer }
+	};
+	const languageClient = new MonacoLanguageClient(languageClientOptions);
 	languageClient.start();
-	reader.onClose(() => languageClient.stop());
+	reader.onClose(() => {
+		stopServer?.();
+		languageClient.stop();
+	});
 	const vfs =
 		options.virtualFileSystem ?? createMemoryFileSystem({ root: "/" });
 	const handlers = createWebgalClientHandlers({

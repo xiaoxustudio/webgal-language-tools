@@ -3,12 +3,12 @@
 	"version": "0.0.1",
 	"main": "build/index.cjs",
 	"module": "build/index.mjs",
-	"types": "build/index.d.ts",
+	"types": "build/index.d.cts",
 	"license": "MIT",
 	"files": ["build/**/*"],
 	"exports": {
 		".": {
-			"types": "./build/index.d.ts",
+			"types": "./build/index.d.cts",
 			"browser": "./build/index.mjs",
 			"import": "./build/index.mjs",
 			"require": "./build/index.cjs"
@@ -17,7 +17,8 @@
 	"scripts": {
 		"build": "tsdown",
 		"format": " prettier --write \"src/**/*.ts\"",
-		"lint": "eslint src --ext ts --fix"
+		"lint": "eslint src --ext ts --fix",
+		"typecheck": "tsc --noEmit"
 	},
 	"devDependencies": {
 		"@types/node": "^18.0.0",

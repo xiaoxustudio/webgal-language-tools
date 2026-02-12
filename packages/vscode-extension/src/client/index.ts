@@ -6,13 +6,10 @@ import {
 } from "vscode-languageclient/node";
 import { ExtensionContext, Uri, window, workspace } from "vscode";
 import { selector, selectorConfig } from "@/utils/utils";
-import {
-	createWebgalClientHandlers,
-	registerWebgalClientHandlers
-} from "@webgal/language-client";
-import { createNodeFileSystem } from "@webgal/language-client/node";
 
-export function createClient(context: ExtensionContext): LanguageClient {
+export async function createClient(
+	context: ExtensionContext
+): Promise<LanguageClient> {
 	const serverModule = Uri.joinPath(
 		context.extensionUri,
 		"dist",
@@ -48,13 +45,18 @@ export function createClient(context: ExtensionContext): LanguageClient {
 		clientOptions
 	);
 
+	const { createWebgalClientHandlers, registerWebgalClientHandlers } =
+		await import("@webgal/language-client");
+	const { createNodeFileSystem } =
+		await import("@webgal/language-client/node");
+
 	const rootPath =
 		workspace.workspaceFolders?.[0]?.uri.fsPath ?? process.cwd();
 	const vfs = createNodeFileSystem({ root: rootPath });
 	const handlers = createWebgalClientHandlers({
 		vfs,
-		showTip: (message) => window.showInformationMessage(message),
-		goPropertyDoc: async (pathSegments) => {
+		showTip: (message: string) => window.showInformationMessage(message),
+		goPropertyDoc: async (pathSegments: string[]) => {
 			const { getState } = await import("@webgal/language-server/utils");
 			return getState(pathSegments);
 		}
