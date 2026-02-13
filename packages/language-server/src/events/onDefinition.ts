@@ -1,16 +1,17 @@
-import { getWordAtPosition, updateGlobalMap } from "@/utils";
+import { getWordAtPosition } from "@/utils";
 import {
 	DefinitionLink,
 	LocationLink,
 	Range,
 	Position
 } from "@volar/language-server";
-import { getGlobalMap } from "@webgal/language-core";
+import type { IDefinetionMap } from "@webgal/language-core";
 import { TextDocument } from "vscode-languageserver-textdocument";
 
 export function provideDefinition(
 	document: TextDocument,
-	position: Position
+	position: Position,
+	definitionMap: IDefinetionMap
 ): DefinitionLink[] {
 	// 使用 volar.js 的服务式定义跳转入口
 	const text = document.getText();
@@ -29,10 +30,8 @@ export function provideDefinition(
 			: currentLine.indexOf(";")
 	);
 
-	updateGlobalMap(documentTextArray, document.uri);
-	const GlobalMap = getGlobalMap(document.uri);
-	const jumpLabelMap = GlobalMap.label;
-	const setVarMap = GlobalMap.setVar;
+	const jumpLabelMap = definitionMap.label;
+	const setVarMap = definitionMap.setVar;
 
 	const targetPool = ["jumpLabel", "choose"].includes(commandType)
 		? jumpLabelMap
@@ -45,7 +44,7 @@ export function provideDefinition(
 		return definitionLinks;
 	}
 	for (const current of targetPoolArray) {
-		if (current.word === findWord.word) {
+		if (current.word === findWord.word && current.position) {
 			definitionLinks.push(
 				LocationLink.create(
 					document.uri,
@@ -53,7 +52,16 @@ export function provideDefinition(
 						Position.create(position.line, findWord.start),
 						Position.create(position.line, findWord.end)
 					),
-					Range.create(current.position, current.position),
+					Range.create(
+						Position.create(
+							current.position.line,
+							current.position.character
+						),
+						Position.create(
+							current.position.line,
+							current.position.character
+						)
+					),
 					Range.create(Position.create(0, 0), Position.create(0, 0))
 				)
 			);

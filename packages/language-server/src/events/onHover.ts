@@ -1,8 +1,4 @@
-import {
-	getPatternAtPosition,
-	getWordAtPosition,
-	updateGlobalMap
-} from "@/utils";
+import { getPatternAtPosition, getWordAtPosition } from "@/utils";
 import {
 	argsMap,
 	WebGALConfigMap,
@@ -19,26 +15,19 @@ import {
 	Position,
 	Range
 } from "@volar/language-server";
-import { getGlobalMap } from "@webgal/language-core";
+import type { IDefinetionMap } from "@webgal/language-core";
 import { TextDocument } from "vscode-languageserver-textdocument";
 
 export async function provideHover(
 	document: TextDocument,
 	position: Position,
-	connection: Connection
+	connection: Connection,
+	definitionMap: IDefinetionMap,
+	lineCommandTypes: string[],
+	sourceUri: string
 ): Promise<Hover> {
-	// 使用 volar.js 的服务式 hover 入口
-	const file_name = document.uri;
-	const text = document.getText();
-	const documentTextArray = text.split("\n");
-	const currentLine = documentTextArray[position.line];
-
-	const commandType = currentLine.substring(
-		0,
-		currentLine.indexOf(":") !== -1
-			? currentLine.indexOf(":")
-			: currentLine.indexOf(";")
-	);
+	const file_name = sourceUri;
+	const commandType = lineCommandTypes[position.line] ?? "";
 
 	let findWordWithPattern = getPatternAtPosition(
 		document,
@@ -141,11 +130,8 @@ export async function provideHover(
 		}
 	}
 
-	updateGlobalMap(documentTextArray, document.uri);
-	const GlobalMap = getGlobalMap(document.uri);
-
 	if (findWord && `{${findWord.word}}` !== "{}") {
-		const current = GlobalMap.setVar[findWord.word];
+		const current = definitionMap.setVar[findWord.word];
 		if (!current || current.length <= 0) {
 			return { contents: [] };
 		}
@@ -159,10 +145,17 @@ export async function provideHover(
 			hoverContent.push(currentVariable.desc);
 		}
 		hoverContent.push("<hr>");
-		if (findWord.word in GlobalMap.setVar) {
-			hoverContent.push(
-				`Position: ${currentVariable.position?.line + 1},${currentVariable.position?.character + 1}`
-			);
+		if (findWord.word in definitionMap.setVar) {
+			const positionValue = currentVariable.position;
+			const line =
+				positionValue && typeof positionValue.line === "number"
+					? positionValue.line
+					: -1;
+			const character =
+				positionValue && typeof positionValue.character === "number"
+					? positionValue.character
+					: -1;
+			hoverContent.push(`Position: ${line + 1},${character + 1}`);
 			hoverContent.push("```webgal");
 			hoverContent.push(
 				`${currentVariable.input?.replace(/\t\r\n/g, "")}\n\n\`\`\``

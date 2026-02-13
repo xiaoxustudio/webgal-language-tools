@@ -2,8 +2,7 @@ import {
 	findTokenRange,
 	getPatternAtPosition,
 	getStageCompletionContext,
-	getWordAtPosition,
-	updateGlobalMap
+	getWordAtPosition
 } from "@/utils";
 import {
 	CommandNameSpecial,
@@ -20,17 +19,21 @@ import {
 	CompletionItemKind,
 	Position
 } from "@volar/language-server";
-import { getGlobalMap } from "@webgal/language-core";
+import type { IDefinetionMap } from "@webgal/language-core";
 import { TextDocument } from "vscode-languageserver-textdocument";
 
 export async function provideCompletionItems(
 	document: TextDocument,
 	position: Position,
-	connection: Connection
+	connection: Connection,
+	definitionMap: IDefinetionMap,
+	lines: string[],
+	lineCommandTypes: string[],
+	sourceUri: string
 ): Promise<CompletionItem[]> {
 	// 使用 volar.js 的服务式补全入口，保留原有 WebGAL 逻辑
-	const file_name = document.uri;
-	const documentTextArray = document.getText().split("\n");
+	const file_name = sourceUri;
+	const documentTextArray = lines;
 
 	const { token } = findTokenRange(document, position);
 	const CompletionItemSuggestions: CompletionItem[] = [];
@@ -114,13 +117,8 @@ export async function provideCompletionItems(
 		Position.create(position.line, 0)
 	);
 
-	const currentLine = documentTextArray[position.line];
-	const commandType = currentLine.substring(
-		0,
-		currentLine.indexOf(":") !== -1
-			? currentLine.indexOf(":")
-			: currentLine.indexOf(";")
-	);
+	const currentLine = documentTextArray[position.line] ?? "";
+	const commandType = lineCommandTypes[position.line] ?? "";
 	const isSayCommandType = !resourcesMap[commandType as CommandNameSpecial];
 
 	if (
@@ -174,13 +172,13 @@ export async function provideCompletionItems(
 	}
 
 	if (token) {
-		updateGlobalMap(documentTextArray, document.uri);
-		const GlobalMap = getGlobalMap(document.uri);
-		const currentPool = GlobalMap.setVar;
+		const currentPool = definitionMap.setVar;
 		for (const key in currentPool) {
 			if (key.includes(token)) {
 				const latest =
-					GlobalMap.setVar[key][GlobalMap.setVar[key].length - 1];
+					definitionMap.setVar[key][
+						definitionMap.setVar[key].length - 1
+					];
 				CompletionItemSuggestions.push({
 					label: key,
 					kind: CompletionItemKind.Variable,

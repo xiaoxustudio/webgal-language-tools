@@ -4,8 +4,9 @@ import { TextDocument } from "vscode-languageserver-textdocument";
 
 export async function provideDiagnostics(
 	document: TextDocument,
-	connection: Connection
+	connection: Connection,
+	text: string
 ): Promise<Diagnostic[]> {
 	// 使用 volar.js 的服务式诊断入口
-	return validateTextDocument(connection, document);
+	return validateTextDocument(connection, document, text);
 }

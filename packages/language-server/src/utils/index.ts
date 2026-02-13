@@ -1,28 +1,28 @@
 import { ServerSettings } from "../types";
-import {
-	clearGlobalMap,
-	fsAccessor,
-	getGlobalMap,
-	IVChooseToken,
-	IVToken,
-	runCode,
-	source
-} from "@webgal/language-core";
+import { fsAccessor, type IDefinetionMap, source } from "@webgal/language-core";
 import { warningConfig, getDiagnosticInformation } from "@/warnings";
 import {
 	Connection,
 	Diagnostic,
 	DiagnosticSeverity,
+	FoldingRange,
+	FoldingRangeKind,
 	Position,
 	Range
 } from "@volar/language-server";
 import {
 	FileType,
 	type FileStat,
-	type FileSystem
+	type FileSystem,
+	type LanguageServiceContext
 } from "@volar/language-service";
+import type {
+	CodeInformation,
+	IScriptSnapshot,
+	VirtualCode
+} from "@volar/language-core";
 import { TextDocument } from "vscode-languageserver-textdocument";
-import type { URI } from "vscode-uri";
+import { URI } from "vscode-uri";
 import type { VirtualFileSystem } from "@webgal/language-service" with {
 	"resolution-mode": "import"
 };
@@ -65,30 +65,366 @@ export function bindCoreFileAccessorToClientVfs(
 	};
 }
 
-// 获取变量的描述
-export function getVariableTypeDesc(ALL_ARR: string[], _start_line: number) {
-	let _desc_arr = [];
-	for (let _d_index = _start_line - 2; _d_index > 0; _d_index--) {
-		const _data = ALL_ARR[_d_index];
-		if (_data.startsWith(";") && _data.length > 0) {
-			_desc_arr.unshift(_data.substring(1));
-		} else if (_data.length > 0) {
+const fullCodeInformation: CodeInformation = {
+	completion: true,
+	semantic: true,
+	navigation: true,
+	structure: true,
+	format: true,
+	verification: true
+};
+
+const emptyDefinitionMap: IDefinetionMap = {
+	label: {},
+	setVar: {},
+	choose: {}
+};
+
+const getVariableDesc = (lines: string[], startLine: number) => {
+	const desc: string[] = [];
+	for (let index = startLine - 2; index > 0; index--) {
+		const line = lines[index];
+		if (line.startsWith(";") && line.length > 0) {
+			desc.unshift(line.substring(1));
+		} else if (line.length > 0) {
 			break;
-		} else {
-			continue;
 		}
 	}
-	return _desc_arr.join("\n");
-}
+	return desc.join("\n");
+};
 
-export function getVariableType(expr: string): string {
-	if (expr.includes("$stage") || expr.includes("$userData")) {
-		return "expression";
+const analyzeWebgalText = (text: string): IDefinetionMap => {
+	const map: IDefinetionMap = {
+		label: {},
+		setVar: {},
+		choose: {}
+	};
+	const lines = text.split(/\r?\n/);
+	for (let lineNumber = 0; lineNumber < lines.length; lineNumber++) {
+		const currentLine = lines[lineNumber];
+		const setVarExec = /setVar:\s*(\w+)\s*=\s*([^;]*\S+);?/g.exec(
+			currentLine
+		);
+		const labelExec = /label:\s*(\S+);/g.exec(currentLine);
+		const getUserInputExec = /getUserInput:\s*([^\s;]+)/g.exec(currentLine);
+		const chooseExec = /choose:\s*([^\s;]+)/g.exec(currentLine);
+		if (setVarExec !== null) {
+			const currentVariablePool = (map.setVar[setVarExec[1]] ??= []);
+			const isGlobal = currentLine.indexOf("-global") !== -1;
+			const currentToken = {
+				word: setVarExec[1],
+				value: setVarExec[2],
+				input: setVarExec.input,
+				isGlobal,
+				isGetUserInput: false,
+				position: { line: lineNumber, character: setVarExec.index + 7 },
+				desc: getVariableDesc(lines, lineNumber)
+			};
+			currentVariablePool.push(currentToken);
+		} else if (labelExec !== null) {
+			(map.label[labelExec[1]] ??= []).push({
+				word: labelExec[1],
+				value: labelExec.input,
+				input: labelExec.input,
+				position: { line: lineNumber, character: 6 }
+			});
+		} else if (getUserInputExec !== null) {
+			(map.setVar[getUserInputExec[1]] ??= []).push({
+				word: getUserInputExec[1],
+				value: getUserInputExec.input,
+				input: getUserInputExec.input,
+				isGetUserInput: true,
+				position: { line: lineNumber, character: 13 }
+			});
+		} else if (chooseExec !== null) {
+			const options: IDefinetionMap["choose"][number]["options"] = [];
+			const text = chooseExec[1];
+			for (const machChooseOption of text.split("|")) {
+				const sliceArray = machChooseOption.split(":");
+				options.push({
+					text: sliceArray[0]?.trim(),
+					value: sliceArray[1]?.trim()
+				});
+			}
+			map.choose[lineNumber] = {
+				options,
+				line: lineNumber
+			};
+		}
 	}
-	const evaluatorFunc = runCode(expr);
-	const res = typeof evaluatorFunc();
-	return res;
-}
+	return map;
+};
+
+export type WebgalVirtualCode = VirtualCode & {
+	webgalDefinitionMap?: IDefinetionMap;
+	webgalDocumentLinkCandidates?: WebgalDocumentLinkCandidate[];
+	webgalFoldingRanges?: FoldingRange[];
+	webgalLines?: string[];
+	webgalLineCommandTypes?: string[];
+};
+
+const getSnapshotText = (snapshot: IScriptSnapshot) =>
+	snapshot.getText(0, snapshot.getLength());
+
+export type WebgalDocumentLinkCandidate = {
+	line: number;
+	start: number;
+	end: number;
+	text: string;
+	command: string;
+};
+
+const buildLineStarts = (text: string) => {
+	const result = [0];
+	for (let i = 0; i < text.length; i++) {
+		if (text.charCodeAt(i) === 10) {
+			result.push(i + 1);
+		}
+	}
+	return result;
+};
+
+const getLineFromOffset = (lineStarts: number[], offset: number) => {
+	let low = 0;
+	let high = lineStarts.length - 1;
+	while (low <= high) {
+		const mid = (low + high) >> 1;
+		const start = lineStarts[mid];
+		const nextStart = lineStarts[mid + 1] ?? Number.POSITIVE_INFINITY;
+		if (offset < start) {
+			high = mid - 1;
+		} else if (offset >= nextStart) {
+			low = mid + 1;
+		} else {
+			return mid;
+		}
+	}
+	return 0;
+};
+
+const analyzeWebgalDocumentLinks = (
+	lines: string[]
+): WebgalDocumentLinkCandidate[] => {
+	const candidates: WebgalDocumentLinkCandidate[] = [];
+	const regex = /\$?\{?(\w+)\.(\w+)\}?/g;
+	for (let i = 0; i < lines.length; i++) {
+		const currentLine = lines[i];
+		const commandType = getLineCommandType(currentLine);
+		let match: RegExpExecArray | null;
+		while ((match = regex.exec(currentLine))) {
+			if (match[0].startsWith("$")) {
+				continue;
+			}
+			const matchText = match[0];
+			candidates.push({
+				line: i,
+				start: match.index,
+				end: match.index + matchText.length,
+				text: matchText,
+				command: commandType
+			});
+			if (regex.lastIndex === match.index) {
+				regex.lastIndex++;
+			}
+		}
+	}
+	return candidates;
+};
+
+const analyzeWebgalFoldingRanges = (text: string): FoldingRange[] => {
+	const foldingRanges: FoldingRange[] = [];
+	const regex = /label:([\s\S]*?)(?=(?:\r?\n|^)end|(?:\r?\n|^)label:|$)/g;
+	const lineStarts = buildLineStarts(text);
+	let match: RegExpExecArray | null;
+	while ((match = regex.exec(text))) {
+		const startLine = getLineFromOffset(lineStarts, match.index);
+		const endOffset = match.index + match[0].length;
+		let endLine = getLineFromOffset(lineStarts, endOffset);
+		const endCharacter = endOffset - lineStarts[endLine];
+		if (endCharacter === 0) {
+			endLine = endLine - 1;
+		}
+		if (endLine > startLine) {
+			foldingRanges.push({
+				startLine,
+				endLine,
+				collapsedText:
+					match[1].split("\n")[0].replace(/;/g, "").trim() || "...",
+				kind: FoldingRangeKind.Region
+			});
+		}
+	}
+	return foldingRanges;
+};
+
+export const createWebgalVirtualCode = (
+	scriptId: URI,
+	languageId: string,
+	snapshot: IScriptSnapshot
+): WebgalVirtualCode => {
+	const length = snapshot.getLength();
+	const text = getSnapshotText(snapshot);
+	const lines = text.split(/\r?\n/);
+	const lineCommandTypes = lines.map(getLineCommandType);
+	const map =
+		languageId === "webgal"
+			? analyzeWebgalText(text)
+			: emptyDefinitionMap;
+	const linkCandidates = analyzeWebgalDocumentLinks(lines);
+	const foldingRanges = analyzeWebgalFoldingRanges(text);
+	return {
+		id: scriptId.toString(),
+		languageId,
+		snapshot,
+		mappings: [
+			{
+				sourceOffsets: [0],
+				generatedOffsets: [0],
+				lengths: [length],
+				data: fullCodeInformation
+			}
+		],
+		webgalDefinitionMap: map,
+		webgalDocumentLinkCandidates: linkCandidates,
+		webgalFoldingRanges: foldingRanges,
+		webgalLines: lines,
+		webgalLineCommandTypes: lineCommandTypes
+	};
+};
+
+export const updateWebgalVirtualCode = (
+	virtualCode: WebgalVirtualCode,
+	newSnapshot: IScriptSnapshot
+): WebgalVirtualCode => {
+	const length = newSnapshot.getLength();
+	const mapping = virtualCode.mappings[0];
+	if (mapping) {
+		mapping.sourceOffsets[0] = 0;
+		mapping.generatedOffsets[0] = 0;
+		mapping.lengths[0] = length;
+		mapping.data = fullCodeInformation;
+	} else {
+		virtualCode.mappings = [
+			{
+				sourceOffsets: [0],
+				generatedOffsets: [0],
+				lengths: [length],
+				data: fullCodeInformation
+			}
+		];
+	}
+	virtualCode.snapshot = newSnapshot;
+	if (virtualCode.languageId === "webgal") {
+		const text = getSnapshotText(newSnapshot);
+		const lines = text.split(/\r?\n/);
+		virtualCode.webgalLines = lines;
+		virtualCode.webgalLineCommandTypes = lines.map(getLineCommandType);
+		virtualCode.webgalDefinitionMap = analyzeWebgalText(text);
+		virtualCode.webgalDocumentLinkCandidates = analyzeWebgalDocumentLinks(
+			lines
+		);
+		virtualCode.webgalFoldingRanges = analyzeWebgalFoldingRanges(text);
+	} else {
+		virtualCode.webgalDefinitionMap = emptyDefinitionMap;
+		virtualCode.webgalDocumentLinkCandidates = [];
+		virtualCode.webgalFoldingRanges = [];
+		virtualCode.webgalLines = [];
+		virtualCode.webgalLineCommandTypes = [];
+	}
+	return virtualCode;
+};
+
+const getSourceUri = (
+	context: LanguageServiceContext,
+	document: TextDocument
+) => {
+	const uri = URI.parse(document.uri);
+	const decoded = context.decodeEmbeddedDocumentUri?.(uri);
+	return decoded ? decoded[0] : uri;
+};
+
+const getSourceVirtualCode = (
+	context: LanguageServiceContext,
+	document: TextDocument
+) => {
+	const sourceUri = getSourceUri(context, document);
+	const script = context.language.scripts.get(sourceUri);
+	const virtualCode = script?.generated?.root as WebgalVirtualCode | undefined;
+	return { script, virtualCode };
+};
+
+export const getWebgalDefinitionMap = (
+	context: LanguageServiceContext,
+	document: TextDocument
+): IDefinetionMap => {
+	const { virtualCode } = getSourceVirtualCode(context, document);
+	return virtualCode?.webgalDefinitionMap ?? emptyDefinitionMap;
+};
+
+export const getWebgalDocumentLinkCandidates = (
+	context: LanguageServiceContext,
+	document: TextDocument
+): WebgalDocumentLinkCandidate[] => {
+	const { virtualCode } = getSourceVirtualCode(context, document);
+	return virtualCode?.webgalDocumentLinkCandidates ?? [];
+};
+
+export const getWebgalFoldingRanges = (
+	context: LanguageServiceContext,
+	document: TextDocument
+): FoldingRange[] => {
+	const { virtualCode } = getSourceVirtualCode(context, document);
+	return virtualCode?.webgalFoldingRanges ?? [];
+};
+
+export const getWebgalVirtualCodeLines = (
+	context: LanguageServiceContext,
+	document: TextDocument
+): string[] => {
+	const { virtualCode } = getSourceVirtualCode(context, document);
+	if (virtualCode?.webgalLines) {
+		return virtualCode.webgalLines;
+	}
+	return document.getText().split(/\r?\n/);
+};
+
+export const getWebgalLineCommandTypes = (
+	context: LanguageServiceContext,
+	document: TextDocument
+): string[] => {
+	const { virtualCode } = getSourceVirtualCode(context, document);
+	if (virtualCode?.webgalLineCommandTypes) {
+		return virtualCode.webgalLineCommandTypes;
+	}
+	return getWebgalVirtualCodeLines(context, document).map(getLineCommandType);
+};
+
+const getLineCommandType = (line: string) => {
+	return line.substring(
+		0,
+		line.indexOf(":") !== -1 ? line.indexOf(":") : line.indexOf(";")
+	);
+};
+
+export const getWebgalSourceUriString = (
+	context: LanguageServiceContext,
+	document: TextDocument
+): string => {
+	return getSourceUri(context, document).toString();
+};
+
+export const getWebgalVirtualCodeText = (
+	context: LanguageServiceContext,
+	document: TextDocument
+): string => {
+	const uri = URI.parse(document.uri);
+	const script = context.language.scripts.get(uri);
+	const snapshot = script?.snapshot;
+	if (snapshot) {
+		return snapshot.getText(0, snapshot.getLength());
+	}
+	return document.getText();
+};
 
 /** 获取位置的指令单词 */
 export function getWordAtPosition(
@@ -368,81 +704,6 @@ export function getStageCompletionContext(
 	return { replaceRange, fullSegments, querySegments, prefix };
 }
 
-/** 更新全局映射表 */
-export function updateGlobalMap(documentTextArray: string[], scope: string) {
-	// 生成全局映射表
-	clearGlobalMap(scope);
-	const GlobalMap = getGlobalMap(scope);
-	for (
-		let lineNumber = 0;
-		lineNumber < documentTextArray.length;
-		lineNumber++
-	) {
-		const currentLine = documentTextArray[lineNumber];
-		const setVarExec = /setVar:\s*(\w+)\s*=\s*([^;]*\S+);?/g.exec(
-			currentLine
-		);
-		const labelExec = /label:\s*(\S+);/g.exec(currentLine);
-		const getUserInputExec = /getUserInput:\s*([^\s;]+)/g.exec(currentLine);
-		const chooseExec = /choose:\s*([^\s;]+)/g.exec(currentLine);
-		if (setVarExec !== null) {
-			const currentVariablePool = (GlobalMap.setVar[setVarExec[1]] ??=
-				[]);
-			const isGlobal =
-				currentLine.indexOf("-global") === -1 ? false : true;
-			currentVariablePool.push({
-				word: setVarExec[1],
-				value: setVarExec[2],
-				input: setVarExec.input,
-				isGlobal,
-				isGetUserInput: false,
-				position: Position.create(lineNumber, setVarExec.index + 7)
-			} as IVToken);
-
-			/* 获取变量描述 */
-			const currentVariableLatest =
-				currentVariablePool[currentVariablePool.length - 1];
-			if (currentVariableLatest && currentVariableLatest?.position) {
-				const _v_pos = currentVariableLatest.position;
-				const _v_line = _v_pos?.line ? _v_pos.line : -1;
-				currentVariableLatest.desc = getVariableTypeDesc(
-					documentTextArray,
-					_v_line
-				);
-			}
-		} else if (labelExec !== null) {
-			(GlobalMap.label[labelExec[1]] ??= []).push({
-				word: labelExec[1],
-				value: labelExec.input,
-				input: labelExec.input,
-				position: Position.create(lineNumber, 6)
-			} as IVToken);
-		} else if (getUserInputExec !== null) {
-			(GlobalMap.setVar[getUserInputExec[1]] ??= []).push({
-				word: getUserInputExec[1],
-				value: getUserInputExec.input,
-				input: getUserInputExec.input,
-				isGetUserInput: true,
-				position: Position.create(lineNumber, 13)
-			} as IVToken);
-		} else if (chooseExec !== null) {
-			const options: IVChooseToken["options"] = [];
-			const text = chooseExec[1];
-			for (const machChooseOption of text.split("|")) {
-				const sliceArray = machChooseOption.split(":");
-				options.push({
-					text: sliceArray[0]?.trim(),
-					value: sliceArray[1]?.trim()
-				});
-			}
-			GlobalMap.choose[lineNumber] = {
-				options,
-				line: lineNumber
-			} as IVChooseToken;
-		}
-	}
-}
-
 export const defaultSettings = {
 	maxNumberOfProblems: 1000,
 	isShowWarning: true,
@@ -487,13 +748,14 @@ export function getDocumentSettings(
 // 校验内容
 export async function validateTextDocument(
 	connection: Connection,
-	textDocument: TextDocument
+	textDocument: TextDocument,
+	textOverride?: string
 ): Promise<Diagnostic[]> {
 	const settings = await getDocumentSettings(connection, textDocument.uri);
 	if (!settings?.isShowWarning) {
 		return [];
 	}
-	const text = textDocument.getText();
+	const text = textOverride ?? textDocument.getText();
 	let m: RegExpExecArray | null;
 	let problems = 0;
 	const diagnostics: Diagnostic[] = [];

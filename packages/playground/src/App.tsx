@@ -36,7 +36,7 @@ function App() {
 
 	async function handleEditorDidMount(editor: IStandaloneCodeEditor) {
 		editorRef.current = editor;
-		const { vfs } = initWorker(editor);
+		const { vfs } = initMainThread(editor);
 		vfsRef.current = vfs;
 		vfs.writeFile("file:///game/scene/start.txt", StartText);
 		vfs.writeFile("file:///game/config.txt", ConfigText);

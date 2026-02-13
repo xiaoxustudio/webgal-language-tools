@@ -13,6 +13,15 @@ import {
 } from "@volar/language-server";
 import { ConnectionDocumentsType } from "@/types";
 import { TextDocument } from "vscode-languageserver-textdocument";
+import {
+	getWebgalDefinitionMap,
+	getWebgalDocumentLinkCandidates,
+	getWebgalFoldingRanges,
+	getWebgalLineCommandTypes,
+	getWebgalSourceUriString,
+	getWebgalVirtualCodeText
+} from "@/utils";
+import { getWebgalVirtualCodeLines } from "@/utils";
 
 import onDid from "./onDid";
 import onInitialized from "./onInitialized";
@@ -51,7 +60,21 @@ export function createWebgalService(
 			foldingRangeProvider: true,
 			definitionProvider: true
 		},
-		create() {
+		create(context) {
+			const getDefinitionMap = (document: TextDocument) =>
+				getWebgalDefinitionMap(context, document);
+			const getVirtualCodeText = (document: TextDocument) =>
+				getWebgalVirtualCodeText(context, document);
+			const getVirtualCodeLines = (document: TextDocument) =>
+				getWebgalVirtualCodeLines(context, document);
+			const getLineCommandTypes = (document: TextDocument) =>
+				getWebgalLineCommandTypes(context, document);
+			const getSourceUriString = (document: TextDocument) =>
+				getWebgalSourceUriString(context, document);
+			const getDocumentLinkCandidates = (document: TextDocument) =>
+				getWebgalDocumentLinkCandidates(context, document);
+			const getFoldingRanges = (document: TextDocument) =>
+				getWebgalFoldingRanges(context, document);
 			return {
 				async provideCompletionItems(
 					document: TextDocument,
@@ -64,7 +87,11 @@ export function createWebgalService(
 						items: await provideCompletionItems(
 							document,
 							position,
-							connection
+							connection,
+							getDefinitionMap(document),
+							getVirtualCodeLines(document),
+							getLineCommandTypes(document),
+							getSourceUriString(document)
 						)
 					};
 				},
@@ -73,32 +100,54 @@ export function createWebgalService(
 					position: Position,
 					_token: CancellationToken
 				): Promise<Hover> {
-					return provideHover(document, position, connection);
+					return provideHover(
+						document,
+						position,
+						connection,
+						getDefinitionMap(document),
+						getLineCommandTypes(document),
+						getSourceUriString(document)
+					);
 				},
 				provideDefinition(
 					document: TextDocument,
 					position: Position,
 					_token: CancellationToken
 				): DefinitionLink[] {
-					return provideDefinition(document, position);
+					return provideDefinition(
+						document,
+						position,
+						getDefinitionMap(document)
+					);
 				},
 				async provideDocumentLinks(
 					document: TextDocument,
 					_token: CancellationToken
 				): Promise<DocumentLink[]> {
-					return provideDocumentLinks(document, connection);
+					return provideDocumentLinks(
+						document,
+						connection,
+						getDocumentLinkCandidates(document)
+					);
 				},
 				provideFoldingRanges(
 					document: TextDocument,
 					_token: CancellationToken
 				): FoldingRange[] {
-					return provideFoldingRanges(document);
+					return provideFoldingRanges(
+						document,
+						getFoldingRanges(document)
+					);
 				},
 				async provideDiagnostics(
 					document: TextDocument,
 					_token: CancellationToken
 				): Promise<Diagnostic[]> {
-					return provideDiagnostics(document, connection);
+					return provideDiagnostics(
+						document,
+						connection,
+						getVirtualCodeText(document)
+					);
 				}
 			};
 		}
