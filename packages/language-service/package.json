@@ -65,6 +65,7 @@
 		"@codingame/monaco-vscode-theme-service-override": "^26.1.1",
 		"@volar/language-core": "^2.4.28",
 		"@volar/language-service": "^2.4.28",
-		"vscode": "npm:@codingame/monaco-vscode-extension-api@26.1.1"
+		"vscode": "npm:@codingame/monaco-vscode-extension-api@26.1.1",
+		"vscode-uri": "^3.1.0"
 	}
 }

@@ -1,3 +1,6 @@
+import { FileSystem, FileType } from "@volar/language-service";
+import { URI } from "vscode-uri";
+
 export type DirectoryEntry = {
 	name: string;
 	isDirectory: boolean;
@@ -111,7 +114,8 @@ const joinPaths = (...parts: string[]) => {
 	return normalizePath(joined);
 };
 
-const uriToPath = (uriString: string) => {
+const uriToPath = (value: string | URI) => {
+	const uriString = typeof value === "string" ? value : value.toString();
 	if (uriString.startsWith("file://")) {
 		const stripped = uriString.replace(/^file:\/*/i, "/");
 		const decoded = decodeURIComponent(stripped).replace(/\\/g, "/");
@@ -123,14 +127,38 @@ const uriToPath = (uriString: string) => {
 	return normalizePath(uriString);
 };
 
+const pathToUri = (path: string) => {
+	if (path.startsWith("file://")) {
+		return URI.parse(path);
+	}
+	if (/^[a-zA-Z]:[\\/]/.test(path)) {
+		return URI.file(path);
+	}
+	if (path.startsWith("/")) {
+		return URI.file(path);
+	}
+	return URI.parse(path);
+};
+
 const toVfsPath = (value: string) =>
 	value.startsWith("file://") ? uriToPath(value) : value;
 
-export function createMemoryFileSystem(options?: {
+export interface VolarWritableFileSystem extends FileSystem {
+	writeFile(uri: URI, content: string): Promise<void>;
+	mkdir(uri: URI): Promise<void>;
+	delete(uri: URI): Promise<void>;
+	rename(oldUri: URI, newUri: URI): Promise<void>;
+	getTree(): VirtualEntry;
+	setTree(tree: VirtualEntry): void;
+	onDidChange(listener: VirtualFileSystemChangeListener): () => void;
+	root: string;
+}
+
+export function createMemoryVolarFileSystem(options?: {
 	root?: string;
 	tree?: VirtualEntry;
-}): VirtualFileSystem {
-	const root = normalizePath(options?.root ?? "/");
+}): VolarWritableFileSystem {
+	const root = normalizePath(toVfsPath(options?.root ?? "/"));
 	let rootEntry: VirtualDirectoryEntry =
 		options?.tree && options.tree.type === "dir"
 			? options.tree
@@ -200,224 +228,296 @@ export function createMemoryFileSystem(options?: {
 		return current;
 	};
 
-	const readDirectory = async (path: string) => {
-		const entry = getEntry(path);
-		if (!entry || entry.type !== "dir") {
-			return null;
-		}
-		return Object.entries(entry.children).map(([name, child]) => ({
-			name,
-			isDirectory: child.type === "dir"
-		}));
-	};
-
-	const readFile = async (path: string) => {
-		const entry = getEntry(path);
-		if (!entry || entry.type !== "file") {
-			return null;
-		}
-		return entry.content;
-	};
-
-	const stat = async (path: string) => {
-		const entry = getEntry(path);
-		if (!entry) {
-			return null;
-		}
-		return {
-			isFile: entry.type === "file",
-			isDirectory: entry.type === "dir"
-		};
-	};
-
-	const findFile = async (startPath: string, targetName: string) => {
-		const startEntry = getEntry(startPath);
-		if (!startEntry || startEntry.type !== "dir") {
-			return null;
-		}
-		const stack: Array<{ path: string; entry: VirtualEntry }> = [
-			{ path: normalizePath(startPath), entry: startEntry }
-		];
-		while (stack.length) {
-			const current = stack.pop();
-			if (!current) {
-				break;
+	return {
+		root,
+		async stat(uri) {
+			const path = uriToPath(uri);
+			const entry = getEntry(path);
+			if (!entry) {
+				return undefined;
 			}
-			if (current.entry.type === "dir") {
-				for (const [name, child] of Object.entries(
-					current.entry.children
-				)) {
-					const nextPath = joinPaths(current.path, name);
-					if (child.type === "file" && name === targetName) {
-						return nextPath;
-					}
-					if (child.type === "dir") {
-						stack.push({ path: nextPath, entry: child });
-					}
+			return {
+				type:
+					entry.type === "file" ? FileType.File : FileType.Directory,
+				ctime: 0,
+				mtime: 0,
+				size: entry.type === "file" ? entry.content.length : 0
+			};
+		},
+		async readFile(uri) {
+			const path = uriToPath(uri);
+			const entry = getEntry(path);
+			if (!entry || entry.type !== "file") {
+				return undefined;
+			}
+			return entry.content;
+		},
+		async readDirectory(uri) {
+			const path = uriToPath(uri);
+			const entry = getEntry(path);
+			if (!entry || entry.type !== "dir") {
+				return [];
+			}
+			return Object.entries(entry.children).map(([name, child]) => [
+				name,
+				child.type === "dir" ? FileType.Directory : FileType.File
+			]);
+		},
+		async writeFile(uri, content) {
+			const path = uriToPath(uri);
+			const segments = resolveToSegments(path);
+			if (segments.length === 0) {
+				return;
+			}
+			const fileName = segments[segments.length - 1]!;
+			const parent = ensureDirectoryEntry(segments.slice(0, -1));
+			parent.children[fileName] = { type: "file", content };
+			emit([{ type: "writeFile", path: normalizePath(path), content }]);
+		},
+		async mkdir(uri) {
+			const path = uriToPath(uri);
+			const segments = resolveToSegments(path);
+			ensureDirectoryEntry(segments);
+			emit([{ type: "mkdir", path: normalizePath(path) }]);
+		},
+		async delete(uri) {
+			const path = uriToPath(uri);
+			const segments = resolveToSegments(path);
+			if (segments.length === 0) {
+				return;
+			}
+			const name = segments[segments.length - 1]!;
+			const parentSegments = segments.slice(0, -1);
+			const parentEntry =
+				parentSegments.length === 0
+					? rootEntry
+					: (getEntry(
+							joinPaths(root, ...parentSegments)
+						) as VirtualEntry);
+			if (!parentEntry || parentEntry.type !== "dir") {
+				return;
+			}
+			delete parentEntry.children[name];
+			emit([{ type: "deletePath", path: normalizePath(path) }]);
+		},
+		async rename(oldUri, newUri) {
+			const from = uriToPath(oldUri);
+			const to = uriToPath(newUri);
+			const fromSegments = resolveToSegments(from);
+			if (fromSegments.length === 0) {
+				return;
+			}
+			const fromName = fromSegments[fromSegments.length - 1]!;
+			const fromParentSegments = fromSegments.slice(0, -1);
+			const fromParentEntry =
+				fromParentSegments.length === 0
+					? rootEntry
+					: (getEntry(
+							joinPaths(root, ...fromParentSegments)
+						) as VirtualEntry);
+			if (!fromParentEntry || fromParentEntry.type !== "dir") {
+				return;
+			}
+			const entry = fromParentEntry.children[fromName];
+			if (!entry) {
+				return;
+			}
+			delete fromParentEntry.children[fromName];
+
+			const toSegments = resolveToSegments(to);
+			if (toSegments.length === 0) {
+				return;
+			}
+			const toName = toSegments[toSegments.length - 1]!;
+			const toParent = ensureDirectoryEntry(toSegments.slice(0, -1));
+			toParent.children[toName] = entry;
+			emit([
+				{
+					type: "rename",
+					from: normalizePath(from),
+					to: normalizePath(to)
 				}
-			}
-		}
-		return null;
-	};
-
-	const getResourceDirectory = async (urls: string[]) => {
-		const target = joinPaths(root, ...urls);
-		return readDirectory(target);
-	};
-
-	const getAllTextWithScene = async () => {
-		const scenePath = joinPaths(root, "scene");
-		const sceneEntry = getEntry(scenePath);
-		if (!sceneEntry || sceneEntry.type !== "dir") {
-			return null;
-		}
-		const map: Record<
-			string,
-			{ path: string; name: string; text: string; fullPath: string }
-		> = {};
-		for (const [name, child] of Object.entries(sceneEntry.children)) {
-			if (child.type === "file" && name.endsWith(".txt")) {
-				const fullPath = joinPaths(scenePath, name);
-				map[name] = {
-					path: fullPath,
-					name,
-					text: child.content,
-					fullPath
-				};
-			}
-		}
-		return map;
-	};
-
-	const getTree = () => rootEntry;
-	const setTree = (tree: VirtualEntry) => {
-		rootEntry =
-			tree.type === "dir"
-				? tree
-				: { type: "dir", children: {} as Record<string, VirtualEntry> };
-		emit([{ type: "setTree", tree: rootEntry }]);
-	};
-
-	const writeFile = async (targetPath: string, content: string) => {
-		const segments = resolveToSegments(targetPath);
-		if (segments.length === 0) {
-			return;
-		}
-		const fileName = segments[segments.length - 1]!;
-		const parent = ensureDirectoryEntry(segments.slice(0, -1));
-		parent.children[fileName] = { type: "file", content };
-		emit([{ type: "writeFile", path: normalizePath(targetPath), content }]);
-	};
-
-	const mkdir = async (targetPath: string) => {
-		const segments = resolveToSegments(targetPath);
-		ensureDirectoryEntry(segments);
-		emit([{ type: "mkdir", path: normalizePath(targetPath) }]);
-	};
-
-	const deletePath = async (targetPath: string) => {
-		const segments = resolveToSegments(targetPath);
-		if (segments.length === 0) {
-			return;
-		}
-		const name = segments[segments.length - 1]!;
-		const parentSegments = segments.slice(0, -1);
-		const parentEntry =
-			parentSegments.length === 0
-				? rootEntry
-				: (getEntry(
-						joinPaths(root, ...parentSegments)
-					) as VirtualEntry);
-		if (!parentEntry || parentEntry.type !== "dir") {
-			return;
-		}
-		delete parentEntry.children[name];
-		emit([{ type: "deletePath", path: normalizePath(targetPath) }]);
-	};
-
-	const rename = async (from: string, to: string) => {
-		const fromSegments = resolveToSegments(from);
-		if (fromSegments.length === 0) {
-			return;
-		}
-		const fromName = fromSegments[fromSegments.length - 1]!;
-		const fromParentSegments = fromSegments.slice(0, -1);
-		const fromParentEntry =
-			fromParentSegments.length === 0
-				? rootEntry
-				: (getEntry(
-						joinPaths(root, ...fromParentSegments)
-					) as VirtualEntry);
-		if (!fromParentEntry || fromParentEntry.type !== "dir") {
-			return;
-		}
-		const entry = fromParentEntry.children[fromName];
-		if (!entry) {
-			return;
-		}
-		delete fromParentEntry.children[fromName];
-
-		const toSegments = resolveToSegments(to);
-		if (toSegments.length === 0) {
-			return;
-		}
-		const toName = toSegments[toSegments.length - 1]!;
-		const toParent = ensureDirectoryEntry(toSegments.slice(0, -1));
-		toParent.children[toName] = entry;
-		emit([
-			{ type: "rename", from: normalizePath(from), to: normalizePath(to) }
-		]);
-	};
-
-	const applyChanges = async (changes: VirtualFileSystemChange[]) => {
-		for (const change of changes) {
-			if (change.type === "writeFile") {
-				await writeFile(change.path, change.content);
-				continue;
-			}
-			if (change.type === "mkdir") {
-				await mkdir(change.path);
-				continue;
-			}
-			if (change.type === "deletePath") {
-				await deletePath(change.path);
-				continue;
-			}
-			if (change.type === "rename") {
-				await rename(change.from, change.to);
-				continue;
-			}
-			if (change.type === "setTree") {
-				setTree(change.tree);
-			}
+			]);
+		},
+		getTree: () => rootEntry,
+		setTree: (tree) => {
+			rootEntry =
+				tree.type === "dir"
+					? tree
+					: {
+							type: "dir",
+							children: {} as Record<string, VirtualEntry>
+						};
+			emit([{ type: "setTree", tree: rootEntry }]);
+		},
+		onDidChange: (listener) => {
+			listeners.add(listener);
+			return () => {
+				listeners.delete(listener);
+			};
 		}
 	};
+}
 
-	const onDidChange = (listener: VirtualFileSystemChangeListener) => {
-		listeners.add(listener);
-		return () => {
-			listeners.delete(listener);
-		};
-	};
-
+export function createVirtualFileSystem(
+	fs: VolarWritableFileSystem
+): VirtualFileSystem {
+	const root = fs.root;
 	return {
 		root,
 		currentDirectory: () => root,
 		join: (...parts: string[]) => joinPaths(...parts),
-		stat,
-		readDirectory,
-		readFile,
-		findFile,
-		getResourceDirectory,
-		getAllTextWithScene,
-		getTree,
-		setTree,
-		writeFile,
-		deletePath,
-		mkdir,
-		rename,
-		applyChanges,
-		onDidChange
+		stat: async (path) => {
+			const stat = await fs.stat(pathToUri(path));
+			if (!stat) {
+				return null;
+			}
+			return {
+				isFile: stat.type === FileType.File,
+				isDirectory: stat.type === FileType.Directory
+			};
+		},
+		readDirectory: async (path) => {
+			const entries = await fs.readDirectory(pathToUri(path));
+			return entries.map(([name, type]) => ({
+				name,
+				isDirectory: type === FileType.Directory
+			}));
+		},
+		readFile: async (path) => {
+			const content = await fs.readFile(pathToUri(path));
+			return content ?? null;
+		},
+		findFile: async (startPath, targetName) => {
+			const stack = [startPath];
+			while (stack.length > 0) {
+				const currentPath = stack.pop()!;
+				const entries = await fs.readDirectory(pathToUri(currentPath));
+				for (const [name, type] of entries) {
+					const fullPath = joinPaths(currentPath, name);
+					if (type === FileType.File && name === targetName) {
+						return fullPath;
+					}
+					if (type === FileType.Directory) {
+						stack.push(fullPath);
+					}
+				}
+			}
+			return null;
+		},
+		getResourceDirectory: async (urls) => {
+			const target = joinPaths(root, ...urls);
+			const entries = await fs.readDirectory(pathToUri(target));
+			return entries.map(([name, type]) => ({
+				name,
+				isDirectory: type === FileType.Directory
+			}));
+		},
+		getAllTextWithScene: async () => {
+			const scenePath = joinPaths(root, "scene");
+			const entries = await fs.readDirectory(pathToUri(scenePath));
+			const map: Record<
+				string,
+				{ path: string; name: string; text: string; fullPath: string }
+			> = {};
+			for (const [name, type] of entries) {
+				if (type === FileType.File && name.endsWith(".txt")) {
+					const fullPath = joinPaths(scenePath, name);
+					const content = await fs.readFile(pathToUri(fullPath));
+					if (content !== undefined) {
+						map[name] = {
+							path: fullPath,
+							name,
+							text: content,
+							fullPath
+						};
+					}
+				}
+			}
+			return map;
+		},
+		getTree: () => fs.getTree(),
+		setTree: (tree) => fs.setTree(tree),
+		writeFile: async (path, content) => {
+			await fs.writeFile(pathToUri(path), content);
+		},
+		deletePath: async (path) => {
+			await fs.delete(pathToUri(path));
+		},
+		mkdir: async (path) => {
+			await fs.mkdir(pathToUri(path));
+		},
+		rename: async (from, to) => {
+			await fs.rename(pathToUri(from), pathToUri(to));
+		},
+		applyChanges: async (changes) => {
+			for (const change of changes) {
+				if (change.type === "writeFile") {
+					await fs.writeFile(pathToUri(change.path), change.content);
+				} else if (change.type === "deletePath") {
+					await fs.delete(pathToUri(change.path));
+				} else if (change.type === "mkdir") {
+					await fs.mkdir(pathToUri(change.path));
+				} else if (change.type === "rename") {
+					await fs.rename(
+						pathToUri(change.from),
+						pathToUri(change.to)
+					);
+				} else if (change.type === "setTree") {
+					fs.setTree(change.tree);
+				}
+			}
+		},
+		onDidChange: (listener) => fs.onDidChange(listener)
+	};
+}
+
+export function createMemoryFileSystem(options?: {
+	root?: string;
+	tree?: VirtualEntry;
+}): VirtualFileSystem {
+	const fs = createMemoryVolarFileSystem(options);
+	return createVirtualFileSystem(fs);
+}
+
+export function createVolarFileSystem(
+	vfs: VirtualFileSystem,
+	options?: {
+		uriToPath?: (uri: URI) => string;
+	}
+): FileSystem {
+	const uriToPathImpl = options?.uriToPath ?? ((uri: URI) => uriToPath(uri));
+
+	return {
+		stat: async (uri) => {
+			const path = uriToPathImpl(uri);
+			const stat = await vfs.stat(path);
+			if (!stat) {
+				return undefined;
+			}
+			return {
+				type: stat.isFile ? FileType.File : FileType.Directory,
+				ctime: 0,
+				mtime: 0,
+				size: 0
+			};
+		},
+		readFile: async (uri) => {
+			const path = uriToPathImpl(uri);
+			const content = await vfs.readFile(path);
+			return content ?? undefined;
+		},
+		readDirectory: async (uri) => {
+			const path = uriToPathImpl(uri);
+			const entries = await vfs.readDirectory(path);
+			if (!entries) {
+				return [];
+			}
+			return entries.map((entry) => [
+				entry.name,
+				entry.isDirectory ? FileType.Directory : FileType.File
+			]);
+		}
 	};
 }
 

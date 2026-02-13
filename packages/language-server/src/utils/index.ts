@@ -614,44 +614,27 @@ export function createVolarFileSystemFromVirtualFileSystem(
 		uriToPath?: (uri: URI) => string;
 	}
 ): FileSystem {
-	const uriToPath =
-		options?.uriToPath ??
-		((uri: URI) => (uri.scheme === "file" ? uri.fsPath : uri.path));
+	let cached: FileSystem | null = null;
+	const load = async () => {
+		if (cached) {
+			return cached;
+		}
+		const module = await import("@webgal/language-service");
+		cached = module.createVolarFileSystem(vfs, options);
+		return cached;
+	};
 	return {
 		stat: async (uri) => {
-			const pathValue = uriToPath(uri);
-			const info = await vfs.stat(pathValue);
-			if (!info) {
-				return undefined;
-			}
-			const type = info.isDirectory
-				? FileType.Directory
-				: info.isFile
-					? FileType.File
-					: FileType.Unknown;
-			const stat: FileStat = {
-				type,
-				ctime: 0,
-				mtime: 0,
-				size: 0
-			};
-			return stat;
+			const fs = await load();
+			return fs.stat(uri);
 		},
 		readFile: async (uri) => {
-			const pathValue = uriToPath(uri);
-			const content = await vfs.readFile(pathValue);
-			return content ?? undefined;
+			const fs = await load();
+			return fs.readFile(uri);
 		},
 		readDirectory: async (uri) => {
-			const pathValue = uriToPath(uri);
-			const entries = await vfs.readDirectory(pathValue);
-			if (!entries) {
-				return [];
-			}
-			return entries.map((entry) => [
-				entry.name,
-				entry.isDirectory ? FileType.Directory : FileType.File
-			]);
+			const fs = await load();
+			return fs.readDirectory(uri);
 		}
 	};
 }
