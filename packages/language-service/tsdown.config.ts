@@ -4,8 +4,7 @@ export default defineConfig({
 	entry: [
 		"src/index.ts",
 		"src/node.ts",
-		"src/monaco.ts",
-		"src/monaco-init.ts",
+		"src/monaco/index.ts",
 		"src/syntaxes.ts",
 		"src/themes.ts"
 	],

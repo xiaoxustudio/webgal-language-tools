@@ -17,7 +17,7 @@ import {
 	createMemoryFileSystem,
 	createWebgalClientHandlers,
 	registerWebgalClientHandlers
-} from "./index.js";
+} from "../index.js";
 
 export interface CreateWebgalMonacoLanguageClientOptions {
 	languageServerUrl: string;

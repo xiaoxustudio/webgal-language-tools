@@ -1,6 +1,6 @@
-import { initWebgalMonaco } from "@webgal/language-service/monaco-init";
 import * as monaco from "monaco-editor";
 import { initWebSocketAndStartClient } from "./lsp-client";
+import { initWebgalMonaco } from "@webgal/language-service";
 
 await initWebgalMonaco();
 

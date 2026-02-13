@@ -1,7 +1,9 @@
-import { initWebgalMonaco } from "@webgal/language-service/monaco-init";
 import * as monaco from "monaco-editor";
-import { createWebgalMonacoLanguageClientWithWorker } from "@webgal/language-service/monaco";
-import { createMemoryFileSystem } from "@webgal/language-service";
+import {
+	createMemoryFileSystem,
+	createWebgalMonacoLanguageClientWithWorker,
+	initWebgalMonaco
+} from "@webgal/language-service";
 
 await initWebgalMonaco();
 

@@ -8,8 +8,8 @@ import {
 	webgalGrammar,
 	webgalConfigGrammar,
 	webgalLanguageConfiguration
-} from "./syntaxes";
-import { webgalDarkTheme, webgalWhiteTheme } from "./themes";
+} from "../syntaxes";
+import { webgalDarkTheme, webgalWhiteTheme } from "../themes";
 import getLanguagesServiceOverride from "@codingame/monaco-vscode-languages-service-override";
 import getThemeServiceOverride from "@codingame/monaco-vscode-theme-service-override";
 import getTextMateServiceOverride from "@codingame/monaco-vscode-textmate-service-override";
