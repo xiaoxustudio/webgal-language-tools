@@ -151,70 +151,7 @@ export function WebgalEditor() {
 
 说明：initWebgalMonaco 具有幂等特性，可在多处安全调用；使用本地 Worker 入口可避免构建工具对包路径的 MIME 误判。
 
-- 主线程模式：直接在主线程运行语言服务器（无需 Worker）。
 
-```ts
-import { useEffect, useRef } from "react";
-import Editor from "@monaco-editor/react";
-import * as monaco from "monaco-editor";
-import {
-  initWebgalMonaco,
-  createWebgalMonacoLanguageClientWithPort,
-  createMemoryFileSystem
-} from "@webgal/language-service";
-import { startServer, createConnection } from "@webgal/language-server/browser";
-import { BrowserMessageReader, BrowserMessageWriter } from "vscode-languageclient/browser.js";
-
-export function WebgalEditor() {
-  const clientRef = useRef<{ port: MessagePort } | null>(null);
-  const vfsRef = useRef(
-    createMemoryFileSystem({
-      root: "file:///game",
-    })
-  );
-
-  useEffect(() => {
-    void initWebgalMonaco();
-    void vfsRef.current.applyChanges([
-      { type: "mkdir", path: "file:///game/scene" },
-      { type: "writeFile", path: "file:///game/config.txt", content: "Game_name:Demo\n" },
-      { type: "writeFile", path: "file:///game/scene/start.txt", content: "setVar:heroine=WebGAL;\n" },
-    ]);
-    return () => {
-       // 清理逻辑
-    };
-  }, []);
-
-  return (
-    <Editor
-      height="70vh"
-      defaultLanguage="webgal"
-      path="file:///game/scene/start.txt"
-      defaultValue={"setVar:heroine=WebGAL;\n"}
-      onMount={async (editor: monaco.editor.IStandaloneCodeEditor) => {
-        if (clientRef.current) return;
-
-        const channel = new MessageChannel();
-        const port1 = channel.port1;
-        const port2 = channel.port2;
-
-        // 服务端
-        const reader = new BrowserMessageReader(port1);
-        const writer = new BrowserMessageWriter(port1);
-        const connection = createConnection(reader, writer);
-        startServer(connection);
-
-        // 客户端
-        clientRef.current = createWebgalMonacoLanguageClientWithPort({
-          port: port2,
-          editor,
-          virtualFileSystem: vfsRef.current,
-        });
-      }}
-    />
-  );
-}
-```
 
 ## 包
 

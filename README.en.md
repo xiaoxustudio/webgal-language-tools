@@ -148,70 +148,7 @@ export function WebgalEditor() {
 
 Note: initWebgalMonaco is idempotent and can be safely called multiple times. Using a local Worker entry avoids MIME type issues that may arise with package entry URLs.
 
-- Main Thread Mode: Run the language server directly in the main thread (no Worker required).
 
-```ts
-import { useEffect, useRef } from "react";
-import Editor from "@monaco-editor/react";
-import * as monaco from "monaco-editor";
-import {
-  initWebgalMonaco,
-  createWebgalMonacoLanguageClientWithPort,
-  createMemoryFileSystem
-} from "@webgal/language-service";
-import { startServer, createConnection } from "@webgal/language-server/browser";
-import { BrowserMessageReader, BrowserMessageWriter } from "vscode-languageclient/browser.js";
-
-export function WebgalEditor() {
-  const clientRef = useRef<{ port: MessagePort } | null>(null);
-  const vfsRef = useRef(
-    createMemoryFileSystem({
-      root: "file:///game",
-    })
-  );
-
-  useEffect(() => {
-    void initWebgalMonaco();
-    void vfsRef.current.applyChanges([
-      { type: "mkdir", path: "file:///game/scene" },
-      { type: "writeFile", path: "file:///game/config.txt", content: "Game_name:Demo\n" },
-      { type: "writeFile", path: "file:///game/scene/start.txt", content: "setVar:heroine=WebGAL;\n" },
-    ]);
-    return () => {
-       // cleanup if needed
-    };
-  }, []);
-
-  return (
-    <Editor
-      height="70vh"
-      defaultLanguage="webgal"
-      path="file:///game/scene/start.txt"
-      defaultValue={"setVar:heroine=WebGAL;\n"}
-      onMount={async (editor: monaco.editor.IStandaloneCodeEditor) => {
-        if (clientRef.current) return;
-
-        const channel = new MessageChannel();
-        const port1 = channel.port1;
-        const port2 = channel.port2;
-
-        // Server side
-        const reader = new BrowserMessageReader(port1);
-        const writer = new BrowserMessageWriter(port1);
-        const connection = createConnection(reader, writer);
-        startServer(connection);
-
-        // Client side
-        clientRef.current = createWebgalMonacoLanguageClientWithPort({
-          port: port2,
-          editor,
-          virtualFileSystem: vfsRef.current,
-        });
-      }}
-    />
-  );
-}
-```
 
 ## Packages
 

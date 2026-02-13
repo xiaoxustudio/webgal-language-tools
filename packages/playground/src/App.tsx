@@ -4,14 +4,23 @@ import * as Monaco from "monaco-editor";
 import type { EditorProps } from "@monaco-editor/react";
 import initWS from "./init";
 import initWorker from "./init-worker";
-import initMainThread from "./init-main-thread";
 import type { VirtualFileSystem } from "@webgal/language-service";
 import StartText from "./assets/start.txt?raw";
 import ConfigText from "./assets/config.txt?raw";
 import "./App.css";
 
+import editorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
+
+self.MonacoEnvironment = {
+	getWorker() {
+		return new editorWorker();
+	}
+};
+
 Monaco.editor.setTheme("webgal-dark");
+
 loader.config({ monaco: Monaco });
+loader.init();
 
 type IStandaloneCodeEditor<T = EditorProps["onMount"]> = T extends (
 	...args: infer A
@@ -36,22 +45,13 @@ function App() {
 
 	async function handleEditorDidMount(editor: IStandaloneCodeEditor) {
 		editorRef.current = editor;
-		const { vfs } = initMainThread(editor);
-		vfsRef.current = vfs;
-		vfs.writeFile("file:///game/scene/start.txt", StartText);
-		vfs.writeFile("file:///game/config.txt", ConfigText);
-		await loadContent(editor, vfs, "file:///game/scene/start.txt");
-		await loadContent(
-			configEditorRef.current,
-			vfs,
-			"file:///game/config.txt"
-		);
 		editor.onDidChangeModelContent(() => {
 			vfsRef.current?.writeFile(
 				"file:///game/scene/start.txt",
 				editor.getValue()
 			);
 		});
+		(document.querySelector("#worker-mode") as HTMLButtonElement)?.click();
 	}
 
 	async function handleConfigEditorDidMount(editor: IStandaloneCodeEditor) {
@@ -75,30 +75,16 @@ function App() {
 		<>
 			<div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
 				<button
-					onClick={async () => {
-						if (!editorRef.current) return;
-						const { vfs } = initMainThread(editorRef.current);
-						vfsRef.current = vfs;
-						await loadContent(
-							editorRef.current,
-							vfs,
-							"file:///game/scene/start.txt"
-						);
-						await loadContent(
-							configEditorRef.current,
-							vfs,
-							"file:///game/config.txt"
-						);
-					}}
-				>
-					Main Thread 模式
-				</button>
-				<button
-					disabled
+					id="worker-mode"
 					onClick={async () => {
 						if (!editorRef.current) return;
 						const { vfs } = initWorker(editorRef.current);
 						vfsRef.current = vfs;
+						vfs.writeFile(
+							"file:///game/scene/start.txt",
+							StartText
+						);
+						vfs.writeFile("file:///game/config.txt", ConfigText);
 						await loadContent(
 							editorRef.current,
 							vfs,
@@ -119,6 +105,11 @@ function App() {
 						if (!editorRef.current) return;
 						const { vfs } = initWS(editorRef.current);
 						vfsRef.current = vfs;
+						vfs.writeFile(
+							"file:///game/scene/start.txt",
+							StartText
+						);
+						vfs.writeFile("file:///game/config.txt", ConfigText);
 						await loadContent(
 							editorRef.current,
 							vfs,
