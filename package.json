@@ -15,6 +15,7 @@
 		"build:core": "pnpm --filter ./packages/language-core run build",
 		"build:service": "pnpm --filter ./packages/language-service run build",
 		"build:server": "pnpm --filter ./packages/language-server run build",
+		"build:playground": "pnpm --filter ./packages/playground run build",
 		"watch": "cd ./packages/vscode-extension && pnpm run watch",
 		"pack": "cd ./packages/vscode-extension && pnpm run pack",
 		"release": "cd ./packages/vscode-extension && pnpm run release",
