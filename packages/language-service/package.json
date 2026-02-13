@@ -66,6 +66,9 @@
 		"@volar/language-core": "^2.4.28",
 		"@volar/language-service": "^2.4.28",
 		"vscode": "npm:@codingame/monaco-vscode-extension-api@26.1.1",
-		"vscode-uri": "^3.1.0"
+		"vscode-uri": "^3.1.0",
+		"vscode-ws-jsonrpc": "^3.5.0",
+		"monaco-languageclient": "^10.7.0",
+		"vscode-languageclient": "^9.0.1"
 	}
 }

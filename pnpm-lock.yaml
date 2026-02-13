@@ -130,12 +130,21 @@ importers:
       '@volar/language-service':
         specifier: ^2.4.28
         version: 2.4.28
+      monaco-languageclient:
+        specifier: ^10.7.0
+        version: 10.7.0
       vscode:
         specifier: npm:@codingame/monaco-vscode-extension-api@26.1.1
         version: '@codingame/monaco-vscode-extension-api@26.1.1'
+      vscode-languageclient:
+        specifier: ^9.0.1
+        version: 9.0.1
       vscode-uri:
         specifier: ^3.1.0
         version: 3.1.0
+      vscode-ws-jsonrpc:
+        specifier: ^3.5.0
+        version: 3.5.0
     devDependencies:
       '@types/node':
         specifier: ^18.0.0
