@@ -13,7 +13,6 @@ export async function provideDocumentLinks(
 	connection: Connection,
 	candidates: WebgalDocumentLinkCandidate[]
 ): Promise<DocumentLink[]> {
-	// 使用 volar.js 的服务式文档链接入口
 	const pathArray = document.uri.split("/");
 	const currentDirectory = await connection.sendRequest<string>(
 		"client/currentDirectory"
@@ -21,7 +20,9 @@ export async function provideDocumentLinks(
 	const documentLinks: DocumentLink[] = [];
 	const pathName =
 		pathArray[
-			pathArray.length - 3 > 0 ? pathArray.length - 3 : pathArray.length - 2
+			pathArray.length - 3 > 0
+				? pathArray.length - 3
+				: pathArray.length - 2
 		];
 	const isConfig =
 		pathArray[pathArray.length - 1] === "config.txt" &&
@@ -51,12 +52,14 @@ export async function provideDocumentLinks(
 			"client/FStat",
 			basePath
 		);
+
 		if (!stat) {
-			basePath = await connection.sendRequest<string>(
-				"client/findFile",
-				[currentDirectory, matchText]
-			);
+			basePath = await connection.sendRequest<string>("client/findFile", [
+				currentDirectory,
+				matchText
+			]);
 		}
+		const tooltip = stat && basePath ? basePath : "unknown file";
 
 		documentLinks.push({
 			target: "file:///" + basePath,
@@ -64,7 +67,7 @@ export async function provideDocumentLinks(
 				Position.create(candidate.line, candidate.start),
 				Position.create(candidate.line, candidate.end)
 			),
-			tooltip: basePath
+			tooltip
 		} as DocumentLink);
 	}
 
