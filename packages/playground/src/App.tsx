@@ -202,7 +202,7 @@ function App() {
 		return getLanguageFromPath(activePath);
 	}, [activePath, getLanguageFromPath]);
 
-	const githubUrl = "https://github.com/MakinoharaShoko/WebGAL";
+	const githubUrl = "https://github.com/xiaoxustudio/webgal-language-tools";
 	const displayPath = activePath ? getDisplayPath(activePath) : "";
 
 	return (
