@@ -183,10 +183,10 @@ importers:
         specifier: ^2.4.28
         version: 2.4.28
       '@webgal/language-server':
-        specifier: ^0.0.2-alpha.1
+        specifier: workspace:*
         version: link:../language-server
       '@webgal/language-service':
-        specifier: ^0.0.2-alpha.1
+        specifier: workspace:*
         version: link:../language-service
       monaco-editor:
         specifier: npm:@codingame/monaco-vscode-editor-api@^26.1.1
