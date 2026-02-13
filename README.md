@@ -216,7 +216,7 @@ export function WebgalEditor() {
 | [@webgal/language-server](./packages/language-server)   | LSP 语言服务器         |
 | [@webgal/language-service](./packages/language-service) | LSP 语言服务           |
 | [playground](./packages/playground)                     | 演示                   |
-| [vscode](./packages/vscode-extension)                   | VSCode 扩展            |
+| [vscode-extension](./packages/vscode-extension)                   | VSCode 扩展            |
 
 ## 许可证
 

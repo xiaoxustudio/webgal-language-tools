@@ -1,8 +1,8 @@
 import { ServerSettings } from "../types";
 import {
-	cleartGlobalMapAll,
+	clearGlobalMap,
 	fsAccessor,
-	GlobalMap,
+	getGlobalMap,
 	IVChooseToken,
 	IVToken,
 	runCode,
@@ -369,9 +369,10 @@ export function getStageCompletionContext(
 }
 
 /** 更新全局映射表 */
-export function updateGlobalMap(documentTextArray: string[]) {
+export function updateGlobalMap(documentTextArray: string[], scope: string) {
 	// 生成全局映射表
-	cleartGlobalMapAll();
+	clearGlobalMap(scope);
+	const GlobalMap = getGlobalMap(scope);
 	for (
 		let lineNumber = 0;
 		lineNumber < documentTextArray.length;

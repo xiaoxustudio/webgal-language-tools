@@ -19,7 +19,7 @@ import {
 	Position,
 	Range
 } from "@volar/language-server";
-import { GlobalMap } from "@webgal/language-core";
+import { getGlobalMap } from "@webgal/language-core";
 import { TextDocument } from "vscode-languageserver-textdocument";
 
 export async function provideHover(
@@ -141,7 +141,8 @@ export async function provideHover(
 		}
 	}
 
-	updateGlobalMap(documentTextArray);
+	updateGlobalMap(documentTextArray, document.uri);
+	const GlobalMap = getGlobalMap(document.uri);
 
 	if (findWord && `{${findWord.word}}` !== "{}") {
 		const current = GlobalMap.setVar[findWord.word];

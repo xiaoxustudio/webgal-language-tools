@@ -213,7 +213,7 @@ export function WebgalEditor() {
 | [@webgal/language-server](./packages/language-server)   | LSP Language Server                         |
 | [@webgal/language-service](./packages/language-service) | LSP Language Service                        |
 | [playground](./packages/playground)                     | Playground                                  |
-| [vscode](./packages/vscode-extension)                   | VSCode extension                            |
+| [vscode-extension](./packages/vscode-extension)                   | VSCode extension                            |
 
 ## License
 

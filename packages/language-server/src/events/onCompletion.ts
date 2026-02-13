@@ -20,7 +20,7 @@ import {
 	CompletionItemKind,
 	Position
 } from "@volar/language-server";
-import { GlobalMap } from "@webgal/language-core";
+import { getGlobalMap } from "@webgal/language-core";
 import { TextDocument } from "vscode-languageserver-textdocument";
 
 export async function provideCompletionItems(
@@ -174,7 +174,8 @@ export async function provideCompletionItems(
 	}
 
 	if (token) {
-		updateGlobalMap(documentTextArray);
+		updateGlobalMap(documentTextArray, document.uri);
+		const GlobalMap = getGlobalMap(document.uri);
 		const currentPool = GlobalMap.setVar;
 		for (const key in currentPool) {
 			if (key.includes(token)) {

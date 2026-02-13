@@ -4,17 +4,40 @@ import { FileAccessor, IDefinetionMap } from "./types";
 export const source = "WebGal Script";
 export const SCHEME = "webgal-virtual-doc";
 
-// 上一次全局映射表
-export const GlobalMap: IDefinetionMap = {
-	label: {},
-	setVar: {},
-	choose: {}
+// 作用域映射表
+const ScopeMap = new Map<string, IDefinetionMap>();
+
+/**
+ * 获取指定作用域的映射表
+ * @param scope 作用域标识符 (默认为 'global')
+ */
+export const getGlobalMap = (scope: string = "global"): IDefinetionMap => {
+	if (!ScopeMap.has(scope)) {
+		ScopeMap.set(scope, {
+			label: {},
+			setVar: {},
+			choose: {}
+		});
+	}
+	return ScopeMap.get(scope)!;
 };
 
+/**
+ * 清除指定作用域的映射表
+ * @param scope 作用域标识符 (默认为 'global')
+ */
+export const clearGlobalMap = (scope: string = "global") => {
+	const map = getGlobalMap(scope);
+	map.label = {};
+	map.setVar = {};
+	map.choose = {};
+};
+
+// 保持兼容性的默认导出
+export const GlobalMap = getGlobalMap("global");
+
 export const cleartGlobalMapAll = () => {
-	GlobalMap.label = {};
-	GlobalMap.setVar = {};
-	GlobalMap.choose = {};
+	clearGlobalMap("global");
 };
 
 const isNodeRuntime =
