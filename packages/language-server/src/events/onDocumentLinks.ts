@@ -15,7 +15,9 @@ export async function provideDocumentLinks(
 	candidates: WebgalDocumentLinkCandidate[]
 ): Promise<DocumentLink[]> {
 	const toFileTarget = (path: string | null) => {
-		if (!path) {return undefined;}
+		if (!path) {
+			return undefined;
+		}
 		if (path.startsWith("file://")) {
 			return URI.parse(path).toString();
 		}
@@ -51,26 +53,34 @@ export async function provideDocumentLinks(
 				currentDirectory + "/" + dirResources
 			);
 		}
-		let basePath = await connection.sendRequest<string>(
+		const defaultPath = await connection.sendRequest<string>(
 			"client/FJoin",
 			targetPath + "/" + matchText
 		);
 
-		const stat = await connection.sendRequest<string>(
+		let stat = await connection.sendRequest<unknown>(
 			"client/FStat",
-			basePath
+			defaultPath
 		);
+		let resolvedPath = defaultPath;
 
 		if (!stat) {
-			basePath = await connection.sendRequest<string>("client/findFile", [
-				currentDirectory,
-				matchText
-			]);
+			const foundPath = await connection.sendRequest<string>(
+				"client/findFile",
+				[currentDirectory, matchText]
+			);
+			if (foundPath) {
+				resolvedPath = foundPath;
+				stat = await connection.sendRequest<unknown>(
+					"client/FStat",
+					resolvedPath
+				);
+			}
 		}
-		const tooltip = stat && basePath ? basePath : "unknown file";
+		const tooltip = stat && resolvedPath ? resolvedPath : "unknown file";
 
 		documentLinks.push({
-			target: toFileTarget(basePath),
+			target: toFileTarget(resolvedPath),
 			range: Range.create(
 				Position.create(candidate.line, candidate.start),
 				Position.create(candidate.line, candidate.end)

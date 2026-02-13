@@ -65,6 +65,7 @@ function App() {
 	const vfsRef = useRef<VirtualFileSystem | null>(null);
 	const activePathRef = useRef<string | null>(null);
 	const skipWriteRef = useRef(false);
+	const linkOpenerRef = useRef<Monaco.IDisposable | null>(null);
 	const [tree, setTree] = useState<VirtualEntry | null>(null);
 	const [activePath, setActivePath] = useState(
 		"file:///game/scene/start.txt"
@@ -183,6 +184,17 @@ function App() {
 
 	async function handleEditorDidMount(editor: IStandaloneCodeEditor) {
 		editorRef.current = editor;
+		if (!linkOpenerRef.current) {
+			linkOpenerRef.current = Monaco.editor.registerLinkOpener({
+				open: (resource) => {
+					const uriString = resource.toString();
+					if (!uriString.startsWith("file://")) {
+						return false;
+					}
+					return openFile(uriString).then(() => true);
+				}
+			});
+		}
 		editor.onDidChangeModelContent(() => {
 			if (skipWriteRef.current) return;
 			const currentPath = activePathRef.current;

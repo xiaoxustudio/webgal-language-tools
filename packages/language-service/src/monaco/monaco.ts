@@ -100,7 +100,6 @@ export const createWebgalMonacoLanguageClientWithWorker = (
 	return { worker, vfs };
 };
 
-
 const createLanguageClient = (
 	messageTransports: MessageTransports,
 	options: {
@@ -113,6 +112,14 @@ const createLanguageClient = (
 		overrides: {
 			"client/showTip": function (message: any) {
 				console.log(message);
+			},
+			"workspace/documentLink/refresh": () => {
+				const model = options.editor.getModel();
+				if (!model) {
+					return null;
+				}
+				options.editor.setModel(model);
+				return null;
 			}
 		}
 	});
@@ -158,5 +165,8 @@ const createLanguageClient = (
 		messageTransports
 	});
 	registerWebgalClientHandlers(client, handlers);
+	options.vfs.onDidChange(() => {
+		client.sendNotification("webgal/vfsChanged");
+	});
 	return client;
 };

@@ -35,13 +35,14 @@ export function createWebgalClientHandlers(
 		return change;
 	};
 	const baseHandlers: WebgalClientHandlers = {
+		"workspace/documentLink/refresh": () => null,
 		"client/showTip": options.showTip ?? (() => null),
 		"client/currentDirectory": () => options.vfs.currentDirectory(),
 		"client/FJoin": (args) =>
 			options.vfs.join(...(Array.isArray(args) ? args : [args])),
-		"client/FStat": (path) => options.vfs.stat(path),
+		"client/FStat": (path) => options.vfs.stat(toVfsPath(path)),
 		"client/findFile": ([startPath, targetName]) =>
-			options.vfs.findFile(startPath, targetName),
+			options.vfs.findFile(toVfsPath(startPath), targetName),
 		"client/goPropertyDoc": options.goPropertyDoc ?? (() => null),
 		"client/readDirectory": (uriString) =>
 			options.vfs.readDirectory(uriToPath(uriString)),

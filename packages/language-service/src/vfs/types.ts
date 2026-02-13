@@ -57,6 +57,7 @@ export type VirtualFileSystem = {
 };
 
 export type WebgalClientHandlers = {
+	"workspace/documentLink/refresh": () => MaybePromise<unknown>;
 	"client/showTip": (message: string) => MaybePromise<unknown>;
 	"client/currentDirectory": () => MaybePromise<string | null>;
 	"client/FJoin": (args: string | string[]) => MaybePromise<string | null>;

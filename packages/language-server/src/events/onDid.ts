@@ -26,4 +26,7 @@ export default <ConnectionHandler>function (documents, connection) {
 		}
 		connection.languages.diagnostics.refresh(); // 重新校验
 	});
+	connection.onNotification("webgal/vfsChanged", () => {
+		void connection.sendRequest("workspace/documentLink/refresh");
+	});
 };
