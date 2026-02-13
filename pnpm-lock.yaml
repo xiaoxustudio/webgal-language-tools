@@ -250,13 +250,13 @@ importers:
         specifier: ^1.65.0
         version: 1.68.0
       '@webgal/language-core':
-        specifier: workspace:*
+        specifier: ^0.0.2-alpha.1
         version: link:../language-core
       '@webgal/language-server':
-        specifier: workspace:*
+        specifier: ^0.0.2-alpha.1
         version: link:../language-server
       '@webgal/language-service':
-        specifier: workspace:*
+        specifier: ^0.0.2-alpha.1
         version: link:../language-service
       angular-expressions:
         specifier: ^1.5.1
