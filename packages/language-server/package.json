@@ -1,6 +1,6 @@
 {
 	"name": "@webgal/language-server",
-	"version": "0.0.1",
+	"version": "0.0.2-alpha.0",
 	"main": "build/index.cjs",
 	"module": "build/index.mjs",
 	"types": "build/index.d.mts",
@@ -47,21 +47,21 @@
 	},
 	"dependencies": {
 		"@volar/language-core": "~2.4.0",
-		"@volar/language-service": "~2.4.0",
 		"@volar/language-server": "~2.4.0",
+		"@volar/language-service": "~2.4.0",
 		"@volar/typescript": "~2.4.0",
-		"@webgal/language-service": "workspace:*",
 		"@webgal/language-core": "workspace:*",
+		"@webgal/language-service": "workspace:*",
 		"tsc-alias": "^1.8.16",
 		"vscode-languageserver": "^9.0.1",
-		"vscode-ws-jsonrpc": "^3.4.0",
 		"vscode-languageserver-textdocument": "^1.0.11",
 		"vscode-uri": "^3.0.8",
+		"vscode-ws-jsonrpc": "^3.4.0",
 		"ws": "^8.18.3"
 	},
 	"devDependencies": {
 		"@types/ws": "^8.18.1",
-		"tsx": "^4.21.0",
-		"tsdown": "^0.20.3"
+		"tsdown": "^0.20.3",
+		"tsx": "^4.21.0"
 	}
 }
