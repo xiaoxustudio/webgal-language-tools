@@ -5,6 +5,10 @@
 	"module": "build/index.mjs",
 	"types": "build/index.d.cts",
 	"license": "MPL-2.0",
+	"publishConfig": {
+		"access": "public",
+		"registry": "https://registry.npmjs.org/"
+	},
 	"files": [
 		"build/**/*"
 	],
