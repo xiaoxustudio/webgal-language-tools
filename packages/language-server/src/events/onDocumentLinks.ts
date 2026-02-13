@@ -6,6 +6,7 @@ import {
 	Position
 } from "@volar/language-server";
 import { TextDocument } from "vscode-languageserver-textdocument";
+import { URI } from "vscode-uri";
 import type { WebgalDocumentLinkCandidate } from "@/utils";
 
 export async function provideDocumentLinks(
@@ -13,6 +14,13 @@ export async function provideDocumentLinks(
 	connection: Connection,
 	candidates: WebgalDocumentLinkCandidate[]
 ): Promise<DocumentLink[]> {
+	const toFileTarget = (path: string | null) => {
+		if (!path) {return undefined;}
+		if (path.startsWith("file://")) {
+			return URI.parse(path).toString();
+		}
+		return URI.file(path).toString();
+	};
 	const pathArray = document.uri.split("/");
 	const currentDirectory = await connection.sendRequest<string>(
 		"client/currentDirectory"
@@ -62,7 +70,7 @@ export async function provideDocumentLinks(
 		const tooltip = stat && basePath ? basePath : "unknown file";
 
 		documentLinks.push({
-			target: "file:///" + basePath,
+			target: toFileTarget(basePath),
 			range: Range.create(
 				Position.create(candidate.line, candidate.start),
 				Position.create(candidate.line, candidate.end)

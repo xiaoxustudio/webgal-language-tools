@@ -4,7 +4,14 @@ import * as Monaco from "monaco-editor";
 import type { EditorProps } from "@monaco-editor/react";
 import initWS from "./init";
 import initWorker from "./init-worker";
-import type { VirtualEntry, VirtualFileSystem } from "@webgal/language-service";
+import {
+	joinPaths,
+	normalizePath,
+	pathToUri,
+	uriToPath,
+	type VirtualEntry,
+	type VirtualFileSystem
+} from "@webgal/language-service";
 import StartText from "./assets/start.txt?raw";
 import ConfigText from "./assets/config.txt?raw";
 import "./App.css";
@@ -83,22 +90,49 @@ function App() {
 		return "webgal";
 	}, []);
 
-	const getDisplayPath = useCallback((path: string) => {
-		if (path.startsWith("file:///game/")) {
-			return path.replace("file:///game/", "");
-		}
-		return path;
-	}, []);
+	const rootPathForJoin = useMemo(() => {
+		const base = rootPath.startsWith("file://")
+			? uriToPath(rootPath)
+			: rootPath;
+		return normalizePath(base);
+	}, [rootPath]);
 
-	const normalizeInputPath = useCallback((value: string) => {
-		const trimmed = value.trim();
-		if (!trimmed) return null;
-		if (trimmed.startsWith("file:///")) return trimmed;
-		if (trimmed.startsWith("/")) {
-			return `file:///game${trimmed}`;
-		}
-		return `file:///game/${trimmed}`;
-	}, []);
+	const toFileUri = useCallback(
+		(value: string) => {
+			const trimmed = value.trim();
+			if (!trimmed) return null;
+			if (trimmed.startsWith("file://")) {
+				return pathToUri(uriToPath(trimmed)).toString();
+			}
+			if (trimmed.startsWith("/")) {
+				return pathToUri(normalizePath(trimmed)).toString();
+			}
+			const joined = joinPaths(rootPathForJoin, trimmed);
+			return pathToUri(joined).toString();
+		},
+		[rootPathForJoin]
+	);
+
+	const getDisplayPath = useCallback(
+		(path: string) => {
+			const normalizedPath = normalizePath(
+				path.startsWith("file://") ? uriToPath(path) : path
+			);
+			if (normalizedPath === rootPathForJoin) {
+				return "";
+			}
+			if (normalizedPath.startsWith(`${rootPathForJoin}/`)) {
+				return normalizedPath.slice(rootPathForJoin.length + 1);
+			}
+			return normalizedPath;
+		},
+		[rootPathForJoin]
+	);
+
+	const normalizeInputPath = useCallback(
+		(value: string) => toFileUri(value),
+		[toFileUri]
+	);
 
 	const refreshTree = useCallback(() => {
 		const vfs = vfsRef.current;
@@ -111,13 +145,15 @@ function App() {
 			const vfs = vfsRef.current;
 			const editor = editorRef.current;
 			if (!vfs || !editor) return;
-			const content = await vfs.readFile(path);
-			const uri = Monaco.Uri.parse(path);
+			const normalizedPath = toFileUri(path);
+			if (!normalizedPath) return;
+			const content = await vfs.readFile(normalizedPath);
+			const uri = Monaco.Uri.parse(normalizedPath);
 			let model = Monaco.editor.getModel(uri);
 			if (!model) {
 				model = Monaco.editor.createModel(
 					content ?? "",
-					getLanguageFromPath(path),
+					getLanguageFromPath(normalizedPath),
 					uri
 				);
 			} else {
@@ -126,17 +162,17 @@ function App() {
 			skipWriteRef.current = true;
 			editor.setModel(model);
 			skipWriteRef.current = false;
-			activePathRef.current = path;
-			setActivePath(path);
+			activePathRef.current = normalizedPath;
+			setActivePath(normalizedPath);
 		},
-		[getLanguageFromPath]
+		[getLanguageFromPath, toFileUri]
 	);
 
 	const initWorkspace = useCallback(
 		async (editor: IStandaloneCodeEditor) => {
 			const { vfs } = initWorker(editor);
 			vfsRef.current = vfs;
-			setRootPath(vfs.root);
+			setRootPath(pathToUri(vfs.root).toString());
 			await vfs.writeFile("file:///game/scene/start.txt", StartText);
 			await vfs.writeFile("file:///game/config.txt", ConfigText);
 			refreshTree();
@@ -182,11 +218,16 @@ function App() {
 	const handleDeleteSelected = useCallback(async () => {
 		const vfs = vfsRef.current;
 		if (!vfs || !selectedPath) return;
-		await vfs.deletePath(selectedPath);
+		const normalizedSelected = toFileUri(selectedPath);
+		if (!normalizedSelected) return;
+		await vfs.deletePath(normalizedSelected);
 		refreshTree();
-		if (activePathRef.current?.startsWith(selectedPath)) {
+		if (activePathRef.current?.startsWith(normalizedSelected)) {
 			const currentTree = vfs.getTree();
-			const nextFile = findFirstFile(currentTree, vfs.root);
+			const nextFile = findFirstFile(
+				currentTree,
+				pathToUri(vfs.root).toString()
+			);
 			if (nextFile) {
 				await openFile(nextFile);
 			} else {
@@ -195,7 +236,7 @@ function App() {
 			}
 		}
 		setSelectedPath(null);
-	}, [openFile, refreshTree, selectedPath]);
+	}, [openFile, refreshTree, selectedPath, toFileUri]);
 
 	const currentLanguage = useMemo(() => {
 		if (!activePath) return "webgal";
@@ -204,6 +245,12 @@ function App() {
 
 	const githubUrl = "https://github.com/xiaoxustudio/webgal-language-tools";
 	const displayPath = activePath ? getDisplayPath(activePath) : "";
+	const handleSelectPath = useCallback(
+		(path: string) => {
+			setSelectedPath(toFileUri(path));
+		},
+		[toFileUri]
+	);
 
 	return (
 		<div className="app">
@@ -224,7 +271,7 @@ function App() {
 					onCreateFile={handleCreateFile}
 					onCreateFolder={handleCreateFolder}
 					onDeleteSelected={handleDeleteSelected}
-					onSelectPath={setSelectedPath}
+					onSelectPath={handleSelectPath}
 					onOpenFile={openFile}
 				/>
 				<EditorPane

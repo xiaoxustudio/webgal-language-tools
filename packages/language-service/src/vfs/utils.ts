@@ -34,7 +34,7 @@ export const uriToPath = (value: string | URI) => {
 
 export const pathToUri = (path: string) => {
 	if (path.startsWith("file://")) {
-		return URI.parse(path);
+		return URI.file(uriToPath(path));
 	}
 	if (/^[a-zA-Z]:[\\/]/.test(path)) {
 		return URI.file(path);
