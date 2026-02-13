@@ -4,7 +4,7 @@
 	"main": "build/index.cjs",
 	"module": "build/index.mjs",
 	"types": "build/index.d.cts",
-	"license": "MIT",
+	"license": "MPL-2.0",
 	"files": ["build/**/*"],
 	"exports": {
 		".": {
