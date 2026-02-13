@@ -14,8 +14,6 @@ import getLanguagesServiceOverride from "@codingame/monaco-vscode-languages-serv
 import getThemeServiceOverride from "@codingame/monaco-vscode-theme-service-override";
 import getTextMateServiceOverride from "@codingame/monaco-vscode-textmate-service-override";
 
-export type WorkerLoader = () => Worker;
-
 let initPromise: Promise<void> | null = null;
 
 export async function initWebgalMonaco() {
@@ -85,7 +83,7 @@ export async function initWebgalMonaco() {
 			new URL(
 				"data:application/json;base64," +
 					btoa(
-						unescape(
+						decodeURIComponent(
 							encodeURIComponent(JSON.stringify(webgalGrammar))
 						)
 					),
@@ -97,7 +95,7 @@ export async function initWebgalMonaco() {
 			new URL(
 				"data:application/json;base64," +
 					btoa(
-						unescape(
+						decodeURIComponent(
 							encodeURIComponent(
 								JSON.stringify(webgalConfigGrammar)
 							)
@@ -111,7 +109,7 @@ export async function initWebgalMonaco() {
 			new URL(
 				"data:application/json;base64," +
 					btoa(
-						unescape(
+						decodeURIComponent(
 							encodeURIComponent(
 								JSON.stringify(webgalLanguageConfiguration)
 							)
@@ -126,7 +124,7 @@ export async function initWebgalMonaco() {
 			new URL(
 				"data:application/json;base64," +
 					btoa(
-						unescape(
+						decodeURIComponent(
 							encodeURIComponent(JSON.stringify(webgalDarkTheme))
 						)
 					),
@@ -138,7 +136,7 @@ export async function initWebgalMonaco() {
 			new URL(
 				"data:application/json;base64," +
 					btoa(
-						unescape(
+						decodeURIComponent(
 							encodeURIComponent(JSON.stringify(webgalWhiteTheme))
 						)
 					),

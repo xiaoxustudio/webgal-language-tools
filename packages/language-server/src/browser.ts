@@ -27,6 +27,7 @@ export function startServer(connection?: ReturnType<typeof createConnection>) {
 	const server = createServer(connection);
 	const documents = server.documents;
 	bindCoreFileAccessorToClientVfs(connection);
+
 	server.fileSystem.install("file", createClientVfsFileSystem(connection));
 
 	const webgalLanguagePlugin: LanguagePlugin<URI> = {
@@ -81,8 +82,8 @@ export function startServer(connection?: ReturnType<typeof createConnection>) {
 	});
 
 	connection.onInitialized(() => {
-		registerConnectionHandlers(documents, connection);
 		server.initialized();
+		registerConnectionHandlers(documents, connection);
 	});
 
 	connection.onShutdown(server.shutdown);
