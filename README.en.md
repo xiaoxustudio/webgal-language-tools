@@ -10,12 +10,14 @@ Install the [webgal-for-vscode](https://marketplace.visualstudio.com/items?itemN
 
 ### Monaco Users
 
+Recommended: import from the @webgal/language-service main entry to keep usage consistent.
+
 We provide two ways to run the WebGAL language service in Monaco. Examples are based on monaco-editor and @monaco-editor/react.
 
 - Pre-initialization: initialize Monaco language configuration and syntax highlighting after page load.
 
 ```ts
-import { initWebgalMonaco } from "@webgal/language-service/monaco-init";
+import { initWebgalMonaco } from "@webgal/language-service";
 
 await initWebgalMonaco();
 ```
@@ -34,9 +36,11 @@ Frontend example (@monaco-editor/react):
 import { useEffect, useRef } from "react";
 import Editor from "@monaco-editor/react";
 import * as monaco from "monaco-editor";
-import { initWebgalMonaco } from "@webgal/language-service/monaco-init";
-import { createWebgalMonacoLanguageClient } from "@webgal/language-service/monaco";
-import { createMemoryFileSystem } from "@webgal/language-service";
+import {
+  initWebgalMonaco,
+  createWebgalMonacoLanguageClient,
+  createMemoryFileSystem
+} from "@webgal/language-service";
 
 export function WebgalEditor() {
   const clientRef = useRef<{ webSocket: WebSocket } | null>(null);
@@ -93,9 +97,11 @@ Step 2: Frontend example (@monaco-editor/react)
 import { useEffect, useRef } from "react";
 import Editor from "@monaco-editor/react";
 import * as monaco from "monaco-editor";
-import { initWebgalMonaco } from "@webgal/language-service/monaco-init";
-import { createWebgalMonacoLanguageClientWithWorker } from "@webgal/language-service/monaco";
-import { createMemoryFileSystem } from "@webgal/language-service";
+import {
+  initWebgalMonaco,
+  createWebgalMonacoLanguageClientWithWorker,
+  createMemoryFileSystem
+} from "@webgal/language-service";
 
 export function WebgalEditor() {
   const clientRef = useRef<{ worker: Worker } | null>(null);
@@ -148,9 +154,11 @@ Note: initWebgalMonaco is idempotent and can be safely called multiple times. Us
 import { useEffect, useRef } from "react";
 import Editor from "@monaco-editor/react";
 import * as monaco from "monaco-editor";
-import { initWebgalMonaco } from "@webgal/language-service/monaco-init";
-import { createWebgalMonacoLanguageClientWithPort } from "@webgal/language-service/monaco";
-import { createMemoryFileSystem } from "@webgal/language-service";
+import {
+  initWebgalMonaco,
+  createWebgalMonacoLanguageClientWithPort,
+  createMemoryFileSystem
+} from "@webgal/language-service";
 import { startServer, createConnection } from "@webgal/language-server/browser";
 import { BrowserMessageReader, BrowserMessageWriter } from "vscode-languageclient/browser.js";
 

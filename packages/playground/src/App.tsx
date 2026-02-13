@@ -37,7 +37,6 @@ function App() {
 
 	return (
 		<>
-			Editor
 			<div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
 				<button
 					onClick={async () => {
@@ -53,6 +52,7 @@ function App() {
 					Main Thread 模式
 				</button>
 				<button
+					disabled
 					onClick={async () => {
 						if (!editorRef.current) return;
 						const { vfs } = initWorker(editorRef.current);
@@ -66,6 +66,7 @@ function App() {
 					Worker 模式
 				</button>
 				<button
+					disabled
 					onClick={async () => {
 						if (!editorRef.current) return;
 						const { vfs } = initWS(editorRef.current);
@@ -80,7 +81,7 @@ function App() {
 				</button>
 			</div>
 			<Editor
-				height="90vh"
+				height="80vh"
 				defaultLanguage="webgal"
 				width="600px"
 				onMount={handleEditorDidMount}

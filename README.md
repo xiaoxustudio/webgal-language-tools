@@ -12,12 +12,14 @@
 
 ### Monaco 用户
 
+推荐统一从 @webgal/language-service 主入口导入，避免分散子路径导入。
+
 我们提供在 Monaco 中使用 WebGAL 语言服务的两种启动方式。示例基于 monaco-editor 与 @monaco-editor/react。
 
 - 前置初始化（必读）：在页面加载后先初始化 WebGAL 的 Monaco 语言配置与语法高亮。
 
 ```ts
-import { initWebgalMonaco } from "@webgal/language-service/monaco-init";
+import { initWebgalMonaco } from "@webgal/language-service";
 
 await initWebgalMonaco();
 ```
@@ -36,9 +38,11 @@ pnpm --filter @webgal/language-server run dev:ws
 import { useEffect, useRef } from "react";
 import Editor from "@monaco-editor/react";
 import * as monaco from "monaco-editor";
-import { initWebgalMonaco } from "@webgal/language-service/monaco-init";
-import { createWebgalMonacoLanguageClient } from "@webgal/language-service/monaco";
-import { createMemoryFileSystem } from "@webgal/language-service";
+import {
+  initWebgalMonaco,
+  createWebgalMonacoLanguageClient,
+  createMemoryFileSystem
+} from "@webgal/language-service";
 
 export function WebgalEditor() {
   const clientRef = useRef<{ webSocket: WebSocket } | null>(null);
@@ -96,9 +100,11 @@ startServer();
 import { useEffect, useRef } from "react";
 import Editor from "@monaco-editor/react";
 import * as monaco from "monaco-editor";
-import { initWebgalMonaco } from "@webgal/language-service/monaco-init";
-import { createWebgalMonacoLanguageClientWithWorker } from "@webgal/language-service/monaco";
-import { createMemoryFileSystem } from "@webgal/language-service";
+import {
+  initWebgalMonaco,
+  createWebgalMonacoLanguageClientWithWorker,
+  createMemoryFileSystem
+} from "@webgal/language-service";
 
 export function WebgalEditor() {
   const clientRef = useRef<{ worker: Worker } | null>(null);
@@ -151,9 +157,11 @@ export function WebgalEditor() {
 import { useEffect, useRef } from "react";
 import Editor from "@monaco-editor/react";
 import * as monaco from "monaco-editor";
-import { initWebgalMonaco } from "@webgal/language-service/monaco-init";
-import { createWebgalMonacoLanguageClientWithPort } from "@webgal/language-service/monaco";
-import { createMemoryFileSystem } from "@webgal/language-service";
+import {
+  initWebgalMonaco,
+  createWebgalMonacoLanguageClientWithPort,
+  createMemoryFileSystem
+} from "@webgal/language-service";
 import { startServer, createConnection } from "@webgal/language-server/browser";
 import { BrowserMessageReader, BrowserMessageWriter } from "vscode-languageclient/browser.js";
 
