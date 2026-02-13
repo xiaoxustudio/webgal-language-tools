@@ -16,8 +16,12 @@ import {
 	createClientVfsFileSystem
 } from "@/utils";
 
-export function startServer() {
-	const connection = createConnection();
+export { createConnection } from "@volar/language-server/browser";
+
+export function startServer(connection?: ReturnType<typeof createConnection>) {
+	if (!connection) {
+		connection = createConnection();
+	}
 	const server = createServer(connection);
 	const documents = server.documents;
 	bindCoreFileAccessorToClientVfs(connection);

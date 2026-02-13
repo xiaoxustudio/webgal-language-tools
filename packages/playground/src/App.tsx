@@ -4,6 +4,7 @@ import * as Monaco from "monaco-editor";
 import type { EditorProps } from "@monaco-editor/react";
 import initWS from "./init";
 import initWorker from "./init-worker";
+import initMainThread from "./init-main-thread";
 import type { VirtualFileSystem } from "@webgal/language-service";
 import "./App.css";
 
@@ -38,6 +39,19 @@ function App() {
 		<>
 			Editor
 			<div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
+				<button
+					onClick={async () => {
+						if (!editorRef.current) return;
+						const { vfs } = initMainThread(editorRef.current);
+						vfsRef.current = vfs;
+						const content = await vfs.readFile(
+							"file:///game/scene/start.txt"
+						);
+						editorRef.current.setValue(content || "");
+					}}
+				>
+					Main Thread 模式
+				</button>
 				<button
 					onClick={async () => {
 						if (!editorRef.current) return;
