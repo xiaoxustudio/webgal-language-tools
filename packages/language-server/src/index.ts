@@ -4,7 +4,12 @@ import {
 	createSimpleProject
 } from "@volar/language-server/node";
 import type { InitializeParams } from "@volar/language-server";
-import { LanguagePlugin } from "@volar/language-core";
+import type {
+	CodeInformation,
+	IScriptSnapshot,
+	LanguagePlugin,
+	VirtualCode
+} from "@volar/language-core";
 import { URI } from "vscode-uri";
 import {
 	createConnection as createVscodeConnection,
@@ -21,6 +26,61 @@ import {
 	bindCoreFileAccessorToClientVfs,
 	createClientVfsFileSystem
 } from "@/utils";
+
+const fullCodeInformation: CodeInformation = {
+	completion: true,
+	semantic: true,
+	navigation: true,
+	structure: true,
+	format: true,
+	verification: true
+};
+
+const createIdentityVirtualCode = (
+	scriptId: URI,
+	languageId: string,
+	snapshot: IScriptSnapshot
+): VirtualCode => {
+	const length = snapshot.getLength();
+	return {
+		id: scriptId.toString(),
+		languageId,
+		snapshot,
+		mappings: [
+			{
+				sourceOffsets: [0],
+				generatedOffsets: [0],
+				lengths: [length],
+				data: fullCodeInformation
+			}
+		]
+	};
+};
+
+const updateIdentityVirtualCode = (
+	virtualCode: VirtualCode,
+	newSnapshot: IScriptSnapshot
+): VirtualCode => {
+	const length = newSnapshot.getLength();
+	const mapping = virtualCode.mappings[0];
+	if (mapping) {
+		mapping.sourceOffsets[0] = 0;
+		mapping.generatedOffsets[0] = 0;
+		mapping.lengths[0] = length;
+		mapping.data = fullCodeInformation;
+	} else {
+		virtualCode.mappings = [
+			{
+				sourceOffsets: [0],
+				generatedOffsets: [0],
+				lengths: [length],
+				data: fullCodeInformation
+			}
+		];
+	}
+	virtualCode.snapshot = newSnapshot;
+	return virtualCode;
+};
 
 type WsOptions = {
 	port: number;
@@ -112,6 +172,21 @@ function startServer(connection: Connection, useClientVfs: boolean) {
 					return "webgal";
 				}
 				return undefined;
+			},
+			createVirtualCode(scriptId, languageId, snapshot) {
+				if (languageId !== "webgal" && languageId !== "webgal-config") {
+					return;
+				}
+				return createIdentityVirtualCode(scriptId, languageId, snapshot);
+			},
+			updateVirtualCode(_scriptId, virtualCode, newSnapshot) {
+				if (
+					virtualCode.languageId !== "webgal" &&
+					virtualCode.languageId !== "webgal-config"
+				) {
+					return;
+				}
+				return updateIdentityVirtualCode(virtualCode, newSnapshot);
 			}
 		};
 		const result = server.initialize(
