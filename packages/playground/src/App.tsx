@@ -10,9 +10,13 @@ import ConfigText from "./assets/config.txt?raw";
 import "./App.css";
 
 import editorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
+import textmateWorker from "@codingame/monaco-vscode-textmate-service-override/worker?worker";
 
 self.MonacoEnvironment = {
-	getWorker() {
+	getWorker(_moduleId, label) {
+		if (label === "TextMateWorker") {
+			return new textmateWorker();
+		}
 		return new editorWorker();
 	}
 };
