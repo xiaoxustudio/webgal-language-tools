@@ -37,7 +37,7 @@ jobs:
               uses: actions/configure-pages@v4
             - name: Install dependencies
               run: pnpm install # 或 pnpm install / yarn install / bun install
-            - name: Build with VitePress
+            - name: Build with Playground
               run: pnpm build:playground
             - name: Upload artifact
               uses: actions/upload-pages-artifact@v3
