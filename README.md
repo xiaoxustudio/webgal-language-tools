@@ -171,7 +171,7 @@ export function WebgalEditor() {
 }
 ```
 
-> ![WARNING]
+> [!WARNING]
 > 注意：我们需要指定`monaco-editor`的版本 ：`npm i monaco-editor@npm:@codingame/monaco-vscode-editor-api@^26.1.1`
 
 ## packages

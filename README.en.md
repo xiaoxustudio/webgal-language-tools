@@ -170,7 +170,7 @@ export function WebgalEditor() {
 }
 ```
 
-> ![WARNING]
+> [!WARNING]
 > Note: you need to pin the `monaco-editor` version: `npm i monaco-editor@npm:@codingame/monaco-vscode-editor-api@^26.1.1`
 
 ## packages
