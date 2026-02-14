@@ -171,7 +171,8 @@ export function WebgalEditor() {
 ```
 
 > [!WARNING]
-> Note: you need to pin the `monaco-editor` version: `npm i monaco-editor@npm:@codingame/monaco-vscode-editor-api@^26.1.1`
+> Note: you need to pin the `monaco-editor` version: `npm i monaco-editor@npm:@codingame/monaco-vscode-editor-api@26.1.1`
+> - If you hit monaco version mismatch type errors during build, ensure all monaco-vscode packages are locked to 26.1.1 and use pnpm.overrides at the workspace root to enforce it.
 
 ## packages
 

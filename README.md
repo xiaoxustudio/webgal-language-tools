@@ -172,7 +172,8 @@ export function WebgalEditor() {
 ```
 
 > [!WARNING]
-> 注意：我们需要指定`monaco-editor`的版本 ：`npm i monaco-editor@npm:@codingame/monaco-vscode-editor-api@^26.1.1`
+> 注意：我们需要指定`monaco-editor`的版本 ：`npm i monaco-editor@npm:@codingame/monaco-vscode-editor-api@26.1.1`
+> - 如果构建出现 monaco 版本不一致的类型报错，请确保 monaco-vscode 相关依赖版本统一为 26.1.1，并在仓库根目录使用 pnpm.overrides 进行锁定。
 
 ## packages
 

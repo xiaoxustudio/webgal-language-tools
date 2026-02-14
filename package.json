@@ -45,5 +45,17 @@
 		"lerna": "^9.0.4",
 		"prettier": "^3.8.1",
 		"typescript": "latest"
+	},
+	"pnpm": {
+		"overrides": {
+			"@codingame/monaco-vscode-editor-api": "26.1.1",
+			"@codingame/monaco-vscode-extension-api": "26.1.1",
+			"@codingame/monaco-vscode-api": "26.1.1",
+			"@codingame/monaco-vscode-extensions-service-override": "26.1.1",
+			"@codingame/monaco-vscode-files-service-override": "26.1.1",
+			"@codingame/monaco-vscode-textmate-service-override": "26.1.1",
+			"@codingame/monaco-vscode-languages-service-override": "26.1.1",
+			"@codingame/monaco-vscode-theme-service-override": "26.1.1"
+		}
 	}
 }
