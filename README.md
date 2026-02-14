@@ -4,6 +4,20 @@
 
 > ⚡提供 WebGAL 脚本的语言支持，基于 [Volar.js](https://volarjs.dev/)
 
+## Packages
+
+| packages                                                | 版本                                                                      | 描述                   |
+| :------------------------------------------------------ | :------------------------------------------------------------------------ | :--------------------- |
+| [@webgal/language-core](./packages/language-core)       | ![NPM Version](https://img.shields.io/npm/v/%40webgal%2Flanguage-core)    | 包含部分配置与核心工具 |
+| [@webgal/language-server](./packages/language-server)   | ![NPM Version](https://img.shields.io/npm/v/%40webgal%2Flanguage-server)  | LSP 语言服务器         |
+| [@webgal/language-service](./packages/language-service) | ![NPM Version](https://img.shields.io/npm/v/%40webgal%2Flanguage-service) | LSP 语言服务           |
+| [playground](./packages/playground)                     |                                                                           | 演示                   |
+
+
+| extension                                        | 描述        |
+| :----------------------------------------------- | :---------- |
+| [vscode-extension](./extension/vscode-extension) | VSCode 扩展 |
+
 ## 快速开始
 
 ### VSCode 用户
@@ -12,6 +26,9 @@
 
 ### Monaco 用户
 
+> [!WARNING]
+> 注意：我们需要指定`monaco-editor`的版本 ：`npm i monaco-editor@npm:@codingame/monaco-vscode-editor-api@26.1.1`
+> - 如果构建出现 monaco 版本不一致的类型报错，请确保 monaco-vscode 相关依赖版本统一为 26.1.1，并在仓库根目录使用 pnpm.overrides 进行锁定。
 
 我们提供在 `Monaco` 中使用 WebGAL 语言服务的两种启动方式。
 
@@ -171,23 +188,7 @@ export function WebgalEditor() {
 }
 ```
 
-> [!WARNING]
-> 注意：我们需要指定`monaco-editor`的版本 ：`npm i monaco-editor@npm:@codingame/monaco-vscode-editor-api@26.1.1`
-> - 如果构建出现 monaco 版本不一致的类型报错，请确保 monaco-vscode 相关依赖版本统一为 26.1.1，并在仓库根目录使用 pnpm.overrides 进行锁定。
-
-## packages
-
-| packages                                                | 描述                   |
-| :------------------------------------------------------ | :--------------------- |
-| [@webgal/language-core](./packages/language-core)       | 包含部分配置与核心工具 |
-| [@webgal/language-server](./packages/language-server)   | LSP 语言服务器         |
-| [@webgal/language-service](./packages/language-service) | LSP 语言服务           |
-| [playground](./packages/playground)                     | 演示                   |
-
-
-| extension                                        | 描述        |
-| :----------------------------------------------- | :---------- |
-| [vscode-extension](./extension/vscode-extension) | VSCode 扩展 |
+更多信息请参考 [Playground](https://github.com/xiaoxustudio/webgal-language-tools/tree/master/packages/playground) 的写法
 
 ## 许可证
 

@@ -4,6 +4,20 @@ English | [中文](./README.md)
 
 > ⚡ Provides language support for WebGAL scripts, based on [Volar.js](https://volarjs.dev/)
 
+## Packages
+
+| packages                                                | Version                                                                   | Description                   |
+| :------------------------------------------------------ | :------------------------------------------------------------------------ | :---------------------------- |
+| [@webgal/language-core](./packages/language-core)       | ![NPM Version](https://img.shields.io/npm/v/%40webgal%2Flanguage-core)    | Configurations and core tools |
+| [@webgal/language-server](./packages/language-server)   | ![NPM Version](https://img.shields.io/npm/v/%40webgal%2Flanguage-server)  | LSP language server           |
+| [@webgal/language-service](./packages/language-service) | ![NPM Version](https://img.shields.io/npm/v/%40webgal%2Flanguage-service) | LSP language service          |
+| [playground](./packages/playground)                     |                                                                           | Demo                          |
+
+| extension                                        | Description      |
+| :----------------------------------------------- | :--------------- |
+| [vscode-extension](./extension/vscode-extension) | VSCode extension |
+
+
 ## Quick Start
 
 ### VSCode Users
@@ -18,21 +32,29 @@ The examples are based on monaco-editor and @monaco-editor/react.
 
 ##### WebSocket Mode
 
+> [!WARNING]
+> Note: you need to pin the `monaco-editor` version: `npm i monaco-editor@npm:@codingame/monaco-vscode-editor-api@26.1.1`
+>
+> - If you hit monaco version mismatch type errors during build, ensure all monaco-vscode packages are locked to 26.1.1 and use pnpm.overrides at the workspace root to enforce it.
+
 - Connect to a local language server via WebSocket, suitable for separated frontend and backend projects.
 
 Start the language server:
 
 If you are using this repo source:
+
 ```bash
 pnpm dev:lsp-ws
 ```
 
 If you are using this repo build output, run it under `node`. Create an empty `node` project and install the `server` package:
+
 ```bash
 npm i @webgal/language-server
 ```
 
 Then create a file like `webgal-lsp.js`:
+
 ```js
 require("@webgal/language-server");
 ```
@@ -46,6 +68,7 @@ node webgal-lsp.js --ws --wsPort=5882 --wsPath=/webgal-lsp
 Frontend example (with @monaco-editor/react):
 
 Create a `vite` project and install dependencies:
+
 ```bash
 npm i @webgal/language-service
 ```
@@ -170,22 +193,7 @@ export function WebgalEditor() {
 }
 ```
 
-> [!WARNING]
-> Note: you need to pin the `monaco-editor` version: `npm i monaco-editor@npm:@codingame/monaco-vscode-editor-api@26.1.1`
-> - If you hit monaco version mismatch type errors during build, ensure all monaco-vscode packages are locked to 26.1.1 and use pnpm.overrides at the workspace root to enforce it.
-
-## packages
-
-| packages                                                | Description                             |
-| :------------------------------------------------------ | :-------------------------------------- |
-| [@webgal/language-core](./packages/language-core)       | Configurations and core tools           |
-| [@webgal/language-server](./packages/language-server)   | LSP language server                     |
-| [@webgal/language-service](./packages/language-service) | LSP language service                    |
-| [playground](./packages/playground)                     | Demo                                    |
-
-| extension                                        | Description |
-| :----------------------------------------------- | :---------- |
-| [vscode-extension](./extension/vscode-extension) | VSCode extension |
+For more information, please refer to [Playground](https://github.com/xiaoxustudio/webgal-language-tools/tree/master/packages/playground) The writing style
 
 ## License
 
