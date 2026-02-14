@@ -56,10 +56,6 @@ export async function createClient(
 	const handlers = createWebgalClientHandlers({
 		vfs,
 		showTip: (message: string) => window.showInformationMessage(message),
-		goPropertyDoc: async (pathSegments: string[]) => {
-			const { getState } = await import("@webgal/language-server/utils");
-			return getState(pathSegments);
-		},
 		overrides: {
 			"client/showTip": (message: string) =>
 				window.showInformationMessage(message)

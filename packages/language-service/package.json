@@ -39,6 +39,11 @@
 			"types": "./build/themes.d.mts",
 			"import": "./build/themes.mjs",
 			"require": "./build/themes.cjs"
+		},
+		"./utils": {
+			"types": "./build/utils/index.d.mts",
+			"import": "./build/utils/index.mjs",
+			"require": "./build/utils/index.cjs"
 		}
 	},
 	"scripts": {
@@ -46,24 +51,26 @@
 		"format": " prettier --write \"src/**/*.ts\"",
 		"lint": "eslint src --ext ts --fix",
 		"typecheck": "tsc --noEmit",
-		"watch": "tsdown --watch"
+		"watch": "tsdown --watch",
+		"gen": "tsx scripts/gen.cts"
 	},
 	"devDependencies": {
 		"@types/node": "^18.0.0",
-		"tsdown": "^0.20.3"
+		"tsdown": "^0.20.3",
+		"tsx": "^4.21.0"
 	},
 	"dependencies": {
-		"monaco-editor": "npm:@codingame/monaco-vscode-editor-api@26.1.1",
-		"vscode": "npm:@codingame/monaco-vscode-extension-api@26.1.1",
 		"@codingame/monaco-vscode-api": "catalog:",
 		"@codingame/monaco-vscode-languages-service-override": "catalog:",
 		"@codingame/monaco-vscode-textmate-service-override": "catalog:",
 		"@codingame/monaco-vscode-theme-service-override": "catalog:",
 		"@volar/language-core": "^2.4.28",
 		"@volar/language-service": "^2.4.28",
-		"vscode-uri": "^3.1.0",
-		"vscode-ws-jsonrpc": "^3.5.0",
+		"monaco-editor": "npm:@codingame/monaco-vscode-editor-api@26.1.1",
 		"monaco-languageclient": "^10.7.0",
-		"vscode-languageclient": "^9.0.1"
+		"vscode": "npm:@codingame/monaco-vscode-extension-api@26.1.1",
+		"vscode-languageclient": "^9.0.1",
+		"vscode-uri": "^3.1.0",
+		"vscode-ws-jsonrpc": "^3.5.0"
 	}
 }

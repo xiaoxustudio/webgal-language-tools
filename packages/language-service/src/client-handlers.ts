@@ -5,6 +5,7 @@ import type {
 	VirtualFileSystemChange,
 	WebgalClientHandlers
 } from "./vfs/types";
+import { getState } from "./utils";
 
 export function createWebgalClientHandlers(
 	options: CreateWebgalClientHandlersOptions
@@ -43,7 +44,8 @@ export function createWebgalClientHandlers(
 		"client/FStat": (path) => options.vfs.stat(toVfsPath(path)),
 		"client/findFile": ([startPath, targetName]) =>
 			options.vfs.findFile(toVfsPath(startPath), targetName),
-		"client/goPropertyDoc": options.goPropertyDoc ?? (() => null),
+		"client/goPropertyDoc":
+			options.goPropertyDoc ?? ((path: string[]) => getState(path)),
 		"client/readDirectory": (uriString) =>
 			options.vfs.readDirectory(uriToPath(uriString)),
 		"client/getAllTextWithScene": () => options.vfs.getAllTextWithScene(),

@@ -6,7 +6,6 @@ import {
 	CommandNameSpecial,
 	WebGALCommandPrefix
 } from "@/utils/provider";
-import { StateMap } from "@/utils/providerState";
 import {
 	Connection,
 	Hover,
@@ -16,6 +15,9 @@ import {
 	Range
 } from "@volar/language-server";
 import type { IDefinetionMap } from "@webgal/language-core";
+import type { StateMap } from "@webgal/language-service/utils" with {
+	"resolution-mode": "import"
+};
 import { TextDocument } from "vscode-languageserver-textdocument";
 
 export async function provideHover(

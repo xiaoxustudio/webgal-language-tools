@@ -7,7 +7,7 @@ enum TypePrefixValue {
 	Type = "@T",
 	Enum = "@E",
 	Union = "@U",
-	Nil = "@N",
+	Nil = "@N"
 }
 
 // 定义输出的目标接口
@@ -39,13 +39,13 @@ function main() {
 		TYPE_DEF_FILE_PATH,
 		fileContent,
 		ts.ScriptTarget.Latest,
-		true, // 设置为 true 以便获取节点的注释
+		true // 设置为 true 以便获取节点的注释
 	);
 
 	// 1. 收集所有顶层定义（接口、类型别名、枚举），以便处理引用类型
 	const definitions = new Map<string, ts.Node>();
 
-	ts.forEachChild(sourceFile, node => {
+	ts.forEachChild(sourceFile, (node) => {
 		if (
 			ts.isInterfaceDeclaration(node) ||
 			ts.isTypeAliasDeclaration(node) ||
@@ -60,7 +60,10 @@ function main() {
 		const fullText = sourceFile.getFullText();
 
 		// 尝试获取行尾注释
-		const trailingComments = ts.getTrailingCommentRanges(fullText, node.end);
+		const trailingComments = ts.getTrailingCommentRanges(
+			fullText,
+			node.end
+		);
 		if (trailingComments && trailingComments.length > 0) {
 			const comment = fullText
 				.substring(trailingComments[0].pos, trailingComments[0].end)
@@ -73,7 +76,11 @@ function main() {
 		const jsDocTags = ts.getJSDocTags(node);
 		if (jsDocTags.length > 0) {
 			return jsDocTags
-				.map(tag => tag.tagName.text + (tag.comment ? " " + tag.comment : ""))
+				.map(
+					(tag) =>
+						tag.tagName.text +
+						(tag.comment ? " " + tag.comment : "")
+				)
 				.join("\n");
 		}
 
@@ -82,7 +89,9 @@ function main() {
 
 	// 3. 递归解析属性
 	function parseProperty(prop: ts.PropertySignature): StateMap | null {
-		if (!prop.name || !prop.type) return null;
+		if (!prop.name || !prop.type) {
+			return null;
+		}
 
 		const key = prop.name.getText();
 		let description = getNodeDescription(prop);
@@ -135,21 +144,23 @@ function main() {
 			description,
 			type: {
 				key: typeKey,
-				description, // 可以在这里加上类型的描述
+				description // 可以在这里加上类型的描述
 			},
-			value,
+			value
 		};
 	}
 
 	// 解析内联类型字面量 { ... }
 	function parseTypeLiteral(
-		node: ts.TypeLiteralNode,
+		node: ts.TypeLiteralNode
 	): Record<string, StateMap> {
 		const result: Record<string, StateMap> = {};
-		node.members.forEach(member => {
+		node.members.forEach((member) => {
 			if (ts.isPropertySignature(member)) {
 				const parsed = parseProperty(member);
-				if (parsed) result[parsed.key] = parsed;
+				if (parsed) {
+					result[parsed.key] = parsed;
+				}
 			}
 		});
 		return result;
@@ -157,7 +168,7 @@ function main() {
 
 	// 解析接口或类型别名声明
 	function parseInterfaceOrType(
-		node: ts.InterfaceDeclaration | ts.TypeAliasDeclaration,
+		node: ts.InterfaceDeclaration | ts.TypeAliasDeclaration
 	): Record<string, StateMap> {
 		const result: Record<string, StateMap> = {};
 
@@ -171,10 +182,12 @@ function main() {
 			members = node.type.members;
 		}
 
-		members.forEach(member => {
+		members.forEach((member) => {
 			if (ts.isPropertySignature(member)) {
 				const parsed = parseProperty(member);
-				if (parsed) result[parsed.key] = parsed;
+				if (parsed) {
+					result[parsed.key] = parsed;
+				}
 			}
 		});
 
@@ -205,7 +218,7 @@ function main() {
 			let result = "";
 			const cleaned = fullComment
 				.split("\n")
-				.map(line => {
+				.map((line) => {
 					return line
 						.replace(/^\s*\/\*\*/, "")
 						.replace(/^\s*\*/, "")
@@ -216,7 +229,7 @@ function main() {
 			finalResult[name] = {
 				...finalResult[name],
 				__WG$key: name,
-				__WG$description: cleaned,
+				__WG$description: cleaned
 			};
 		}
 	});
@@ -232,7 +245,7 @@ function main() {
 	fs.writeFileSync(
 		path.join(__dirname, "../src/utils/definedMap.ts"),
 		`/** This is Automatically generated, do not modify */
-export default ${jsLike}`,
+export default ${jsLike}`
 	);
 }
 

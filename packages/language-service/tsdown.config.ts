@@ -6,7 +6,8 @@ export default defineConfig({
 		"src/node.ts",
 		"src/monaco/index.ts",
 		"src/syntaxes.ts",
-		"src/themes.ts"
+		"src/themes.ts",
+		"src/utils/index.ts"
 	],
 	format: ["esm", "cjs"],
 	dts: true,

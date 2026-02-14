@@ -10,8 +10,9 @@ export default function (editor: monaco.editor.IStandaloneCodeEditor): {
 		new URL("./webgal-lsp.worker.ts", import.meta.url),
 		{ type: "module" }
 	);
-	return createWebgalMonacoLanguageClientWithWorker({
+	const instance = createWebgalMonacoLanguageClientWithWorker({
 		worker,
 		editor
 	});
+	return instance;
 }

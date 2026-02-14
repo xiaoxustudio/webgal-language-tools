@@ -11,7 +11,6 @@ import {
 	WebGALKeywords,
 	WebgGALKeywordsCompletionMap
 } from "@/utils/provider";
-import { StateMap } from "@/utils/providerState";
 import { resourcesMap } from "@/utils/resources";
 import {
 	Connection,
@@ -20,6 +19,9 @@ import {
 	Position
 } from "@volar/language-server";
 import type { IDefinetionMap } from "@webgal/language-core";
+import type { StateMap } from "@webgal/language-service/utils" with {
+	"resolution-mode": "import"
+};
 import { TextDocument } from "vscode-languageserver-textdocument";
 
 export async function provideCompletionItems(
@@ -31,7 +33,6 @@ export async function provideCompletionItems(
 	lineCommandTypes: string[],
 	sourceUri: string
 ): Promise<CompletionItem[]> {
-	// 使用 volar.js 的服务式补全入口，保留原有 WebGAL 逻辑
 	const file_name = sourceUri;
 	const documentTextArray = lines;
 
