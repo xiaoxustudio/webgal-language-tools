@@ -3,7 +3,7 @@ import { loader } from "@monaco-editor/react";
 import * as Monaco from "monaco-editor";
 import type { EditorProps } from "@monaco-editor/react";
 import initWS from "./init";
-import initWorker from "./init-worker";
+// import initWorker from "./init-worker";
 import {
 	joinPaths,
 	normalizePath,
@@ -16,13 +16,14 @@ import { initWebgalMonaco } from "@webgal/language-service/monaco";
 
 import StartText from "./assets/start.txt?raw";
 import ConfigText from "./assets/config.txt?raw";
-import "./App.css";
 import corePackage from "../../language-core/package.json";
 import serverPackage from "../../language-server/package.json";
 import servicePackage from "../../language-service/package.json";
 import Header from "./components/Header";
 import Sidebar from "./components/Sidebar";
 import EditorPane from "./components/EditorPane";
+
+import "./App.css";
 
 import editorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
 import textmateWorker from "@codingame/monaco-vscode-textmate-service-override/worker?worker";
@@ -173,7 +174,7 @@ function App() {
 
 	const initWorkspace = useCallback(
 		async (editor: IStandaloneCodeEditor) => {
-			const { vfs } = initWorker(editor);
+			const { vfs } = initWS(editor);
 			vfsRef.current = vfs;
 			setRootPath(pathToUri(vfs.root).toString());
 			await vfs.writeFile("file:///game/scene/start.txt", StartText);

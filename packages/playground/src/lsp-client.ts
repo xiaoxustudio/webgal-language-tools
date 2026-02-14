@@ -1,8 +1,8 @@
-import * as monaco from "monaco-editor";
 import {
 	createMemoryFileSystem,
 	createWebgalMonacoLanguageClient
-} from "@webgal/language-service";
+} from "@webgal/language-service/monaco";
+import * as monaco from "monaco-editor";
 
 export const initWebSocketAndStartClient = (
 	url: string,

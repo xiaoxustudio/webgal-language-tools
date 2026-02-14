@@ -161,6 +161,7 @@ export type WebgalVirtualCode = VirtualCode & {
 	webgalFoldingRanges?: FoldingRange[];
 	webgalLines?: string[];
 	webgalLineCommandTypes?: string[];
+	webgalOriginalId?: string;
 };
 
 const getSnapshotText = (snapshot: IScriptSnapshot) =>
@@ -262,18 +263,18 @@ export const createWebgalVirtualCode = (
 	languageId: string,
 	snapshot: IScriptSnapshot
 ): WebgalVirtualCode => {
+	const originalId = scriptId.toString();
+	const normalizedId = originalId.toLowerCase();
 	const length = snapshot.getLength();
 	const text = getSnapshotText(snapshot);
 	const lines = text.split(/\r?\n/);
 	const lineCommandTypes = lines.map(getLineCommandType);
 	const map =
-		languageId === "webgal"
-			? analyzeWebgalText(text)
-			: emptyDefinitionMap;
+		languageId === "webgal" ? analyzeWebgalText(text) : emptyDefinitionMap;
 	const linkCandidates = analyzeWebgalDocumentLinks(lines);
 	const foldingRanges = analyzeWebgalFoldingRanges(text);
 	return {
-		id: scriptId.toString(),
+		id: normalizedId,
 		languageId,
 		snapshot,
 		mappings: [
@@ -284,6 +285,7 @@ export const createWebgalVirtualCode = (
 				data: fullCodeInformation
 			}
 		],
+		webgalOriginalId: originalId,
 		webgalDefinitionMap: map,
 		webgalDocumentLinkCandidates: linkCandidates,
 		webgalFoldingRanges: foldingRanges,
@@ -320,9 +322,8 @@ export const updateWebgalVirtualCode = (
 		virtualCode.webgalLines = lines;
 		virtualCode.webgalLineCommandTypes = lines.map(getLineCommandType);
 		virtualCode.webgalDefinitionMap = analyzeWebgalText(text);
-		virtualCode.webgalDocumentLinkCandidates = analyzeWebgalDocumentLinks(
-			lines
-		);
+		virtualCode.webgalDocumentLinkCandidates =
+			analyzeWebgalDocumentLinks(lines);
 		virtualCode.webgalFoldingRanges = analyzeWebgalFoldingRanges(text);
 	} else {
 		virtualCode.webgalDefinitionMap = emptyDefinitionMap;
@@ -349,7 +350,9 @@ const getSourceVirtualCode = (
 ) => {
 	const sourceUri = getSourceUri(context, document);
 	const script = context.language.scripts.get(sourceUri);
-	const virtualCode = script?.generated?.root as WebgalVirtualCode | undefined;
+	const virtualCode = script?.generated?.root as
+		| WebgalVirtualCode
+		| undefined;
 	return { script, virtualCode };
 };
 

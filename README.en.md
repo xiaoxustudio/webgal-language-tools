@@ -1,6 +1,8 @@
 # webgal-language-tools
 
-> ⚡Provide language support for WebGAL script based on Volar.js [Volar.js](https://volarjs.dev/)
+English | [中文](./README.md)
+
+> ⚡ Provides language support for WebGAL scripts, based on [Volar.js](https://volarjs.dev/)
 
 ## Quick Start
 
@@ -10,52 +12,72 @@ Install the [webgal-for-vscode](https://marketplace.visualstudio.com/items?itemN
 
 ### Monaco Users
 
-Recommended: import from the @webgal/language-service main entry to keep usage consistent.
+We provide two ways to use WebGAL language services in `Monaco`.
 
-We provide two ways to run the WebGAL language service in Monaco. Examples are based on monaco-editor and @monaco-editor/react.
+The examples are based on monaco-editor and @monaco-editor/react.
 
-- Pre-initialization: initialize Monaco language configuration and syntax highlighting after page load.
+##### WebSocket Mode
 
-```ts
-import { initWebgalMonaco } from "@webgal/language-service";
-
-await initWebgalMonaco();
-```
-
-- WebSocket Mode: connect to a local language server via WebSocket.
+- Connect to a local language server via WebSocket, suitable for separated frontend and backend projects.
 
 Start the language server:
 
+If you are using this repo source:
 ```bash
-pnpm --filter @webgal/language-server run dev:ws
+pnpm dev:lsp-ws
 ```
 
-Frontend example (@monaco-editor/react):
+If you are using this repo build output, run it under `node`. Create an empty `node` project and install the `server` package:
+```bash
+npm i @webgal/language-server
+```
+
+Then create a file like `webgal-lsp.js`:
+```js
+require("@webgal/language-server");
+```
+
+Finally start it:
+
+```bash
+node webgal-lsp.js --ws --wsPort=5882 --wsPath=/webgal-lsp
+```
+
+Frontend example (with @monaco-editor/react):
+
+Create a `vite` project and install dependencies:
+```bash
+npm i @webgal/language-service
+```
+
+Then put the following in `App.tsx` (install other dependencies yourself, see the note at the end):
 
 ```ts
 import { useEffect, useRef } from "react";
 import Editor from "@monaco-editor/react";
 import * as monaco from "monaco-editor";
 import {
-  initWebgalMonaco,
-  createWebgalMonacoLanguageClient,
-  createMemoryFileSystem
-} from "@webgal/language-service";
+	createMemoryFileSystem,
+	initWebgalMonaco,
+	createWebgalMonacoLanguageClient
+} from "@webgal/language-service/monaco";
+
+await initWebgalMonaco();
 
 export function WebgalEditor() {
   const clientRef = useRef<{ webSocket: WebSocket } | null>(null);
   const vfsRef = useRef(
     createMemoryFileSystem({
-      root: "file:///game",
+      root: "file:///project",
     })
   );
 
   useEffect(() => {
-    void initWebgalMonaco();
     void vfsRef.current.applyChanges([
-      { type: "mkdir", path: "file:///game/scene" },
-      { type: "writeFile", path: "file:///game/config.txt", content: "Game_name:Demo\n" },
-      { type: "writeFile", path: "file:///game/scene/start.txt", content: "setVar:heroine=WebGAL;\n" },
+      { type: "mkdir", path: "file:///project/game" },
+      { type: "mkdir", path: "file:///project/game/scene" },
+      { type: "writeFile", path: "file:///project/game/config.txt", content: "Game_name:Demo\n" },
+      { type: "writeFile", path: "file:///project/game/scene/start.txt", content: "setVar:heroine=WebGAL;\n" },
     ]);
     return () => {
       clientRef.current?.webSocket?.close();
@@ -66,12 +88,12 @@ export function WebgalEditor() {
     <Editor
       height="70vh"
       defaultLanguage="webgal"
-      path="file:///game/scene/start.txt"
+      path="file:///project/game/scene/start.txt"
       defaultValue={"setVar:heroine=WebGAL;\n"}
       onMount={async (editor: monaco.editor.IStandaloneCodeEditor) => {
         if (clientRef.current) return;
         clientRef.current = createWebgalMonacoLanguageClient({
-          languageServerUrl: "ws://localhost:3001/webgal-lsp",
+          languageServerUrl: "ws://localhost:5882/webgal-lsp",
           editor,
           virtualFileSystem: vfsRef.current,
         });
@@ -81,9 +103,11 @@ export function WebgalEditor() {
 }
 ```
 
-- Browser (Worker) Mode: start the language server in a Web Worker and communicate with the frontend language client.
+##### Browser Mode
 
-Step 1: Create a local Worker entry file (e.g., src/webgal-lsp.worker.ts)
+- Start the language server in the browser via `Web Worker`, and communicate with the frontend language client without a backend.
+
+Create a local Worker entry file (e.g. `src/webgal-lsp.worker.ts`)
 
 ```ts
 import { startServer } from "@webgal/language-server/browser";
@@ -91,7 +115,7 @@ import { startServer } from "@webgal/language-server/browser";
 startServer();
 ```
 
-Step 2: Frontend example (@monaco-editor/react)
+The logic is roughly the same as the `websocket` mode:
 
 ```ts
 import { useEffect, useRef } from "react";
@@ -146,19 +170,21 @@ export function WebgalEditor() {
 }
 ```
 
-Note: initWebgalMonaco is idempotent and can be safely called multiple times. Using a local Worker entry avoids MIME type issues that may arise with package entry URLs.
+> ![WARNING]
+> Note: you need to pin the `monaco-editor` version: `npm i monaco-editor@npm:@codingame/monaco-vscode-editor-api@^26.1.1`
 
+## packages
 
+| packages                                                | Description                             |
+| :------------------------------------------------------ | :-------------------------------------- |
+| [@webgal/language-core](./packages/language-core)       | Configurations and core tools           |
+| [@webgal/language-server](./packages/language-server)   | LSP language server                     |
+| [@webgal/language-service](./packages/language-service) | LSP language service                    |
+| [playground](./packages/playground)                     | Demo                                    |
 
-## Packages
-
-| Package                                                 | Description                                 |
-| :------------------------------------------------------ | :------------------------------------------ |
-| [@webgal/language-core](./packages/language-core)       | Contains configurations and core tools      |
-| [@webgal/language-server](./packages/language-server)   | LSP Language Server                         |
-| [@webgal/language-service](./packages/language-service) | LSP Language Service                        |
-| [playground](./packages/playground)                     | Playground                                  |
-| [vscode-extension](./packages/vscode-extension)                   | VSCode extension                            |
+| extension                                        | Description |
+| :----------------------------------------------- | :---------- |
+| [vscode-extension](./extension/vscode-extension) | VSCode extension |
 
 ## License
 

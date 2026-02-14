@@ -2,7 +2,7 @@
 
 [English](./README.en.md) | 中文
 
-> ⚡提供 WebGAL 脚本的语言支持，基于 Volar.js [Volar.js](https://volarjs.dev/)
+> ⚡提供 WebGAL 脚本的语言支持，基于 [Volar.js](https://volarjs.dev/)
 
 ## 快速开始
 
@@ -12,37 +12,58 @@
 
 ### Monaco 用户
 
-推荐统一从 @webgal/language-service 主入口导入，避免分散子路径导入。
 
-我们提供在 Monaco 中使用 WebGAL 语言服务的两种启动方式。示例基于 monaco-editor 与 @monaco-editor/react。
+我们提供在 `Monaco` 中使用 WebGAL 语言服务的两种启动方式。
 
-- 前置初始化（必读）：在页面加载后先初始化 WebGAL 的 Monaco 语言配置与语法高亮。
+示例基于 monaco-editor 与 @monaco-editor/react
 
-```ts
-import { initWebgalMonaco } from "@webgal/language-service";
+##### WebSocket 模式
 
-await initWebgalMonaco();
-```
-
-- WebSocket 模式：通过 WebSocket 连接到本地语言服务器。
+- 通过 WebSocket 连接到本地语言服务器，适用于前后端分离的项目。
 
 启动语言服务器：
 
+如果你是基于本项目源码
 ```bash
-pnpm --filter @webgal/language-server run dev:ws
+pnpm dev:lsp-ws
+```
+
+如果你是基于本项目构建产物，那么需要在`node`下运行，新建一个空`node`项目后，安装`server`包：
+```bash
+npm i @webgal/language-server
+```
+
+再新建一个文件，例如`webgal-lsp.js`，内容如下：
+```js
+require("@webgal/language-server");
+```
+
+最后启动它：
+
+```bash
+node webgal-lsp.js --ws --wsPort=5882 --wsPath=/webgal-lsp
 ```
 
 前端示例（使用 @monaco-editor/react）：
+
+新建一个 `vite` 前端项目后，安装依赖：
+```bash
+npm i @webgal/language-service
+```
+
+然后在主界面`App.tsx`写入以下内容（其他依赖自行安装，注意本文最后的ps）：
 
 ```ts
 import { useEffect, useRef } from "react";
 import Editor from "@monaco-editor/react";
 import * as monaco from "monaco-editor";
 import {
-  initWebgalMonaco,
-  createWebgalMonacoLanguageClient,
-  createMemoryFileSystem
-} from "@webgal/language-service";
+	createMemoryFileSystem,
+	initWebgalMonaco,
+	createWebgalMonacoLanguageClient
+} from "@webgal/language-service/monaco";
+
+await initWebgalMonaco();
 
 export function WebgalEditor() {
   const clientRef = useRef<{ webSocket: WebSocket } | null>(null);
@@ -53,7 +74,6 @@ export function WebgalEditor() {
   );
 
   useEffect(() => {
-    void initWebgalMonaco();
     void vfsRef.current.applyChanges([
       { type: "mkdir", path: "file:///project/game" },
       { type: "mkdir", path: "file:///project/game/scene" },
@@ -74,7 +94,7 @@ export function WebgalEditor() {
       onMount={async (editor: monaco.editor.IStandaloneCodeEditor) => {
         if (clientRef.current) return;
         clientRef.current = createWebgalMonacoLanguageClient({
-          languageServerUrl: "ws://localhost:3001/webgal-lsp",
+          languageServerUrl: "ws://localhost:5882/webgal-lsp",
           editor,
           virtualFileSystem: vfsRef.current,
         });
@@ -84,9 +104,11 @@ export function WebgalEditor() {
 }
 ```
 
-- 浏览器模式：通过 Web Worker 在浏览器中启动语言服务器，并与前端语言客户端通信。
+##### 浏览器模式
 
-步骤一：创建本地 Worker 入口文件（例如 src/webgal-lsp.worker.ts）
+- 通过 `Web Worker` 在浏览器中启动语言服务器，并与前端语言客户端通信，无需后端。
+
+创建本地 Worker 入口文件（例如 `src/webgal-lsp.worker.ts`）
 
 ```ts
 import { startServer } from "@webgal/language-server/browser";
@@ -94,7 +116,7 @@ import { startServer } from "@webgal/language-server/browser";
 startServer();
 ```
 
-步骤二：前端示例（使用 @monaco-editor/react）
+大概逻辑和`websocket`模式差不多：
 
 ```ts
 import { useEffect, useRef } from "react";
@@ -149,19 +171,22 @@ export function WebgalEditor() {
 }
 ```
 
-说明：initWebgalMonaco 具有幂等特性，可在多处安全调用；使用本地 Worker 入口可避免构建工具对包路径的 MIME 误判。
+> ![WARNING]
+> 注意：我们需要指定`monaco-editor`的版本 ：`npm i monaco-editor@npm:@codingame/monaco-vscode-editor-api@^26.1.1`
 
+## packages
 
-
-## 包
-
-| 包                                                      | 描述                   |
+| packages                                                | 描述                   |
 | :------------------------------------------------------ | :--------------------- |
 | [@webgal/language-core](./packages/language-core)       | 包含部分配置与核心工具 |
 | [@webgal/language-server](./packages/language-server)   | LSP 语言服务器         |
 | [@webgal/language-service](./packages/language-service) | LSP 语言服务           |
 | [playground](./packages/playground)                     | 演示                   |
-| [vscode-extension](./packages/vscode-extension)                   | VSCode 扩展            |
+
+
+| extension                                        | 描述        |
+| :----------------------------------------------- | :---------- |
+| [vscode-extension](./extension/vscode-extension) | VSCode 扩展 |
 
 ## 许可证
 
