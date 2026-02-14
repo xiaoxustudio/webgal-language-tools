@@ -11,7 +11,7 @@
 		"preview": "vite preview"
 	},
 	"dependencies": {
-		"@codingame/monaco-vscode-textmate-service-override": "26.1.1",
+		"@codingame/monaco-vscode-textmate-service-override": "catalog:",
 		"@monaco-editor/react": "^4.7.0",
 		"@volar/monaco": "^2.4.28",
 		"@webgal/language-server": "workspace:*",
