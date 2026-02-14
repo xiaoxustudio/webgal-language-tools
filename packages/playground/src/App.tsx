@@ -27,6 +27,7 @@ import "./App.css";
 
 import editorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
 import textmateWorker from "@codingame/monaco-vscode-textmate-service-override/worker?worker";
+import initWorker from "./init-worker";
 
 self.MonacoEnvironment = {
 	getWorker(_moduleId, label) {
@@ -174,7 +175,7 @@ function App() {
 
 	const initWorkspace = useCallback(
 		async (editor: IStandaloneCodeEditor) => {
-			const { vfs } = initWS(editor);
+			const { vfs } = initWorker(editor);
 			vfsRef.current = vfs;
 			setRootPath(pathToUri(vfs.root).toString());
 			await vfs.writeFile("file:///game/scene/start.txt", StartText);
