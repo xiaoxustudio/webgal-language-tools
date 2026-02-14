@@ -9,5 +9,9 @@ export default defineConfig({
 	format: ["esm", "cjs"],
 	dts: true,
 	outDir: "build",
-	fixedExtension: true
+	fixedExtension: true,
+	env: {
+		WEBGAL_LSP_WS_PATH: "/webgal-lsp",
+		WEBGAL_LSP_WS_PORT: 5882
+	}
 });

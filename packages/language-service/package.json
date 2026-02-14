@@ -26,14 +26,9 @@
 			"require": "./build/node.cjs"
 		},
 		"./monaco": {
-			"types": "./build/monaco.d.mts",
-			"import": "./build/monaco.mjs",
-			"require": "./build/monaco.cjs"
-		},
-		"./monaco-init": {
-			"types": "./build/monaco-init.d.mts",
-			"import": "./build/monaco-init.mjs",
-			"require": "./build/monaco-init.cjs"
+			"types": "./build/monaco/index.d.mts",
+			"import": "./build/monaco/index.mjs",
+			"require": "./build/monaco/index.cjs"
 		},
 		"./syntaxes": {
 			"types": "./build/syntaxes.d.mts",
@@ -55,17 +50,17 @@
 	},
 	"devDependencies": {
 		"@types/node": "^18.0.0",
-		"monaco-editor": "^0.55.1",
 		"tsdown": "^0.20.3"
 	},
 	"dependencies": {
+		"monaco-editor": "npm:@codingame/monaco-vscode-editor-api@^26.1.1",
+		"vscode": "npm:@codingame/monaco-vscode-extension-api@^26.1.1",
 		"@codingame/monaco-vscode-api": "^26.1.1",
 		"@codingame/monaco-vscode-languages-service-override": "^26.1.1",
 		"@codingame/monaco-vscode-textmate-service-override": "^26.1.1",
 		"@codingame/monaco-vscode-theme-service-override": "^26.1.1",
 		"@volar/language-core": "^2.4.28",
 		"@volar/language-service": "^2.4.28",
-		"vscode": "npm:@codingame/monaco-vscode-extension-api@26.1.1",
 		"vscode-uri": "^3.1.0",
 		"vscode-ws-jsonrpc": "^3.5.0",
 		"monaco-languageclient": "^10.7.0",

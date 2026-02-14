@@ -1,13 +1,12 @@
 import fs from "fs/promises";
 import path from "path";
-
 import {
-	type VirtualDirectoryEntry,
-	type VirtualEntry,
-	type VirtualFileSystem,
-	type VirtualFileSystemChange,
-	type VirtualFileSystemChangeListener
-} from "./index.js";
+	VirtualDirectoryEntry,
+	VirtualEntry,
+	VirtualFileSystem,
+	VirtualFileSystemChange,
+	VirtualFileSystemChangeListener
+} from "./vfs/types";
 
 export type NodeFileSystemOptions = {
 	root: string;
@@ -165,8 +164,7 @@ export function createNodeFileSystem(
 
 	const getTree = () => rootEntry;
 	const setTree = (tree: VirtualEntry) => {
-		rootEntry =
-			tree.type === "dir" ? tree : { type: "dir", children: {} };
+		rootEntry = tree.type === "dir" ? tree : { type: "dir", children: {} };
 		loadedDirectories.clear();
 		loadedFiles.clear();
 		emit([{ type: "setTree", tree: rootEntry }]);
@@ -255,9 +253,7 @@ export function createNodeFileSystem(
 			return;
 		}
 		const toName = toPathSegments[toPathSegments.length - 1]!;
-		const toParent = ensureDirectoryBySegments(
-			toPathSegments.slice(0, -1)
-		);
+		const toParent = ensureDirectoryBySegments(toPathSegments.slice(0, -1));
 		toParent.children[toName] = entry;
 
 		if (loadedFiles.has(fromAbs)) {

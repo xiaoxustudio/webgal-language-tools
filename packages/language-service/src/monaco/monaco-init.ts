@@ -3,7 +3,6 @@ import {
 	registerExtension,
 	ExtensionHostKind
 } from "@codingame/monaco-vscode-api/extensions";
-import "vscode/localExtensionHost";
 import {
 	webgalGrammar,
 	webgalConfigGrammar,
@@ -14,7 +13,17 @@ import getLanguagesServiceOverride from "@codingame/monaco-vscode-languages-serv
 import getThemeServiceOverride from "@codingame/monaco-vscode-theme-service-override";
 import getTextMateServiceOverride from "@codingame/monaco-vscode-textmate-service-override";
 
+import "vscode/localExtensionHost";
+
 let initPromise: Promise<void> | null = null;
+
+export const initResources = {
+	"./webgal.tmLanguage.json": webgalGrammar,
+	"./webgal-config.tmLanguage.json": webgalConfigGrammar,
+	"./language-configuration.json": webgalLanguageConfiguration,
+	"./dark.json": webgalDarkTheme,
+	"./white.json": webgalWhiteTheme
+};
 
 export async function initWebgalMonaco() {
 	if (initPromise) {
@@ -77,72 +86,20 @@ export async function initWebgalMonaco() {
 			},
 			ExtensionHostKind.LocalProcess
 		);
-
-		registerFileUrl(
-			"./webgal.tmLanguage.json",
-			new URL(
-				"data:application/json;base64," +
-					btoa(
-						decodeURIComponent(
-							encodeURIComponent(JSON.stringify(webgalGrammar))
-						)
-					),
-				import.meta.url
-			).href
-		);
-		registerFileUrl(
-			"./webgal-config.tmLanguage.json",
-			new URL(
-				"data:application/json;base64," +
-					btoa(
-						decodeURIComponent(
-							encodeURIComponent(
-								JSON.stringify(webgalConfigGrammar)
+		for (const [key, value] of Object.entries(initResources)) {
+			registerFileUrl(
+				key,
+				new URL(
+					"data:application/json;base64," +
+						btoa(
+							decodeURIComponent(
+								encodeURIComponent(JSON.stringify(value))
 							)
-						)
-					),
-				import.meta.url
-			).href
-		);
-		registerFileUrl(
-			"./language-configuration.json",
-			new URL(
-				"data:application/json;base64," +
-					btoa(
-						decodeURIComponent(
-							encodeURIComponent(
-								JSON.stringify(webgalLanguageConfiguration)
-							)
-						)
-					),
-				import.meta.url
-			).href
-		);
-
-		registerFileUrl(
-			"./dark.json",
-			new URL(
-				"data:application/json;base64," +
-					btoa(
-						decodeURIComponent(
-							encodeURIComponent(JSON.stringify(webgalDarkTheme))
-						)
-					),
-				import.meta.url
-			).href
-		);
-		registerFileUrl(
-			"./white.json",
-			new URL(
-				"data:application/json;base64," +
-					btoa(
-						decodeURIComponent(
-							encodeURIComponent(JSON.stringify(webgalWhiteTheme))
-						)
-					),
-				import.meta.url
-			).href
-		);
+						),
+					import.meta.url
+				).href
+			);
+		}
 
 		await initialize({
 			...getTextMateServiceOverride(),

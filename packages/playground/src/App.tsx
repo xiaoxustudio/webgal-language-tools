@@ -12,6 +12,8 @@ import {
 	type VirtualEntry,
 	type VirtualFileSystem
 } from "@webgal/language-service";
+import { initWebgalMonaco } from "@webgal/language-service/monaco";
+
 import StartText from "./assets/start.txt?raw";
 import ConfigText from "./assets/config.txt?raw";
 import "./App.css";
@@ -34,10 +36,10 @@ self.MonacoEnvironment = {
 	}
 };
 
-Monaco.editor.setTheme("webgal-dark");
-
 loader.config({ monaco: Monaco });
 loader.init();
+
+await initWebgalMonaco();
 
 type IStandaloneCodeEditor<T = EditorProps["onMount"]> = T extends (
 	...args: infer A

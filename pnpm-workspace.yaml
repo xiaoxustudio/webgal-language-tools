@@ -1,6 +1,9 @@
 packages:
   - packages/*
+  - extension/*
 
 onlyBuiltDependencies:
+  - '@vscode/vsce-sign'
   - esbuild
   - keytar
+  - nx

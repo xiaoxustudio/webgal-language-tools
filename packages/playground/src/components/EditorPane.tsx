@@ -34,7 +34,7 @@ export default function EditorPane({
 					onMount={onEditorMount}
 					language={currentLanguage}
 					path={activePath}
-					theme="vs-dark"
+					theme="webgal-dark"
 					options={{
 						quickSuggestions: {
 							other: true,

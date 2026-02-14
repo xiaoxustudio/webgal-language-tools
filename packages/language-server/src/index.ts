@@ -10,7 +10,6 @@ import {
 	createConnection as createVscodeConnection,
 	type Connection
 } from "vscode-languageserver/node";
-import { WebSocket } from "ws";
 import { IncomingMessage } from "http";
 import { createWebgalService, registerConnectionHandlers } from "./events";
 import {
@@ -57,7 +56,7 @@ async function startWebSocketServer(options: WsOptions) {
 }
 
 function getWsOptions(argv: string[]): WsOptions {
-	let port = Number(process.env.WEBGAL_LSP_WS_PORT ?? 3001);
+	let port = Number(process.env.WEBGAL_LSP_WS_PORT ?? 5882);
 	let path = process.env.WEBGAL_LSP_WS_PATH ?? "/webgal-lsp";
 	for (const arg of argv) {
 		if (arg.startsWith("--ws=")) {
@@ -87,7 +86,10 @@ function startServer(connection: Connection, useClientVfs: boolean) {
 	const documents = server.documents;
 	bindCoreFileAccessorToClientVfs(connection);
 	if (useClientVfs) {
-		server.fileSystem.install("file", createClientVfsFileSystem(connection));
+		server.fileSystem.install(
+			"file",
+			createClientVfsFileSystem(connection)
+		);
 	}
 
 	connection.onInitialize((params: InitializeParams) => {

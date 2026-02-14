@@ -14,21 +14,33 @@ import {
 import { MonacoLanguageClient } from "monaco-languageclient";
 import type * as monaco from "monaco-editor";
 import {
-	createMemoryFileSystem,
+	createMemoryVolarFileSystem,
+	createVirtualFileSystem,
+	VirtualEntry,
+	VirtualFileSystem
+} from "@/vfs";
+import {
 	createWebgalClientHandlers,
 	registerWebgalClientHandlers
-} from "../index.js";
+} from "@/client-handlers";
 
 export interface CreateWebgalMonacoLanguageClientOptions {
 	languageServerUrl: string;
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	editor: any;
-	virtualFileSystem?: ReturnType<typeof createMemoryFileSystem>;
+	editor: monaco.editor.IStandaloneCodeEditor;
+	virtualFileSystem?: VirtualFileSystem;
+}
+
+export function createMemoryFileSystem(options?: {
+	root?: string;
+	tree?: VirtualEntry;
+}): VirtualFileSystem {
+	const fs = createMemoryVolarFileSystem(options);
+	return createVirtualFileSystem(fs);
 }
 
 export const createWebgalMonacoLanguageClient = (
 	options: CreateWebgalMonacoLanguageClientOptions
-): { webSocket: WebSocket; vfs: ReturnType<typeof createMemoryFileSystem> } => {
+): { webSocket: WebSocket; vfs: VirtualFileSystem } => {
 	const { languageServerUrl, editor } = options;
 	const editorInstance = editor as monaco.editor.IStandaloneCodeEditor;
 	const vfs =
@@ -63,17 +75,16 @@ export const createWebgalMonacoLanguageClient = (
 };
 
 export interface CreateWebgalMonacoLanguageClientWorkerOptions {
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	editor: any;
+	editor: monaco.editor.IStandaloneCodeEditor;
 	worker: Worker;
-	virtualFileSystem?: ReturnType<typeof createMemoryFileSystem>;
+	virtualFileSystem?: VirtualFileSystem;
 }
 
 export const createWebgalMonacoLanguageClientWithWorker = (
 	options: CreateWebgalMonacoLanguageClientWorkerOptions
-): { worker: Worker; vfs: ReturnType<typeof createMemoryFileSystem> } => {
+): { worker: Worker; vfs: VirtualFileSystem } => {
 	const { worker, editor } = options;
-	const editorInstance = editor as monaco.editor.IStandaloneCodeEditor;
+	const editorInstance = editor;
 	const vfs =
 		options.virtualFileSystem ||
 		createMemoryFileSystem({ root: "file:///game" });
@@ -95,8 +106,8 @@ export const createWebgalMonacoLanguageClientWithWorker = (
 	);
 	languageClient.start();
 
-	(worker as any).onerror = () => languageClient.stop();
-	(worker as any).onmessageerror = () => languageClient.stop();
+	worker.onerror = () => languageClient.stop();
+	worker.onmessageerror = () => languageClient.stop();
 	return { worker, vfs };
 };
 
@@ -104,13 +115,13 @@ const createLanguageClient = (
 	messageTransports: MessageTransports,
 	options: {
 		editor: monaco.editor.IStandaloneCodeEditor;
-		vfs: ReturnType<typeof createMemoryFileSystem>;
+		vfs: VirtualFileSystem;
 	}
 ): MonacoLanguageClient => {
 	const handlers = createWebgalClientHandlers({
 		vfs: options.vfs,
 		overrides: {
-			"client/showTip": function (message: any) {
+			"client/showTip": function (message: string) {
 				console.log(message);
 			},
 			"workspace/documentLink/refresh": () => {

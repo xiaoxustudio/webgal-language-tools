@@ -43,7 +43,7 @@
 		"build": "tsdown",
 		"gen": "tsx scripts/gen.ts",
 		"dev": "pnpm build && node bin/webgal-language-server.js --stdio",
-		"dev:ws": "pnpm build && node bin/webgal-language-server.js --ws=3001",
+		"dev:ws": "pnpm build && node bin/webgal-language-server.js --ws",
 		"format": " prettier --write \"src/**/*.ts\"",
 		"lint": "eslint src --ext ts --fix",
 		"typecheck": "tsc --noEmit",

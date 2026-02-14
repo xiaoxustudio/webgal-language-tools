@@ -13,7 +13,6 @@ export function provideDefinition(
 	position: Position,
 	definitionMap: IDefinetionMap
 ): DefinitionLink[] {
-	// 使用 volar.js 的服务式定义跳转入口
 	const text = document.getText();
 	const findWord = getWordAtPosition(document, position);
 	const definitionLinks: DefinitionLink[] = [];
