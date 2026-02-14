@@ -6,8 +6,11 @@ import * as path from "path";
 enum TypePrefixValue {
 	Type = "@T",
 	Enum = "@E",
+	EnumString = "@ES",
 	Union = "@U",
-	Nil = "@N"
+	Nil = "@N",
+	Array = "@A",
+	Record = "@R"
 }
 
 // 定义输出的目标接口
@@ -111,10 +114,10 @@ function main() {
 					// 递归解析引用的接口
 					value = parseInterfaceOrType(refNode);
 				} else if (ts.isTypeAliasDeclaration(refNode)) {
-					value = TypePrefixValue.Nil;
+					value = `${TypePrefixValue.Nil}:${typeKey}`;
 				} else if (ts.isEnumDeclaration(refNode)) {
 					// 枚举通常作为字符串类型处理，或者不展开其成员
-					value = typeKey;
+					value = `${TypePrefixValue.EnumString}:${typeKey}`;
 				}
 			} else {
 				// 外部库类型或未找到定义
@@ -186,6 +189,30 @@ function main() {
 			if (ts.isPropertySignature(member)) {
 				const parsed = parseProperty(member);
 				if (parsed) {
+					const Map = {
+						Array: TypePrefixValue.Array,
+						Record: TypePrefixValue.Record
+					};
+					const type = parsed.value
+						? String(parsed.value).includes("[")
+							? String(parsed.value).substring(
+									0,
+									String(parsed.value).indexOf("[")
+								)
+							: String(parsed.value).substring(
+									0,
+									String(parsed.value).indexOf("<")
+								)
+						: "";
+					if (type) {
+						if (type in Map) {
+							parsed.value = Map[type] + ":" + parsed.value;
+						} else if (!type.startsWith("@")) {
+							// 不是已标记类型
+							parsed.value =
+								TypePrefixValue.Type + ":" + parsed.value;
+						}
+					}
 					result[parsed.key] = parsed;
 				}
 			}
@@ -245,7 +272,7 @@ function main() {
 	fs.writeFileSync(
 		path.join(__dirname, "../src/utils/definedMap.ts"),
 		`/** This is Automatically generated, do not modify */
-export default ${jsLike}`
+export default ${jsLike};`
 	);
 }
 

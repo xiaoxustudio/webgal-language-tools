@@ -68,7 +68,7 @@ export default {
                 key: "fileType",
                 description: "资源类型"
             },
-            value: "fileType"
+            value: "@ES:fileType"
         },
         url: {
             key: "url",
@@ -99,7 +99,7 @@ export default {
                 key: "commandType",
                 description: "语句类型"
             },
-            value: "commandType"
+            value: "@ES:commandType"
         },
         commandRaw: {
             key: "commandRaw",
@@ -126,7 +126,7 @@ export default {
                 key: "Array<arg>",
                 description: "参数列表"
             },
-            value: "Array<arg>"
+            value: "@A:Array<arg>"
         },
         sentenceAssets: {
             key: "sentenceAssets",
@@ -135,7 +135,7 @@ export default {
                 key: "Array<IAsset>",
                 description: "语句携带的资源列表"
             },
-            value: "Array<IAsset>"
+            value: "@A:Array<IAsset>"
         },
         subScene: {
             key: "subScene",
@@ -144,7 +144,7 @@ export default {
                 key: "Array<string>",
                 description: "语句包含子场景列表"
             },
-            value: "Array<string>"
+            value: "@A:Array<string>"
         },
         inlineComment: {
             key: "inlineComment",
@@ -184,7 +184,7 @@ export default {
                 key: "Array<ISentence>",
                 description: "语句列表"
             },
-            value: "Array<ISentence>"
+            value: "@A:Array<ISentence>"
         },
         assetsList: {
             key: "assetsList",
@@ -193,7 +193,7 @@ export default {
                 key: "Array<IAsset>",
                 description: "资源列表"
             },
-            value: "Array<IAsset>"
+            value: "@A:Array<IAsset>"
         },
         subSceneList: {
             key: "subSceneList",
@@ -202,7 +202,7 @@ export default {
                 key: "Array<string>",
                 description: "子场景的url列表"
             },
-            value: "Array<string>"
+            value: "@A:Array<string>"
         },
         __WG$key: "IScene",
         __WG$description: "\n场景接口\n@interface IScene\n/"
@@ -224,7 +224,7 @@ export default {
                 key: "Array<ISceneEntry>",
                 description: "场景栈"
             },
-            value: "Array<ISceneEntry>"
+            value: "@A:Array<ISceneEntry>"
         },
         currentScene: {
             key: "currentScene",
@@ -259,7 +259,7 @@ export default {
                         key: "Array<ISentence>",
                         description: "语句列表"
                     },
-                    value: "Array<ISentence>"
+                    value: "@A:Array<ISentence>"
                 },
                 assetsList: {
                     key: "assetsList",
@@ -268,7 +268,7 @@ export default {
                         key: "Array<IAsset>",
                         description: "资源列表"
                     },
-                    value: "Array<IAsset>"
+                    value: "@A:Array<IAsset>"
                 },
                 subSceneList: {
                     key: "subSceneList",
@@ -277,7 +277,7 @@ export default {
                         key: "Array<string>",
                         description: "子场景的url列表"
                     },
-                    value: "Array<string>"
+                    value: "@A:Array<string>"
                 }
             }
         },
@@ -292,7 +292,7 @@ export default {
                 key: "commandType",
                 description: ""
             },
-            value: "commandType"
+            value: "@ES:commandType"
         },
         additionalArgs: {
             key: "additionalArgs",
@@ -301,7 +301,7 @@ export default {
                 key: "Array<arg>",
                 description: ""
             },
-            value: "Array<arg>"
+            value: "@A:Array<arg>"
         },
         __WG$key: "parsedCommand",
         __WG$description: "\n处理后的命令接口\n@interface parsedCommand\n/"
@@ -976,7 +976,7 @@ export default {
                 key: "StageAnimationSettingUpdatableKey",
                 description: ""
             },
-            value: "@N"
+            value: "@N:StageAnimationSettingUpdatableKey"
         },
         value: {
             key: "value",
@@ -985,7 +985,7 @@ export default {
                 key: "IStageAnimationSetting[StageAnimationSettingUpdatableKey]",
                 description: ""
             },
-            value: "IStageAnimationSetting[StageAnimationSettingUpdatableKey]"
+            value: "@T:IStageAnimationSetting[StageAnimationSettingUpdatableKey]"
         }
     },
     IFreeFigure: {
@@ -1185,7 +1185,7 @@ export default {
                         key: "commandType",
                         description: "语句类型"
                     },
-                    value: "commandType"
+                    value: "@ES:commandType"
                 },
                 commandRaw: {
                     key: "commandRaw",
@@ -1212,7 +1212,7 @@ export default {
                         key: "Array<arg>",
                         description: "参数列表"
                     },
-                    value: "Array<arg>"
+                    value: "@A:Array<arg>"
                 },
                 sentenceAssets: {
                     key: "sentenceAssets",
@@ -1221,7 +1221,7 @@ export default {
                         key: "Array<IAsset>",
                         description: "语句携带的资源列表"
                     },
-                    value: "Array<IAsset>"
+                    value: "@A:Array<IAsset>"
                 },
                 subScene: {
                     key: "subScene",
@@ -1230,7 +1230,7 @@ export default {
                         key: "Array<string>",
                         description: "语句包含子场景列表"
                     },
-                    value: "Array<string>"
+                    value: "@A:Array<string>"
                 },
                 inlineComment: {
                     key: "inlineComment",
@@ -1566,7 +1566,7 @@ export default {
                 key: "textSize",
                 description: ""
             },
-            value: "textSize"
+            value: "@ES:textSize"
         },
         vocalVolume: {
             key: "vocalVolume",
@@ -1638,7 +1638,7 @@ export default {
                 key: "language",
                 description: ""
             },
-            value: "language"
+            value: "@ES:language"
         },
         voiceInterruption: {
             key: "voiceInterruption",
@@ -1647,7 +1647,7 @@ export default {
                 key: "voiceOption",
                 description: "是否中断语音"
             },
-            value: "voiceOption"
+            value: "@ES:voiceOption"
         },
         fullScreen: {
             key: "fullScreen",
@@ -1656,7 +1656,7 @@ export default {
                 key: "fullScreenOption",
                 description: ""
             },
-            value: "fullScreenOption"
+            value: "@ES:fullScreenOption"
         },
         __WG$key: "IOptionData",
         __WG$description: "\n@interface IOptionData 用户设置数据接口\n/"
@@ -1678,7 +1678,7 @@ export default {
                 key: "Array<ISceneEntry>",
                 description: "场景栈"
             },
-            value: "Array<ISceneEntry>"
+            value: "@A:Array<ISceneEntry>"
         },
         sceneName: {
             key: "sceneName",
@@ -1762,7 +1762,7 @@ export default {
                         key: "Array<IFreeFigure>",
                         description: ""
                     },
-                    value: "Array<IFreeFigure>"
+                    value: "@A:Array<IFreeFigure>"
                 },
                 figureAssociatedAnimation: {
                     key: "figureAssociatedAnimation",
@@ -1771,7 +1771,7 @@ export default {
                         key: "Array<IFigureAssociatedAnimation>",
                         description: ""
                     },
-                    value: "Array<IFigureAssociatedAnimation>"
+                    value: "@A:Array<IFigureAssociatedAnimation>"
                 },
                 showText: {
                     key: "showText",
@@ -1816,7 +1816,7 @@ export default {
                         key: "Array<IChooseItem>",
                         description: "选项列表"
                     },
-                    value: "Array<IChooseItem>"
+                    value: "@A:Array<IChooseItem>"
                 },
                 vocal: {
                     key: "vocal",
@@ -1916,7 +1916,7 @@ export default {
                         key: "Array<IEffect>",
                         description: "应用的变换"
                     },
-                    value: "Array<IEffect>"
+                    value: "@A:Array<IEffect>"
                 },
                 animationSettings: {
                     key: "animationSettings",
@@ -1925,7 +1925,7 @@ export default {
                         key: "Array<IStageAnimationSetting>",
                         description: ""
                     },
-                    value: "Array<IStageAnimationSetting>"
+                    value: "@A:Array<IStageAnimationSetting>"
                 },
                 bgTransform: {
                     key: "bgTransform",
@@ -1952,7 +1952,7 @@ export default {
                         key: "Array<IRunPerform>",
                         description: "要启动的演出列表"
                     },
-                    value: "Array<IRunPerform>"
+                    value: "@A:Array<IRunPerform>"
                 },
                 currentDialogKey: {
                     key: "currentDialogKey",
@@ -2033,7 +2033,7 @@ export default {
                         key: "Record<string, string>",
                         description: ""
                     },
-                    value: "Record<string, string>"
+                    value: "@R:Record<string, string>"
                 },
                 figureMetaData: {
                     key: "figureMetaData",
@@ -2042,7 +2042,7 @@ export default {
                         key: "figureMetaData",
                         description: ""
                     },
-                    value: "@N"
+                    value: "@N:figureMetaData"
                 }
             }
         },
@@ -2070,7 +2070,7 @@ export default {
                         key: "Array<ISceneEntry>",
                         description: "场景栈"
                     },
-                    value: "Array<ISceneEntry>"
+                    value: "@A:Array<ISceneEntry>"
                 },
                 sceneName: {
                     key: "sceneName",
@@ -2154,7 +2154,7 @@ export default {
                         key: "Array<IFreeFigure>",
                         description: ""
                     },
-                    value: "Array<IFreeFigure>"
+                    value: "@A:Array<IFreeFigure>"
                 },
                 figureAssociatedAnimation: {
                     key: "figureAssociatedAnimation",
@@ -2163,7 +2163,7 @@ export default {
                         key: "Array<IFigureAssociatedAnimation>",
                         description: ""
                     },
-                    value: "Array<IFigureAssociatedAnimation>"
+                    value: "@A:Array<IFigureAssociatedAnimation>"
                 },
                 showText: {
                     key: "showText",
@@ -2208,7 +2208,7 @@ export default {
                         key: "Array<IChooseItem>",
                         description: "选项列表"
                     },
-                    value: "Array<IChooseItem>"
+                    value: "@A:Array<IChooseItem>"
                 },
                 vocal: {
                     key: "vocal",
@@ -2308,7 +2308,7 @@ export default {
                         key: "Array<IEffect>",
                         description: "应用的变换"
                     },
-                    value: "Array<IEffect>"
+                    value: "@A:Array<IEffect>"
                 },
                 animationSettings: {
                     key: "animationSettings",
@@ -2317,7 +2317,7 @@ export default {
                         key: "Array<IStageAnimationSetting>",
                         description: ""
                     },
-                    value: "Array<IStageAnimationSetting>"
+                    value: "@A:Array<IStageAnimationSetting>"
                 },
                 bgTransform: {
                     key: "bgTransform",
@@ -2344,7 +2344,7 @@ export default {
                         key: "Array<IRunPerform>",
                         description: "要启动的演出列表"
                     },
-                    value: "Array<IRunPerform>"
+                    value: "@A:Array<IRunPerform>"
                 },
                 currentDialogKey: {
                     key: "currentDialogKey",
@@ -2425,7 +2425,7 @@ export default {
                         key: "Record<string, string>",
                         description: ""
                     },
-                    value: "Record<string, string>"
+                    value: "@R:Record<string, string>"
                 },
                 figureMetaData: {
                     key: "figureMetaData",
@@ -2434,7 +2434,7 @@ export default {
                         key: "figureMetaData",
                         description: ""
                     },
-                    value: "@N"
+                    value: "@N:figureMetaData"
                 }
             }
         },
@@ -2445,7 +2445,7 @@ export default {
                 key: "Array<IBacklogItem>",
                 description: "舞台数据"
             },
-            value: "Array<IBacklogItem>"
+            value: "@A:Array<IBacklogItem>"
         },
         index: {
             key: "index",
@@ -2489,7 +2489,7 @@ export default {
                         key: "Array<ISceneEntry>",
                         description: "场景栈"
                     },
-                    value: "Array<ISceneEntry>"
+                    value: "@A:Array<ISceneEntry>"
                 },
                 sceneName: {
                     key: "sceneName",
@@ -2560,7 +2560,7 @@ export default {
                 key: "Array<IAppreciationAsset>",
                 description: ""
             },
-            value: "Array<IAppreciationAsset>"
+            value: "@A:Array<IAppreciationAsset>"
         },
         cg: {
             key: "cg",
@@ -2569,7 +2569,7 @@ export default {
                 key: "Array<IAppreciationAsset>",
                 description: ""
             },
-            value: "Array<IAppreciationAsset>"
+            value: "@A:Array<IAppreciationAsset>"
         }
     },
     stage: {
@@ -2625,7 +2625,7 @@ export default {
                 key: "Array<IFreeFigure>",
                 description: ""
             },
-            value: "Array<IFreeFigure>"
+            value: "@A:Array<IFreeFigure>"
         },
         figureAssociatedAnimation: {
             key: "figureAssociatedAnimation",
@@ -2634,7 +2634,7 @@ export default {
                 key: "Array<IFigureAssociatedAnimation>",
                 description: ""
             },
-            value: "Array<IFigureAssociatedAnimation>"
+            value: "@A:Array<IFigureAssociatedAnimation>"
         },
         showText: {
             key: "showText",
@@ -2679,7 +2679,7 @@ export default {
                 key: "Array<IChooseItem>",
                 description: "选项列表"
             },
-            value: "Array<IChooseItem>"
+            value: "@A:Array<IChooseItem>"
         },
         vocal: {
             key: "vocal",
@@ -2779,7 +2779,7 @@ export default {
                 key: "Array<IEffect>",
                 description: "应用的变换"
             },
-            value: "Array<IEffect>"
+            value: "@A:Array<IEffect>"
         },
         animationSettings: {
             key: "animationSettings",
@@ -2788,7 +2788,7 @@ export default {
                 key: "Array<IStageAnimationSetting>",
                 description: ""
             },
-            value: "Array<IStageAnimationSetting>"
+            value: "@A:Array<IStageAnimationSetting>"
         },
         bgTransform: {
             key: "bgTransform",
@@ -2815,7 +2815,7 @@ export default {
                 key: "Array<IRunPerform>",
                 description: "要启动的演出列表"
             },
-            value: "Array<IRunPerform>"
+            value: "@A:Array<IRunPerform>"
         },
         currentDialogKey: {
             key: "currentDialogKey",
@@ -2896,7 +2896,7 @@ export default {
                 key: "Record<string, string>",
                 description: ""
             },
-            value: "Record<string, string>"
+            value: "@R:Record<string, string>"
         },
         figureMetaData: {
             key: "figureMetaData",
@@ -2905,7 +2905,7 @@ export default {
                 key: "figureMetaData",
                 description: ""
             },
-            value: "@N"
+            value: "@N:figureMetaData"
         },
         __WG$key: "IStageState",
         __WG$description: "\n@interface IStageState 游戏舞台数据接口\n/"
@@ -2971,7 +2971,7 @@ export default {
                         key: "textSize",
                         description: ""
                     },
-                    value: "textSize"
+                    value: "@ES:textSize"
                 },
                 vocalVolume: {
                     key: "vocalVolume",
@@ -3043,7 +3043,7 @@ export default {
                         key: "language",
                         description: ""
                     },
-                    value: "language"
+                    value: "@ES:language"
                 },
                 voiceInterruption: {
                     key: "voiceInterruption",
@@ -3052,7 +3052,7 @@ export default {
                         key: "voiceOption",
                         description: "是否中断语音"
                     },
-                    value: "voiceOption"
+                    value: "@ES:voiceOption"
                 },
                 fullScreen: {
                     key: "fullScreen",
@@ -3061,7 +3061,7 @@ export default {
                         key: "fullScreenOption",
                         description: ""
                     },
-                    value: "fullScreenOption"
+                    value: "@ES:fullScreenOption"
                 }
             }
         },
@@ -3080,7 +3080,7 @@ export default {
                         key: "Array<IAppreciationAsset>",
                         description: ""
                     },
-                    value: "Array<IAppreciationAsset>"
+                    value: "@A:Array<IAppreciationAsset>"
                 },
                 cg: {
                     key: "cg",
@@ -3089,7 +3089,7 @@ export default {
                         key: "Array<IAppreciationAsset>",
                         description: ""
                     },
-                    value: "Array<IAppreciationAsset>"
+                    value: "@A:Array<IAppreciationAsset>"
                 }
             }
         },
@@ -3105,4 +3105,4 @@ export default {
         __WG$key: "IUserData",
         __WG$description: "\n@interface IUserData 用户数据接口\n/"
     }
-}
+};
