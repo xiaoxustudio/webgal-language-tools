@@ -26,7 +26,7 @@ import {
 
 export interface CreateWebgalMonacoLanguageClientOptions {
 	languageServerUrl: string;
-	editor: monaco.editor.IStandaloneCodeEditor;
+	editor: any;
 	virtualFileSystem?: VirtualFileSystem;
 }
 
@@ -75,7 +75,7 @@ export const createWebgalMonacoLanguageClient = (
 };
 
 export interface CreateWebgalMonacoLanguageClientWorkerOptions {
-	editor: monaco.editor.IStandaloneCodeEditor;
+	editor: any;
 	worker: Worker;
 	virtualFileSystem?: VirtualFileSystem;
 }
