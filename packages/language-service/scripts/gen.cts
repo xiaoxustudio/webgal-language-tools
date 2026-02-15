@@ -206,7 +206,7 @@ function main() {
 						: "";
 					if (type) {
 						if (type in Map) {
-							parsed.value = Map[type] + ":" + parsed.value;
+							parsed.value = `${Map[type]}:${parsed.value}`;
 						} else if (!type.startsWith("@")) {
 							// 不是已标记类型
 							parsed.value =
