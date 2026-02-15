@@ -67,16 +67,23 @@ export async function provideCompletionItems(
 	if (findWordWithPattern) {
 		const { replaceRange, fullSegments, querySegments, prefix } =
 			getStageCompletionContext(document, position, findWordWithPattern);
+		const sendPath = querySegments.length ? querySegments : fullSegments;
 		const info = await connection.sendRequest<
 			StateMap | Record<string, StateMap>
-		>(
-			"client/goPropertyDoc",
-			querySegments.length ? querySegments : fullSegments
-		);
+		>("client/goPropertyDoc", sendPath);
 
 		if (info) {
 			delete info.__WG$key;
 			delete info.__WG$description;
+			// 如果是单个属性值，则不进行补全
+			if (
+				"key" in info &&
+				"description" in info &&
+				"type" in info &&
+				"value" in info
+			) {
+				return CompletionItemSuggestions;
+			}
 			if (!isStateMap(info)) {
 				for (const key in info) {
 					if (prefix && !key.includes(prefix)) {
