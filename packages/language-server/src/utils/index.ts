@@ -1,4 +1,4 @@
-import { ServerSettings } from "../types";
+import { LspFeatureOptions, ServerSettings } from "../types";
 import { fsAccessor, type IDefinetionMap, source } from "@webgal/language-core";
 import { warningConfig, getDiagnosticInformation } from "@/warnings";
 import {
@@ -23,9 +23,7 @@ import type {
 } from "@volar/language-core";
 import { TextDocument } from "vscode-languageserver-textdocument";
 import { URI } from "vscode-uri";
-import type { VirtualFileSystem } from "@webgal/language-service" with {
-	"resolution-mode": "import"
-};
+import type { VirtualFileSystem } from "@webgal/language-service/src/vfs/types";
 
 type SendRequestConnection = {
 	sendRequest: (method: string, ...params: any[]) => Promise<any>;
@@ -717,15 +715,33 @@ export const documentSettings: Map<
 	Thenable<ServerSettings>
 > = new Map();
 
+export const defaultFeatureOptions: LspFeatureOptions = {
+	completion: true,
+	hover: true,
+	documentLink: true,
+	resourceCompletion: true,
+	diagnostics: true,
+	foldingRange: true,
+	definition: true
+};
+
 export const StateConfig = {
 	hasConfigurationCapability: false, // 是否支持配置能力
 	hasWorkspaceFolderCapability: false, // 是否支持工作区文件夹能力
-	hasDiagnosticRelatedInformationCapability: false // 是否支持诊断相关信息的能力
+	hasDiagnosticRelatedInformationCapability: false, // 是否支持诊断相关信息的能力
+	featureOptions: defaultFeatureOptions
 };
 
 export let globalSettings: ServerSettings = defaultSettings;
 export function setGlobalSettings(settings: ServerSettings) {
 	globalSettings = settings;
+}
+
+export function setFeatureOptions(options?: Partial<LspFeatureOptions>) {
+	StateConfig.featureOptions = {
+		...defaultFeatureOptions,
+		...(options ?? {})
+	};
 }
 
 // 获取文档设置

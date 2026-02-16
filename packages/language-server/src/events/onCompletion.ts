@@ -19,9 +19,7 @@ import {
 	Position
 } from "@volar/language-server";
 import type { IDefinetionMap } from "@webgal/language-core";
-import type { StateMap } from "@webgal/language-service/utils" with {
-	"resolution-mode": "import"
-};
+import type { StateMap } from "@webgal/language-service/src/utils";
 import { TextDocument } from "vscode-languageserver-textdocument";
 
 export async function provideCompletionItems(
@@ -31,7 +29,8 @@ export async function provideCompletionItems(
 	definitionMap: IDefinetionMap,
 	lines: string[],
 	lineCommandTypes: string[],
-	sourceUri: string
+	sourceUri: string,
+	enableResourceCompletion: boolean
 ): Promise<CompletionItem[]> {
 	const file_name = sourceUri;
 	const documentTextArray = lines;
@@ -135,22 +134,24 @@ export async function provideCompletionItems(
 		Object.keys(resourcesMap).includes(commandType) ||
 		token.startsWith("-")
 	) {
-		const resourceBaseDir = isSayCommandType
-			? "vocal"
-			: resourcesMap[commandType];
-		if (resourceBaseDir) {
-			const dirs = await connection.sendRequest<any>(
-				"client/getResourceDirectory",
-				[resourceBaseDir, token]
-			);
-			if (dirs) {
-				for (const dir of dirs) {
-					CompletionItemSuggestions.push({
-						label: dir.name,
-						kind: dir.isDirectory
-							? CompletionItemKind.Folder
-							: CompletionItemKind.File
-					} satisfies CompletionItem);
+		if (enableResourceCompletion) {
+			const resourceBaseDir = isSayCommandType
+				? "vocal"
+				: resourcesMap[commandType];
+			if (resourceBaseDir) {
+				const dirs = await connection.sendRequest<any>(
+					"client/getResourceDirectory",
+					[resourceBaseDir, token]
+				);
+				if (dirs) {
+					for (const dir of dirs) {
+						CompletionItemSuggestions.push({
+							label: dir.name,
+							kind: dir.isDirectory
+								? CompletionItemKind.Folder
+								: CompletionItemKind.File
+						} satisfies CompletionItem);
+					}
 				}
 			}
 		}

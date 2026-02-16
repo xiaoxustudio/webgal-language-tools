@@ -30,20 +30,33 @@ export function applyClientCapabilities(params: InitializeParams) {
 export function applyServerCapabilities(result: InitializeResult) {
 	// 保持原有能力声明，同时让 volar.js 负责服务分发
 	result.capabilities.textDocumentSync = TextDocumentSyncKind.Incremental;
-	result.capabilities.completionProvider = {
-		triggerCharacters: [".", ":", "-", "/"]
-	};
-	result.capabilities.hoverProvider = true;
-	result.capabilities.diagnosticProvider = {
-		identifier: "webgal-diagnostics",
-		interFileDependencies: false,
-		workspaceDiagnostics: false
-	};
-	result.capabilities.documentLinkProvider = {
-		resolveProvider: true
-	};
-	result.capabilities.foldingRangeProvider = true;
-	result.capabilities.definitionProvider = true;
+	const featureOptions = StateConfig.featureOptions;
+	if (featureOptions.completion) {
+		result.capabilities.completionProvider = {
+			triggerCharacters: [".", ":", "-", "/"]
+		};
+	}
+	if (featureOptions.hover) {
+		result.capabilities.hoverProvider = true;
+	}
+	if (featureOptions.diagnostics) {
+		result.capabilities.diagnosticProvider = {
+			identifier: "webgal-diagnostics",
+			interFileDependencies: false,
+			workspaceDiagnostics: false
+		};
+	}
+	if (featureOptions.documentLink) {
+		result.capabilities.documentLinkProvider = {
+			resolveProvider: true
+		};
+	}
+	if (featureOptions.foldingRange) {
+		result.capabilities.foldingRangeProvider = true;
+	}
+	if (featureOptions.definition) {
+		result.capabilities.definitionProvider = true;
+	}
 
 	if (StateConfig.hasWorkspaceFolderCapability) {
 		result.capabilities.workspace = {

@@ -11,6 +11,7 @@ import {
 	type Connection
 } from "vscode-languageserver/node";
 import { IncomingMessage } from "http";
+import type { StartServerOptions } from "@/types";
 import { createWebgalService, registerConnectionHandlers } from "./events";
 import {
 	applyClientCapabilities,
@@ -20,7 +21,8 @@ import {
 	bindCoreFileAccessorToClientVfs,
 	createClientVfsFileSystem,
 	createWebgalVirtualCode,
-	updateWebgalVirtualCode
+	updateWebgalVirtualCode,
+	setFeatureOptions
 } from "@/utils";
 
 type WsOptions = {
@@ -87,7 +89,12 @@ function getWsOptions(argv: string[]): WsOptions {
 	};
 }
 
-function startServer(connection: Connection, useClientVfs: boolean) {
+function startServer(
+	connection: Connection,
+	useClientVfs: boolean,
+	options?: StartServerOptions
+) {
+	setFeatureOptions(options?.features);
 	const server = createServer(connection);
 	const documents = server.documents;
 	bindCoreFileAccessorToClientVfs(connection);

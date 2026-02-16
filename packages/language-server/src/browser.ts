@@ -6,6 +6,7 @@ import {
 import type { InitializeParams } from "@volar/language-server";
 import type { LanguagePlugin } from "@volar/language-core";
 import { URI } from "vscode-uri";
+import type { StartServerOptions } from "@/types";
 import { createWebgalService, registerConnectionHandlers } from "./events";
 import {
 	applyClientCapabilities,
@@ -15,7 +16,8 @@ import {
 	bindCoreFileAccessorToClientVfs,
 	createClientVfsFileSystem,
 	createWebgalVirtualCode,
-	updateWebgalVirtualCode
+	updateWebgalVirtualCode,
+	setFeatureOptions
 } from "@/utils";
 
 export { createConnection } from "@volar/language-server/browser";
@@ -25,10 +27,14 @@ export { createConnection } from "@volar/language-server/browser";
  * @param connection - 可选的连接实例，如果未提供则会创建新的连接
  * @returns 返回连接实例
  */
-export function startServer(connection?: ReturnType<typeof createConnection>) {
+export function startServer(
+	connection?: ReturnType<typeof createConnection>,
+	options?: StartServerOptions
+) {
 	if (!connection) {
 		connection = createConnection();
 	}
+	setFeatureOptions(options?.features);
 	const server = createServer(connection);
 	const documents = server.documents;
 	bindCoreFileAccessorToClientVfs(connection);

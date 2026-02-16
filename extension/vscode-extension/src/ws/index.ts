@@ -4,7 +4,7 @@ import type {
 	FileAccessor,
 	IDebugMessage,
 	RuntimeVariable
-} from "@webgal/language-core" with { "resolution-mode": "import" };
+} from "@webgal/language-core";
 import {
 	disableGameStatus,
 	enableGameStatus,
@@ -12,9 +12,7 @@ import {
 	setGameData
 } from "@/utils/utils";
 
-type LanguageCore = typeof import("@webgal/language-core", {
-	with: { "resolution-mode": "import" }
-});
+type LanguageCore = typeof import("@webgal/language-core");
 type VscodeApi = typeof import("vscode");
 type ScopeKey = "local" | "env" | "scene";
 

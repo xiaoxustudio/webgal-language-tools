@@ -19,7 +19,8 @@ import {
 	getWebgalFoldingRanges,
 	getWebgalLineCommandTypes,
 	getWebgalSourceUriString,
-	getWebgalVirtualCodeText
+	getWebgalVirtualCodeText,
+	StateConfig
 } from "@/utils";
 import { getWebgalVirtualCodeLines } from "@/utils";
 
@@ -43,22 +44,39 @@ export function registerConnectionHandlers(
 export function createWebgalService(
 	connection: Connection
 ): LanguageServicePlugin {
+	const featureOptions = StateConfig.featureOptions;
 	return {
 		name: "webgal-service",
 		capabilities: {
-			completionProvider: {
-				triggerCharacters: [".", ":", "-", "/"]
-			},
-			hoverProvider: true,
-			diagnosticProvider: {
-				interFileDependencies: false,
-				workspaceDiagnostics: false
-			},
-			documentLinkProvider: {
-				resolveProvider: true
-			},
-			foldingRangeProvider: true,
-			definitionProvider: true
+			...(featureOptions.completion
+				? {
+						completionProvider: {
+							triggerCharacters: [".", ":", "-", "/"]
+						}
+					}
+				: {}),
+			...(featureOptions.hover ? { hoverProvider: true } : {}),
+			...(featureOptions.diagnostics
+				? {
+						diagnosticProvider: {
+							interFileDependencies: false,
+							workspaceDiagnostics: false
+						}
+					}
+				: {}),
+			...(featureOptions.documentLink
+				? {
+						documentLinkProvider: {
+							resolveProvider: true
+						}
+					}
+				: {}),
+			...(featureOptions.foldingRange
+				? { foldingRangeProvider: true }
+				: {}),
+			...(featureOptions.definition
+				? { definitionProvider: true }
+				: {})
 		},
 		create(context) {
 			const getDefinitionMap = (document: TextDocument) =>
@@ -76,79 +94,104 @@ export function createWebgalService(
 			const getFoldingRanges = (document: TextDocument) =>
 				getWebgalFoldingRanges(context, document);
 			return {
-				async provideCompletionItems(
-					document: TextDocument,
-					position: Position,
-					_context: CompletionContext,
-					_token: CancellationToken
-				): Promise<CompletionList> {
-					return {
-						isIncomplete: false,
-						items: await provideCompletionItems(
-							document,
-							position,
-							connection,
-							getDefinitionMap(document),
-							getVirtualCodeLines(document),
-							getLineCommandTypes(document),
-							getSourceUriString(document)
-						)
-					};
-				},
-				async provideHover(
-					document: TextDocument,
-					position: Position,
-					_token: CancellationToken
-				): Promise<Hover> {
-					return provideHover(
-						document,
-						position,
-						connection,
-						getDefinitionMap(document),
-						getLineCommandTypes(document),
-						getSourceUriString(document)
-					);
-				},
-				provideDefinition(
-					document: TextDocument,
-					position: Position,
-					_token: CancellationToken
-				): DefinitionLink[] {
-					return provideDefinition(
-						document,
-						position,
-						getDefinitionMap(document)
-					);
-				},
-				async provideDocumentLinks(
-					document: TextDocument,
-					_token: CancellationToken
-				): Promise<DocumentLink[]> {
-					return provideDocumentLinks(
-						document,
-						connection,
-						getDocumentLinkCandidates(document)
-					);
-				},
-				provideFoldingRanges(
-					document: TextDocument,
-					_token: CancellationToken
-				): FoldingRange[] {
-					return provideFoldingRanges(
-						document,
-						getFoldingRanges(document)
-					);
-				},
-				async provideDiagnostics(
-					document: TextDocument,
-					_token: CancellationToken
-				): Promise<Diagnostic[]> {
-					return provideDiagnostics(
-						document,
-						connection,
-						getVirtualCodeText(document)
-					);
-				}
+				...(featureOptions.completion
+					? {
+							async provideCompletionItems(
+								document: TextDocument,
+								position: Position,
+								_context: CompletionContext,
+								_token: CancellationToken
+							): Promise<CompletionList> {
+								return {
+									isIncomplete: false,
+									items: await provideCompletionItems(
+										document,
+										position,
+										connection,
+										getDefinitionMap(document),
+										getVirtualCodeLines(document),
+										getLineCommandTypes(document),
+										getSourceUriString(document),
+										featureOptions.resourceCompletion
+									)
+								};
+							}
+						}
+					: {}),
+				...(featureOptions.hover
+					? {
+							async provideHover(
+								document: TextDocument,
+								position: Position,
+								_token: CancellationToken
+							): Promise<Hover> {
+								return provideHover(
+									document,
+									position,
+									connection,
+									getDefinitionMap(document),
+									getLineCommandTypes(document),
+									getSourceUriString(document)
+								);
+							}
+						}
+					: {}),
+				...(featureOptions.definition
+					? {
+							provideDefinition(
+								document: TextDocument,
+								position: Position,
+								_token: CancellationToken
+							): DefinitionLink[] {
+								return provideDefinition(
+									document,
+									position,
+									getDefinitionMap(document)
+								);
+							}
+						}
+					: {}),
+				...(featureOptions.documentLink
+					? {
+							async provideDocumentLinks(
+								document: TextDocument,
+								_token: CancellationToken
+							): Promise<DocumentLink[]> {
+								return provideDocumentLinks(
+									document,
+									connection,
+									getDocumentLinkCandidates(document)
+								);
+							}
+						}
+					: {}),
+				...(featureOptions.foldingRange
+					? {
+							provideFoldingRanges(
+								document: TextDocument,
+								_token: CancellationToken
+							): FoldingRange[] {
+								return provideFoldingRanges(
+									document,
+									getFoldingRanges(document)
+								);
+							}
+						}
+					: {}),
+				...(featureOptions.diagnostics
+					? {
+							async provideDiagnostics(
+								document: TextDocument,
+								_token: CancellationToken
+							): Promise<Diagnostic[]> {
+								return provideDiagnostics(
+									document,
+									connection,
+									getVirtualCodeText(document)
+								);
+							}
+						}
+					: {})
 			};
 		}
 	};
