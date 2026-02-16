@@ -31,15 +31,16 @@ export function startServer(
 	connection?: ReturnType<typeof createConnection>,
 	options?: StartServerOptions
 ) {
-	if (!connection) {
-		connection = createConnection();
-	}
+	const resolvedConnection = connection ?? createConnection();
 	setFeatureOptions(options?.features);
-	const server = createServer(connection);
+	const server = createServer(resolvedConnection);
 	const documents = server.documents;
-	bindCoreFileAccessorToClientVfs(connection);
+	bindCoreFileAccessorToClientVfs(resolvedConnection);
 
-	server.fileSystem.install("file", createClientVfsFileSystem(connection));
+	server.fileSystem.install(
+		"file",
+		createClientVfsFileSystem(resolvedConnection)
+	);
 
 	const webgalLanguagePlugin: LanguagePlugin<URI> = {
 		getLanguageId(scriptId) {
@@ -81,24 +82,24 @@ export function startServer(
 		}
 	};
 
-	connection.onInitialize((params: InitializeParams) => {
+	resolvedConnection.onInitialize((params: InitializeParams) => {
 		applyClientCapabilities(params);
 		const result = server.initialize(
 			params,
 			createSimpleProject([webgalLanguagePlugin]),
-			[createWebgalService(connection)]
+			[createWebgalService(resolvedConnection)]
 		);
 		applyServerCapabilities(result);
 		return result;
 	});
 
-	connection.onInitialized(() => {
+	resolvedConnection.onInitialized(() => {
 		server.initialized();
-		registerConnectionHandlers(documents, connection);
+		registerConnectionHandlers(documents, resolvedConnection);
 	});
 
-	connection.onShutdown(server.shutdown);
+	resolvedConnection.onShutdown(server.shutdown);
 
-	connection.listen();
-	return connection;
+	resolvedConnection.listen();
+	return resolvedConnection;
 }
