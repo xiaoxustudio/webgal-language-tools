@@ -10,6 +10,7 @@ onlyBuiltDependencies:
 
 catalogs:
     default:
+        "typescript": "^4.3.5"
         "@codingame/monaco-vscode-editor-api": "26.1.1"
         "@codingame/monaco-vscode-extension-api": "26.1.1"
         "@codingame/monaco-vscode-api": "26.1.1"

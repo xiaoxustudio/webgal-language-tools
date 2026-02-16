@@ -44,6 +44,6 @@
 		"eslint": "^8.56.0",
 		"lerna": "^9.0.4",
 		"prettier": "^3.8.1",
-		"typescript": "latest"
+		"typescript": "catalog:"
 	}
 }
