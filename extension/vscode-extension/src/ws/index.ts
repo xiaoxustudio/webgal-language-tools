@@ -1,61 +1,80 @@
-import { DebugSession, Range, TextEditorDecorationType, window } from "vscode";
+import EventEmitter from "events";
+import WebSocket from "ws";
+import type {
+	FileAccessor,
+	IDebugMessage,
+	RuntimeVariable
+} from "@webgal/language-core" with { "resolution-mode": "import" };
 import {
 	disableGameStatus,
 	enableGameStatus,
 	is_JSON,
 	setGameData
 } from "@/utils/utils";
-import EventEmitter from "events";
-import WebSocket, { WebSocket as WS } from "ws";
-import type {
-	FileAccessor,
-	IDebugMessage,
-	RuntimeVariable
-} from "@webgal/language-core" with { "resolution-mode": "import" };
 
 type LanguageCore = typeof import("@webgal/language-core", {
 	with: { "resolution-mode": "import" }
 });
+type VscodeApi = typeof import("vscode");
+type ScopeKey = "local" | "env" | "scene";
 
-export function timeout(ms: number) {
-	return new Promise((resolve) => setTimeout(resolve, ms));
-}
+export type XRRuntimeConfig = {
+	program: string;
+	ws?: string;
+};
+
+const defaultWs = "ws://localhost:3001/api/webgalsync";
 
 export default class XRRuntime extends EventEmitter {
-	private _WS!: WS;
-	private _core: LanguageCore | null = null;
-	public variables = new Map<string, Map<string, RuntimeVariable>>([
+	private socket: WebSocket | null = null;
+	private core: LanguageCore | null = null;
+	private config: XRRuntimeConfig | null = null;
+	private vscode: VscodeApi | null = null;
+	private decorationType: import("vscode").TextEditorDecorationType | null =
+		null;
+	private currentLine = -1;
+
+	public variables = new Map<ScopeKey, Map<string, RuntimeVariable>>([
 		["local", new Map<string, RuntimeVariable>()],
 		["env", new Map<string, RuntimeVariable>()],
 		["scene", new Map<string, RuntimeVariable>()]
 	]);
-	private _config: any;
-	public _clearFunc!: Function;
-	constructor(
-		public _ADP: DebugSession,
-		public fileAccessor: FileAccessor
-	) {
+
+	constructor(public fileAccessor: FileAccessor) {
 		super();
 	}
-	public setRunLine(Line: number = 1) {
-		const core = this._core;
-		if (!core) {
-			return;
-		}
-		const msg: IDebugMessage = {
-			event: "message",
-			data: {
-				command: core.DebugCommand.JUMP,
-				sceneMsg: {
-					scene: this._config.program,
-					sentence: Line
-				}, // @ts-ignore
-				stageSyncMsg: {},
-				message: "Sync"
-			}
+
+	async start(config: XRRuntimeConfig) {
+		this.core = await import("@webgal/language-core");
+		this.vscode = await this.loadVscode();
+		this.config = {
+			program: config.program,
+			ws: config.ws || defaultWs
 		};
-		this._WS.send(JSON.stringify(msg));
+		this.connect();
 	}
+
+	dispose() {
+		this.clearDecorations();
+		this.currentLine = -1;
+		this.variables = new Map<ScopeKey, Map<string, RuntimeVariable>>([
+			["local", new Map<string, RuntimeVariable>()],
+			["env", new Map<string, RuntimeVariable>()],
+			["scene", new Map<string, RuntimeVariable>()]
+		]);
+		if (this.socket) {
+			this.socket.removeAllListeners();
+			if (
+				this.socket.readyState === WebSocket.OPEN ||
+				this.socket.readyState === WebSocket.CONNECTING
+			) {
+				this.socket.close();
+			}
+		}
+		this.socket = null;
+		disableGameStatus();
+	}
+
 	public getLocalVariables(type: "env" | "scene" | "var"): RuntimeVariable[] {
 		switch (type) {
 			case "env": {
@@ -84,178 +103,217 @@ export default class XRRuntime extends EventEmitter {
 			}
 		}
 	}
-	getWS() {
-		return this._WS;
-	}
-	async start(program: string) {
-		void program;
-		const core = await import("@webgal/language-core");
-		this._core = core;
-		const _obj = createWS(this._ADP, this, core);
-		this._WS = _obj.sock;
-		this._config = _obj.config;
-		this._clearFunc = _obj.clearDecorationType;
-	}
-	public sendEvent(event: string, ...args: any[]): void {
-		setTimeout(() => {
-			this.emit(event, ...args);
-		}, 0);
-	}
-}
 
-function createWS(_ADP: DebugSession, self: XRRuntime, core: LanguageCore) {
-	const config = _ADP.configuration;
-	const _ws_host = config.ws || "ws://localhost:3001/api/webgalsync";
-	const sock = new WebSocket(_ws_host);
-	const editor = window.activeTextEditor;
-	let _restart: NodeJS.Timeout | null;
-	let _sendMy = false;
-	let decorationType: TextEditorDecorationType;
-	let last_line_num = -1;
-	function clearDecorationType() {
-		const editor = window.activeTextEditor;
-		if (editor && decorationType) {
-			editor.setDecorations(decorationType, []);
-			decorationType?.dispose();
-		}
-	}
-	sock.on("open", function () {
-		if (sock.readyState === 1) {
-			clearDecorationType();
-			enableGameStatus(sock);
-			const msg: IDebugMessage = {
-				event: "message",
-				data: {
-					command: core.DebugCommand.JUMP,
-					sceneMsg: {
-						scene: config.program,
-						sentence: 0
-					}, // @ts-ignore
-					stageSyncMsg: {},
-					message: "徐然"
-				}
-			};
-			sock.send(JSON.stringify(msg));
-			window.showInformationMessage("(webgal)调试连接到：" + _ws_host);
-			_restart = setTimeout(() => {
-				sock.emit("close");
-				console.log("(webgal)连接超时");
-			}, 5000);
-		} else {
-			window.showErrorMessage("(webgal)调试连接错误，请重试！");
-			clearDecorationType();
-		}
-	});
-
-	sock.on("error", function () {
-		disableGameStatus();
-		window.showErrorMessage("(webgal)调试连接错误，请重试！");
-		clearDecorationType();
-		last_line_num = -1;
-		_sendMy = false;
-		_ADP.customRequest("close");
-	});
-	sock.on("runscript", function (e: string) {
-		if (sock.readyState === 1) {
-			const msg: IDebugMessage = {
-				event: "message",
-				data: {
-					command: core.DebugCommand.EXE_COMMAND,
-					sceneMsg: {
-						scene: config.program,
-						sentence: 1
-					},
-					stageSyncMsg: {},
-					message: e
-				}
-			};
-			sock.send(JSON.stringify(msg));
-		}
-	});
-
-	sock.on("close", function () {
-		setGameData({});
-		disableGameStatus();
-		window.showErrorMessage("(webgal)调试关闭！");
-		console.log("(webgal)调试关闭！");
-		clearDecorationType();
-		last_line_num = -1;
-		_sendMy = false;
-		_ADP.customRequest("disconnect");
-	});
-	sock.on("message", function (data: Buffer) {
-		if (!_sendMy) {
-			_sendMy = true;
-			clearTimeout(_restart!);
-			_restart = null;
-			return;
-		} else if (_restart) {
-			clearTimeout(_restart);
-			return;
-		} else if (!is_JSON(data.toString())) {
+	sendRunLine(line: number) {
+		const core = this.core;
+		const config = this.config;
+		if (!core || !config) {
 			return;
 		}
-		let _data = JSON.parse(data.toString()) as IDebugMessage;
-		let newv = new Map<string, Map<string, RuntimeVariable>>([
+		this.sendMessage({
+			event: "message",
+			data: {
+				command: core.DebugCommand.JUMP,
+				sceneMsg: {
+					scene: config.program,
+					sentence: line
+				},
+				stageSyncMsg: {},
+				message: "Sync"
+			}
+		});
+	}
+
+	sendScript(script: string) {
+		const core = this.core;
+		const config = this.config;
+		if (!core || !config) {
+			return;
+		}
+		this.sendMessage({
+			event: "message",
+			data: {
+				command: core.DebugCommand.EXE_COMMAND,
+				sceneMsg: {
+					scene: config.program,
+					sentence: 1
+				},
+				stageSyncMsg: {},
+				message: script
+			}
+		});
+	}
+
+	setVariable(name: string, value: string) {
+		this.sendScript(`setVar:${name}=${value};`);
+	}
+
+	private connect() {
+		const config = this.config;
+		if (!config) {
+			return;
+		}
+		const socket = new WebSocket(config.ws || defaultWs);
+		this.socket = socket;
+
+		socket.on("open", () => {
+			if (socket.readyState !== WebSocket.OPEN) {
+				return;
+			}
+			enableGameStatus(socket);
+			this.sendRunLine(0);
+			this.showInfo(`(webgal)调试连接到：${config.ws || defaultWs}`);
+			this.emit("connected");
+		});
+
+		socket.on("error", () => {
+			this.showError("(webgal)调试连接错误，请重试！");
+			this.emit("error");
+			this.dispose();
+		});
+
+		socket.on("close", () => {
+			setGameData({});
+			this.showError("(webgal)调试关闭！");
+			this.dispose();
+			this.emit("terminated");
+		});
+
+		socket.on("message", (data: Buffer) => {
+			const text = data.toString();
+			if (!is_JSON(text)) {
+				return;
+			}
+			const payload = JSON.parse(text) as IDebugMessage;
+			this.updateVariables(payload);
+			setGameData(payload);
+			this.updateDecoration(payload?.data?.sceneMsg ?? {});
+		});
+	}
+
+	private updateVariables(payload: IDebugMessage) {
+		const core = this.core;
+		if (!core) {
+			return;
+		}
+		const stageSyncMsg = payload?.data?.stageSyncMsg ?? {};
+		const sceneMsg = (payload?.data?.sceneMsg ?? {}) as Record<
+			string,
+			unknown
+		>;
+		const gameVar = stageSyncMsg?.GameVar ?? {};
+
+		const next = new Map<ScopeKey, Map<string, RuntimeVariable>>([
 			["local", new Map<string, RuntimeVariable>()],
 			["env", new Map<string, RuntimeVariable>()],
 			["scene", new Map<string, RuntimeVariable>()]
 		]);
-		for (let _var in _data.data.stageSyncMsg.GameVar) {
-			const _val = _data.data.stageSyncMsg.GameVar[_var];
-			const _local = newv.get("local");
-			if (_local) {
-				_local.set(_var, new core.RuntimeVariable(_var, _val));
-			}
+
+		for (const key of Object.keys(gameVar)) {
+			next.get("local")?.set(
+				key,
+				new core.RuntimeVariable(key, gameVar[key])
+			);
 		}
-		for (let _var in _data.data.stageSyncMsg) {
-			const _val = _data.data.stageSyncMsg[_var];
-			const _env = newv.get("env");
-			if (_env && _var !== "GameVar") {
-				_env.set(_var, new core.RuntimeVariable(_var, _val));
+
+		for (const key of Object.keys(stageSyncMsg)) {
+			if (key === "GameVar") {
+				continue;
 			}
+			next.get("env")?.set(
+				key,
+				new core.RuntimeVariable(key, stageSyncMsg[key])
+			);
 		}
-		const sceneMsg: Record<string, any> = _data.data.sceneMsg;
-		for (let _var in sceneMsg) {
-			const _val = sceneMsg[_var];
-			const _scene = newv.get("scene");
-			if (_scene) {
-				_scene.set(_var, new core.RuntimeVariable(_var, _val));
-			}
+
+		for (const key of Object.keys(sceneMsg)) {
+			next.get("scene")?.set(
+				key,
+				new core.RuntimeVariable(key, sceneMsg[key] as any)
+			);
 		}
-		self.variables = newv;
-		// self._ADP.customRequest("updatevar");
-		setGameData(_data);
+
+		this.variables = next;
+	}
+
+	private updateDecoration(sceneMsg: Record<string, any>) {
+		const vscode = this.vscode;
+		if (!vscode) {
+			return;
+		}
+		const editor = vscode.window.activeTextEditor;
 		if (!editor || !editor.document) {
 			return;
 		}
-		const _fname = String(editor.document.fileName || "");
-		const _dname = String(sceneMsg.scene || "");
-		const _now = _fname.substring(_fname.lastIndexOf("\\") + 1);
-		const _target = _dname.substring(_dname.lastIndexOf("\\") + 1);
-		if (!_now || !_target) {
+		const sceneName = String(sceneMsg.scene ?? "");
+		const sentence = Number(sceneMsg.sentence ?? -1);
+		if (!sceneName || Number.isNaN(sentence)) {
 			return;
 		}
-		if (
-			sceneMsg &&
-			last_line_num !== sceneMsg.sentence &&
-			_now === _target
-		) {
-			clearDecorationType();
-			decorationType = window.createTextEditorDecorationType({
+		const currentFile = this.basename(editor.document.fileName);
+		const targetFile = this.basename(sceneName);
+		if (!currentFile || !targetFile || currentFile !== targetFile) {
+			return;
+		}
+		const lineIndex = Math.max(sentence, 0);
+		if (this.currentLine === lineIndex) {
+			return;
+		}
+		this.currentLine = lineIndex;
+		if (!this.decorationType) {
+			this.decorationType = vscode.window.createTextEditorDecorationType({
 				backgroundColor: "rgba(150, 0, 0, 0.3)",
 				isWholeLine: true
 			});
-			last_line_num = sceneMsg.sentence;
-			const _num = Math.max(last_line_num - 1, 0);
-			const range = new Range(
-				_num,
-				0,
-				_num,
-				editor.document.lineAt(_num).text.length
-			);
-			editor.setDecorations(decorationType, [range]);
 		}
-	});
-	return { sock, config, clearDecorationType };
+		const range = new vscode.Range(
+			lineIndex,
+			0,
+			lineIndex,
+			editor.document.lineAt(lineIndex).text.length
+		);
+		editor.setDecorations(this.decorationType, [range]);
+	}
+
+	private clearDecorations() {
+		const vscode = this.vscode;
+		if (!vscode || !this.decorationType) {
+			return;
+		}
+		const editor = vscode.window.activeTextEditor;
+		if (editor) {
+			editor.setDecorations(this.decorationType, []);
+		}
+		this.decorationType.dispose();
+		this.decorationType = null;
+	}
+
+	private basename(filePath: string) {
+		const normalized = filePath.replace(/\\/g, "/");
+		const parts = normalized.split("/");
+		return parts[parts.length - 1] ?? "";
+	}
+
+	private sendMessage(message: IDebugMessage) {
+		if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
+			return;
+		}
+		this.socket.send(JSON.stringify(message));
+	}
+
+	private showInfo(message: string) {
+		this.vscode?.window.showInformationMessage(message);
+	}
+
+	private showError(message: string) {
+		this.vscode?.window.showErrorMessage(message);
+	}
+
+	private async loadVscode(): Promise<VscodeApi | null> {
+		try {
+			return await import("vscode");
+		} catch {
+			return null;
+		}
+	}
 }

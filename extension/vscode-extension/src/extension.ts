@@ -3,6 +3,7 @@ import { activateAutoInsertion, createLabsInfo } from "@volar/vscode";
 import { BaseLanguageClient } from "@volar/vscode/node";
 import * as vscode from "vscode";
 import { createClient } from "./client";
+import { XRDebugAdapterDescriptorFactory } from "./debug/activeDebug";
 
 let client: BaseLanguageClient;
 
@@ -11,6 +12,13 @@ export async function activate(context: vscode.ExtensionContext) {
 	await client.start();
 
 	activateAutoInsertion("webgal", client);
+
+	context.subscriptions.push(
+		vscode.debug.registerDebugAdapterDescriptorFactory(
+			"webgal",
+			new XRDebugAdapterDescriptorFactory()
+		)
+	);
 
 	// support for https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.volarjs-labs
 	// ref: https://twitter.com/johnsoncodehk/status/1656126976774791168

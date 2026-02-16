@@ -1,1 +1,1 @@
-import "@webgal/language-server";
+import("@webgal/language-server");

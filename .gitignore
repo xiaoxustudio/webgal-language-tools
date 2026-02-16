@@ -6,3 +6,5 @@ node_modules
 *.log
 
 pnpm-lock.yaml
+
+example/.vscode
