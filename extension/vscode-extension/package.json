@@ -216,8 +216,10 @@
 		"vsce": "latest"
 	},
 	"dependencies": {
-		"@webgal/language-service": "workspace:*",
 		"@vscode/debugadapter": "^1.65.0",
+		"@webgal/language-core": "workspace:*",
+		"@webgal/language-server": "workspace:*",
+		"@webgal/language-service": "workspace:*",
 		"angular-expressions": "^1.5.1",
 		"js-beautify": "^1.15.3",
 		"vscode-debugadapter": "^1.51.0",
@@ -226,8 +228,6 @@
 		"vscode-languageserver": "^9.0.1",
 		"vscode-languageserver-textdocument": "^1.0.11",
 		"webgal-parser": "^4.5.18",
-		"ws": "^8.17.1",
-		"@webgal/language-server": "workspace:*",
-		"@webgal/language-core": "workspace:*"
+		"ws": "^8.17.1"
 	}
 }
