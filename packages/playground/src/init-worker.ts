@@ -1,6 +1,7 @@
 import type { VirtualFileSystem } from "@webgal/language-service";
 import { createWebgalMonacoLanguageClientWithWorker } from "@webgal/language-service/monaco";
 import * as monaco from "monaco-editor";
+import defaultTree from "./defaultTree";
 
 export default function (editor: monaco.editor.IStandaloneCodeEditor): {
 	worker: Worker;
@@ -14,5 +15,6 @@ export default function (editor: monaco.editor.IStandaloneCodeEditor): {
 		worker,
 		editor
 	});
+	defaultTree(instance.vfs);
 	return instance;
 }

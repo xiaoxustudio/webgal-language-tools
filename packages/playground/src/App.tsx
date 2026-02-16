@@ -77,6 +77,9 @@ function App() {
 	const [newFilePath, setNewFilePath] = useState("scene/new.txt");
 	const [newFolderPath, setNewFolderPath] = useState("scene/new-folder");
 	const [rootPath, setRootPath] = useState("file:///game");
+	const [expandedPaths, setExpandedPaths] = useState<Set<string>>(
+		() => new Set()
+	);
 
 	const versionItems = useMemo(
 		() => [
@@ -180,6 +183,12 @@ function App() {
 			await vfs.writeFile("file:///game/scene/start.txt", StartText);
 			await vfs.writeFile("file:///game/config.txt", ConfigText);
 			refreshTree();
+			setExpandedPaths((prev) => {
+				const next = new Set(prev);
+				next.add("file:///game");
+				next.add("file:///game/scene");
+				return next;
+			});
 			await openFile(activePathRef.current ?? activePath);
 		},
 		[activePath, openFile, refreshTree]
@@ -266,6 +275,17 @@ function App() {
 		},
 		[toFileUri]
 	);
+	const handleTogglePath = useCallback((path: string) => {
+		setExpandedPaths((prev) => {
+			const next = new Set(prev);
+			if (next.has(path)) {
+				next.delete(path);
+			} else {
+				next.add(path);
+			}
+			return next;
+		});
+	}, []);
 
 	return (
 		<div className="app">
@@ -281,6 +301,7 @@ function App() {
 					selectedPath={selectedPath}
 					tree={tree}
 					rootPath={rootPath}
+					expandedPaths={expandedPaths}
 					onFilePathChange={setNewFilePath}
 					onFolderPathChange={setNewFolderPath}
 					onCreateFile={handleCreateFile}
@@ -288,6 +309,7 @@ function App() {
 					onDeleteSelected={handleDeleteSelected}
 					onSelectPath={handleSelectPath}
 					onOpenFile={openFile}
+					onTogglePath={handleTogglePath}
 				/>
 				<EditorPane
 					activePath={activePath}

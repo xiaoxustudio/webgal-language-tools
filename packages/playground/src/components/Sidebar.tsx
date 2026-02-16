@@ -8,6 +8,7 @@ type SidebarProps = {
 	selectedPath: string | null;
 	tree: VirtualEntry | null;
 	rootPath: string;
+	expandedPaths: Set<string>;
 	onFilePathChange: (value: string) => void;
 	onFolderPathChange: (value: string) => void;
 	onCreateFile: () => void;
@@ -15,6 +16,7 @@ type SidebarProps = {
 	onDeleteSelected: () => void;
 	onSelectPath: (path: string) => void;
 	onOpenFile: (path: string) => void;
+	onTogglePath: (path: string) => void;
 };
 
 export default function Sidebar({
@@ -23,13 +25,15 @@ export default function Sidebar({
 	selectedPath,
 	tree,
 	rootPath,
+	expandedPaths,
 	onFilePathChange,
 	onFolderPathChange,
 	onCreateFile,
 	onCreateFolder,
 	onDeleteSelected,
 	onSelectPath,
-	onOpenFile
+	onOpenFile,
+	onTogglePath
 }: SidebarProps) {
 	return (
 		<aside className="sidebar">
@@ -71,8 +75,10 @@ export default function Sidebar({
 					tree={tree}
 					rootPath={rootPath}
 					selectedPath={selectedPath}
+					expandedPaths={expandedPaths}
 					onSelectPath={onSelectPath}
 					onOpenFile={onOpenFile}
+					onTogglePath={onTogglePath}
 				/>
 			</div>
 		</aside>

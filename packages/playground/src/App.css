@@ -140,6 +140,24 @@
   background: #161b2a;
 }
 
+.tree-toggle {
+  border: none;
+  background: transparent;
+  color: #c7cbd6;
+  font-size: 12px;
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+}
+
+.tree-toggle:hover {
+  color: #ffffff;
+}
+
 .tree-icon {
   font-size: 13px;
 }
