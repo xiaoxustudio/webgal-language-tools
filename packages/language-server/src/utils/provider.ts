@@ -150,7 +150,7 @@ changeFigure:k2.png -next;
 
 你也可以只使用 \`-concat\` 参数，将下一句连接在上一句对话之后，因为 \`-notend\` 参数会在对话渐显完成后转到下一句。
 
-\`\`\`
+\`\`\`webgal
 这是第一句......;
 用户点击鼠标后才会转到第二句 -concat;
 \`\`\`
@@ -171,7 +171,7 @@ changeFigure:k2.png -next;
 
 示例如下：这是一个在对话进行中切换立绘的演示。
 
-\`\`\`
+\`\`\`webgal
 WebGAL:测试语句插演出！马上切换立绘...... -notend;
 changeFigure:k1.png -next;
 切换立绘！马上切换表情...... -notend -concat;
@@ -181,7 +181,7 @@ changeFigure:k2.png -next;
 
 你也可以只使用 \`-concat\` 参数，将下一句连接在上一句对话之后，因为 \`-notend\` 参数会在对话渐显完成后转到下一句。
 
-\`\`\`
+\`\`\`webgal
 这是第一句......;
 用户点击鼠标后才会转到第二句 -concat;
 \`\`\`
@@ -281,7 +281,7 @@ changeFigure:none -right;
 		documentation: markdown(`
 现在，你可以在页面的三个不同位置放置不同的立绘，只需要在放置立绘的语句处加上你要放置的位置就可以了，示例如下：
 
-\`\`\`
+\`\`\`webgal
 changeFigure:testFigure03.png -left;
 changeFigure:testFigure04.png;
 changeFigure:testFigure03.png -right;
@@ -289,7 +289,7 @@ changeFigure:testFigure03.png -right;
 
 以上三行分别对应着左、中、右三个不同的位置。三个不同位置的立绘是相互独立的，所以如果你需要清除立绘，必须分别独立清除：
 
-\`\`\`
+\`\`\`webgal
 changeFigure:none -left;
 changeFigure:none;
 changeFigure:none -right;
@@ -304,7 +304,7 @@ changeFigure:none -right;
 		documentation: markdown(`
 指定该对话所属的立绘为右侧立绘
 
-\`\`\`
+\`\`\`webgal
 WebGAL:这是右侧立绘的对话 -right;
 \`\`\`
   `)
@@ -317,7 +317,7 @@ WebGAL:这是右侧立绘的对话 -right;
 		documentation: markdown(`
 如果你想要更精确地控制立绘，或使用超过 3 个立绘，可以为立绘指定 \`id\` 和初始位置：
 
-\`\`\`
+\`\`\`webgal
 ; // 一个初始位置在右侧的自由立绘
 changeFigure:testFigure03.png -left -id=test1;
 ; // 通过 id 关闭立绘
@@ -335,7 +335,7 @@ changeFigure:none -id=test1;
 		documentation: markdown(`
 为效果音赋予一个 \`id\` 将会自动启用效果音循环，后续使用相同的 \`id\` 来停止。
 
-\`\`\`
+\`\`\`webgal
 playEffect:xxx.mp3 -id=xxx;
 playEffect:none -id=xxx; // 停止这个循环的效果音
 \`\`\`
@@ -349,7 +349,7 @@ playEffect:none -id=xxx; // 停止这个循环的效果音
 		documentation: markdown(`
 图层排序索引值，值越大越靠上，值相同时晚加入的靠上
 
-\`\`\`
+\`\`\`webgal
 changeFigure:xxx.png -id=xxx -zIndex=0;
 changeFigure:yyy.png -id=yyy -zIndex=1;
 \`\`\`
@@ -367,7 +367,7 @@ changeFigure:yyy.png -id=yyy -zIndex=1;
 - multiply (正片叠底)
 - screen (滤色)
 
-\`\`\`
+\`\`\`webgal
 changeFigure:xxx.png -blendMode=add;
 \`\`\`
   `)
@@ -388,7 +388,7 @@ changeFigure:xxx.png -blendMode=add;
 当 \`animationFlag\` 设置为 \`on\` 时，可为图片立绘开启唇形同步与眨眼
 本质上是多个静态图片切换
 
-\`\`\`
+\`\`\`webgal
 changeFigure:char.png -animationFlag=on -eyesOpen=char_eyes_open.png -eyesClose=char_eyes_close.png -mouthOpen=mouth.png -mouthHalfOpen=char_mouth_half_open.png -mouthClose=char_mouth_close.png; 
 \`\`\`
   `)
@@ -402,7 +402,7 @@ changeFigure:char.png -animationFlag=on -eyesOpen=char_eyes_open.png -eyesClose=
 当 \`animationFlag\` 设置为 \`on\` 时，可为图片立绘开启唇形同步与眨眼
 本质上是多个静态图片切换
 
-\`\`\`
+\`\`\`webgal
 changeFigure:char.png -animationFlag=on -eyesOpen=char_eyes_open.png -eyesClose=char_eyes_close.png -mouthOpen=mouth.png -mouthHalfOpen=char_mouth_half_open.png -mouthClose=char_mouth_close.png; 
 \`\`\`
   `)
@@ -416,7 +416,7 @@ changeFigure:char.png -animationFlag=on -eyesOpen=char_eyes_open.png -eyesClose=
 当 \`animationFlag\` 设置为 \`on\` 时，可为图片立绘开启唇形同步与眨眼
 本质上是多个静态图片切换
 
-\`\`\`
+\`\`\`webgal
 changeFigure:char.png -animationFlag=on -eyesOpen=char_eyes_open.png -eyesClose=char_eyes_close.png -mouthOpen=mouth.png -mouthHalfOpen=char_mouth_half_open.png -mouthClose=char_mouth_close.png; 
 \`\`\`
   `)
@@ -430,7 +430,7 @@ changeFigure:char.png -animationFlag=on -eyesOpen=char_eyes_open.png -eyesClose=
 当 \`animationFlag\` 设置为 \`on\` 时，可为图片立绘开启唇形同步与眨眼
 本质上是多个静态图片切换
 
-\`\`\`
+\`\`\`webgal
 changeFigure:char.png -animationFlag=on -eyesOpen=char_eyes_open.png -eyesClose=char_eyes_close.png -mouthOpen=mouth.png -mouthHalfOpen=char_mouth_half_open.png -mouthClose=char_mouth_close.png; 
 \`\`\`
   `)
@@ -444,7 +444,7 @@ changeFigure:char.png -animationFlag=on -eyesOpen=char_eyes_open.png -eyesClose=
 当 \`animationFlag\` 设置为 \`on\` 时，可为图片立绘开启唇形同步与眨眼
 本质上是多个静态图片切换
 
-\`\`\`
+\`\`\`webgal
 changeFigure:char.png -animationFlag=on -eyesOpen=char_eyes_open.png -eyesClose=char_eyes_close.png -mouthOpen=mouth.png -mouthHalfOpen=char_mouth_half_open.png -mouthClose=char_mouth_close.png; 
 \`\`\`
   `)
@@ -458,7 +458,7 @@ changeFigure:char.png -animationFlag=on -eyesOpen=char_eyes_open.png -eyesClose=
 当 \`animationFlag\` 设置为 \`on\` 时，可为图片立绘开启唇形同步与眨眼
 本质上是多个静态图片切换
 
-\`\`\`
+\`\`\`webgal
 changeFigure:char.png -animationFlag=on -eyesOpen=char_eyes_open.png -eyesClose=char_eyes_close.png -mouthOpen=mouth.png -mouthHalfOpen=char_mouth_half_open.png -mouthClose=char_mouth_close.png; 
 \`\`\`
   `)
@@ -471,7 +471,7 @@ changeFigure:char.png -animationFlag=on -eyesOpen=char_eyes_open.png -eyesClose=
 		documentation: markdown(`
 你可以使用 \`-motion=motionName\` 或 \`-expression=expressionName\` 参数来切换表情，如：
 
-\`\`\`
+\`\`\`webgal
 changeFigure:xxx.json -motion=angry -expression=angry01;
 \`\`\`
   `)
@@ -484,7 +484,7 @@ changeFigure:xxx.json -motion=angry -expression=angry01;
 		documentation: markdown(`
 你可以使用 \`-motion=motionName\` 或 \`-expression=expressionName\` 参数来切换表情，如：
 
-\`\`\`
+\`\`\`webgal
 changeFigure:xxx.json -motion=angry -expression=angry01;
 \`\`\`
   `)
@@ -497,7 +497,7 @@ changeFigure:xxx.json -motion=angry -expression=angry01;
 		documentation: markdown(`
 当live2D默认显示范围不足时，调整此参数以拓展边界
 
-\`\`\`
+\`\`\`webgal
 changeFigure:xxx.json -bounds=0,50,0,50;
 \`\`\`
   `)
@@ -521,7 +521,7 @@ CG或音乐解锁进鉴赏模式后应当放在哪个系列
 
 你可以在设置立绘或背景的时候就为立绘设置一些变换和滤镜效果，以下是一个示例：
 
-\`\`\`
+\`\`\`webgal
 changeFigure:stand.png -transform={"alpha":1,"position":{"x":0,"y":500},"scale":{"x":1,"y":1},"rotation":0,"blur":0,"brightness":1,"contrast":1,"saturation":1,"gamma":1,"colorRed":255,"colorGreen":255,"colorBlue":255,"oldFilm":0,"dotFilm":0,"reflectionFilm":0,"glitchFilm":0,"rgbFilm":0,"godrayFilm":0} -next;
 \`\`\`
   `)
@@ -539,7 +539,7 @@ changeFigure:stand.png -transform={"alpha":1,"position":{"x":0,"y":500},"scale":
 - closedDuration: 眨眼闭合保持时间, 单位毫秒, 默认50
 - openingDuration: 眨眼睁开时间, 单位毫秒, 默认150
 
-\`\`\`
+\`\`\`webgal
 changeFigure:xxx.json -blink={"blinkInterval":5000,"blinkIntervalRandom":2000,"closingDuration":100,"closedDuration":50,"openingDuration":150};
 \`\`\`
   `)
@@ -555,7 +555,7 @@ changeFigure:xxx.json -blink={"blinkInterval":5000,"blinkIntervalRandom":2000,"c
 - y: 注视点 Y 坐标, 范围 -1.0 ~ 1.0, 默认 0.0
 - instant: 是否立即生效, 布尔值, 默认 false
 
-\`\`\`
+\`\`\`webgal
 changeFigure:xxx.json -focus={"x":0.5,"y":0.0,"instant":false};
 \`\`\`
   `)
@@ -654,7 +654,7 @@ WebGAL 的普通变量是跟随存档的，也就是说，任何变量只存在�
 
 加上 \`-global\` 参数可以设置长效（全局）变量
 
-\`\`\`ws
+\`\`\`webgal
 setVar:a=1 -global;
 \`\`\`
 
@@ -662,7 +662,7 @@ setVar:a=1 -global;
 
 使用例：
 
-\`\`\`ws
+\`\`\`webgal
 jumpLabel:turn-2 -when=a>0;
 setVar:a=1 -global;
 一周目;
