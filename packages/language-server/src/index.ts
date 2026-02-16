@@ -36,6 +36,12 @@ if (useWs) {
 	startServer(createConnection(), false);
 }
 
+/**
+ * 启动WebSocket服务器
+ *
+ * @param options - WebSocket服务器配置选项，包含端口和路径等信息
+ * @returns void
+ */
 async function startWebSocketServer(options: WsOptions) {
 	const [
 		{ WebSocketServer },

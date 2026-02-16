@@ -8,6 +8,14 @@ import type {
 	VolarWritableFileSystem
 } from "./types";
 
+/**
+ * 创建基于内存的Volar可写文件系统
+ * 该文件系统将所有文件和目录存储在内存中，不持久化到磁盘
+ * @param options - 配置选项
+ * @param options.root - 根目录路径，默认为"/"
+ * @param options.tree - 可选的初始虚拟文件树结构
+ * @returns 返回Volar可写文件系统实例，支持文件读写、目录操作和变更监听
+ */
 export function createMemoryVolarFileSystem(options?: {
 	root?: string;
 	tree?: VirtualEntry;

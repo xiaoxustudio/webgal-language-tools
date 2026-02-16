@@ -3,6 +3,12 @@ import type { URI } from "vscode-uri";
 import { VolarWritableFileSystem, VirtualFileSystem } from "./types";
 import { joinPaths, pathToUri, uriToPath } from "./utils";
 
+/**
+ * 创建虚拟文件系统适配器
+ * 将Volar可写文件系统封装为统一的虚拟文件系统接口
+ * @param fs - Volar可写文件系统实例
+ * @returns 返回虚拟文件系统实例，提供文件读写、目录操作等功能
+ */
 export function createVirtualFileSystem(
 	fs: VolarWritableFileSystem
 ): VirtualFileSystem {
@@ -116,6 +122,14 @@ export function createVirtualFileSystem(
 	};
 }
 
+/**
+ * 创建Volar文件系统适配器
+ * 将虚拟文件系统封装为Volar语言服务所需的FileSystem接口
+ * @param vfs - 虚拟文件系统实例
+ * @param options - 配置选项
+ * @param options.uriToPath - 可选的URI到路径的转换函数，默认使用内置的转换函数
+ * @returns 返回符合Volar FileSystem接口的文件系统实例
+ */
 export function createVolarFileSystem(
 	vfs: VirtualFileSystem,
 	options?: {

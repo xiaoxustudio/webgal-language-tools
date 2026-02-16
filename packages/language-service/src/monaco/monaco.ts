@@ -30,6 +30,13 @@ export interface CreateWebgalMonacoLanguageClientOptions {
 	virtualFileSystem?: VirtualFileSystem;
 }
 
+/**
+ * 创建虚拟文件系统
+ * @param options - 配置选项
+ * @param options.root - 根目录路径，默认为 "file:///"
+ * @param options.tree - 可选的虚拟文件树结构
+ * @returns 返回一个虚拟文件系统实例
+ */
 export function createMemoryFileSystem(options?: {
 	root?: string;
 	tree?: VirtualEntry;
@@ -38,6 +45,14 @@ export function createMemoryFileSystem(options?: {
 	return createVirtualFileSystem(fs);
 }
 
+/**
+ * 创建WebGAL Monaco语言客户端（WebSocket连接模式）
+ * @param options - 配置选项
+ * @param options.languageServerUrl - 语言服务器WebSocket URL
+ * @param options.editor - Monaco编辑器实例
+ * @param options.virtualFileSystem - 可选的虚拟文件系统，未提供时将创建默认的内存文件系统
+ * @returns 返回包含WebSocket连接和虚拟文件系统的对象
+ */
 export const createWebgalMonacoLanguageClient = (
 	options: CreateWebgalMonacoLanguageClientOptions
 ): { webSocket: WebSocket; vfs: VirtualFileSystem } => {
@@ -80,6 +95,14 @@ export interface CreateWebgalMonacoLanguageClientWorkerOptions {
 	virtualFileSystem?: VirtualFileSystem;
 }
 
+/**
+ * 创建WebGAL Monaco语言客户端（Worker模式）
+ * @param options - 配置选项
+ * @param options.editor - Monaco编辑器实例
+ * @param options.worker - Web Worker实例
+ * @param options.virtualFileSystem - 可选的虚拟文件系统，未提供时将创建默认的内存文件系统
+ * @returns 返回包含Worker实例和虚拟文件系统的对象
+ */
 export const createWebgalMonacoLanguageClientWithWorker = (
 	options: CreateWebgalMonacoLanguageClientWorkerOptions
 ): { worker: Worker; vfs: VirtualFileSystem } => {

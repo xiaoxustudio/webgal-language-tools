@@ -3,7 +3,7 @@ import { loader } from "@monaco-editor/react";
 import * as Monaco from "monaco-editor";
 import type { EditorProps } from "@monaco-editor/react";
 import initWS from "./init";
-// import initWorker from "./init-worker";
+import initWorker from "./init-worker";
 import {
 	joinPaths,
 	normalizePath,
@@ -27,7 +27,6 @@ import "./App.css";
 
 import editorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
 import textmateWorker from "@codingame/monaco-vscode-textmate-service-override/worker?worker";
-import initWorker from "./init-worker";
 
 self.MonacoEnvironment = {
 	getWorker(_moduleId, label) {

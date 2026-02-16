@@ -20,6 +20,11 @@ import {
 
 export { createConnection } from "@volar/language-server/browser";
 
+/**
+ * 启动服务器并建立连接
+ * @param connection - 可选的连接实例，如果未提供则会创建新的连接
+ * @returns 返回连接实例
+ */
 export function startServer(connection?: ReturnType<typeof createConnection>) {
 	if (!connection) {
 		connection = createConnection();

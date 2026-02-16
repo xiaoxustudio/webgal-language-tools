@@ -17,6 +17,10 @@ import "vscode/localExtensionHost";
 
 let initPromise: Promise<void> | null = null;
 
+/**
+ * 初始化资源映射对象
+ * 包含WebGAL语言服务所需的语法高亮、语言配置和主题等资源
+ */
 export const initResources = {
 	"./webgal.tmLanguage.json": webgalGrammar,
 	"./webgal-config.tmLanguage.json": webgalConfigGrammar,
@@ -25,6 +29,12 @@ export const initResources = {
 	"./white.json": webgalWhiteTheme
 };
 
+/**
+ * 初始化WebGAL Monaco编辑器环境
+ * 该函数会注册WebGAL语言扩展、语法高亮、主题配置等，并初始化Monaco编辑器的服务
+ * 使用单例模式，多次调用只会执行一次初始化
+ * @returns Promise<void> 初始化完成的Promise
+ */
 export async function initWebgalMonaco() {
 	if (initPromise) {
 		return initPromise;

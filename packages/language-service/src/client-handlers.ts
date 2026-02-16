@@ -7,6 +7,12 @@ import type {
 } from "./vfs/types";
 import { getState } from "./utils";
 
+/**
+ * 创建Webgal客户端处理器
+ *
+ * @param options - 创建处理器的配置选项
+ * @returns 返回一个包含各种客户端处理器方法的对象
+ */
 export function createWebgalClientHandlers(
 	options: CreateWebgalClientHandlersOptions
 ): WebgalClientHandlers {
@@ -70,6 +76,12 @@ export function createWebgalClientHandlers(
 	};
 }
 
+/**
+ * 注册WebGal客户端处理器
+ *
+ * @param client - 语言客户端实例，实现了LanguageClientLike接口
+ * @param handlers - WebGal客户端处理器的可选映射对象，包含要注册的各种处理器方法
+ */
 export function registerWebgalClientHandlers(
 	client: LanguageClientLike,
 	handlers: Partial<WebgalClientHandlers>
