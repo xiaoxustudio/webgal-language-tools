@@ -1,10 +1,10 @@
 import { getPatternAtPosition, getWordAtPosition } from "@/utils";
 import {
-	argsMap,
 	WebGALConfigMap,
 	WebGALKeywords,
 	CommandNameSpecial,
-	WebGALCommandPrefix
+	WebGALCommandPrefix,
+	argsMap
 } from "@/utils/provider";
 import {
 	Connection,
@@ -43,15 +43,18 @@ export async function provideHover(
 		/(?<=-)[\w]+/
 	);
 	if (findWordWithPattern) {
-		const argsData = argsMap[findWordWithPattern.text];
+		const commandData =
+			WebGALKeywords[commandType as CommandNameSpecial]?.args;
+		const argsData = Object.values(commandData).find(
+			(item) => item.label === findWordWithPattern!.text
+		);
 		if (argsData) {
 			return {
 				contents: {
 					kind: MarkupKind.Markdown,
 					value: [
 						`### ${argsData.label}`,
-						`${argsData?.documentation}`,
-						`\`${argsData.detail}\``
+						`${argsData.documentation.value}`
 					].join("\n\n")
 				} as MarkupContent,
 				range: Range.create(
@@ -59,6 +62,26 @@ export async function provideHover(
 					findWordWithPattern.endPos
 				)
 			};
+		} else {
+			// 如果在指令找不到就在全局中找
+			const argsData = Object.values(argsMap).find(
+				(item) => item.label === findWordWithPattern!.text
+			);
+			if (argsData) {
+				return {
+					contents: {
+						kind: MarkupKind.Markdown,
+						value: [
+							`### ${argsData.label}`,
+							`${argsData.documentation.value}`
+						].join("\n\n")
+					} as MarkupContent,
+					range: Range.create(
+						findWordWithPattern.startPos,
+						findWordWithPattern.endPos
+					)
+				};
+			}
 		}
 	}
 

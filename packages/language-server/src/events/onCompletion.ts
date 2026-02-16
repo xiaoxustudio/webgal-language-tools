@@ -162,10 +162,10 @@ export async function provideCompletionItems(
 
 			const data = [...keyData.args, ...globalArgs].map((arg) => {
 				return {
-					label: arg.arg,
+					label: arg.label,
 					kind: CompletionItemKind.Constant,
-					documentation: arg.desc,
-					detail: arg.desc
+					documentation: arg.documentation,
+					detail: arg.detail
 				};
 			}) as CompletionItem[];
 
