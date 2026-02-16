@@ -3,8 +3,8 @@
 	"compilerOptions": {
 		"outDir": "build",
 		"rootDir": "src",
-		"module": "commonjs",
-		"moduleResolution": "node",
+		"module": "esnext",
+		"moduleResolution": "bundler",
 		"paths": {
 			"@/*": ["./src/*"]
 		}
