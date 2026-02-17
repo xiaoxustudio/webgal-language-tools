@@ -7,8 +7,9 @@
 	},
 	"scripts": {
 		"dev": "lerna run dev --scope playground",
-		"dev:lsp": "lerna run dev --scope @webgal/language-server",
-		"dev:lsp-ws": "lerna run dev:ws --scope @webgal/language-server",
+		"dev:lsp": "lerna run dev:ws --scope playground",
+		"dev:nlsp": "lerna run dev --scope @webgal/language-server",
+		"dev:nlsp-ws": "lerna run dev:ws --scope @webgal/language-server",
 		"build": "lerna run build --ignore=playground --ignore=webgal-for-vscode",
 		"build:vsc": "lerna run build --scope webgal-for-vscode",
 		"build:core": "lerna run build --scope @webgal/language-core",

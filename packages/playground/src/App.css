@@ -197,11 +197,33 @@
   color: #e4e7eb;
   padding: 6px 10px;
   font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .editor-toolbar button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.ws-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  display: inline-block;
+}
+
+.ws-dot--connected {
+  background: #22c55e;
+}
+
+.ws-dot--connecting {
+  background: #f59e0b;
+}
+
+.ws-dot--disconnected {
+  background: #ef4444;
 }
 
 .editor-wrapper {
