@@ -19,7 +19,7 @@ import {
 	Position
 } from "@volar/language-server";
 import type { IDefinetionMap } from "@webgal/language-core";
-import type { StateMap } from "@webgal/language-service/src/utils";
+import type { StateMap } from "@webgal/language-service/utils";
 import { TextDocument } from "vscode-languageserver-textdocument";
 
 export async function provideCompletionItems(
