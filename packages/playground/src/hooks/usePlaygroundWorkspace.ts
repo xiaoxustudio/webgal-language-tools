@@ -121,26 +121,30 @@ export function usePlaygroundWorkspace(options: WorkspaceOptions) {
 		async (path: string) => {
 			const vfs = vfsRef.current;
 			const editor = editorRef.current;
-			if (!vfs || !editor) return;
+			if (!vfs || !editor) return false;
 			const normalizedPath = toFileUri(path);
-			if (!normalizedPath) return;
+			if (!normalizedPath) return false;
 			const content = await vfs.readFile(normalizedPath);
+			if (content === null) {
+				return false;
+			}
 			const uri = Monaco.Uri.parse(normalizedPath);
 			let model = Monaco.editor.getModel(uri);
 			if (!model) {
 				model = Monaco.editor.createModel(
-					content ?? "",
+					content,
 					getLanguageFromPath(normalizedPath),
 					uri
 				);
 			} else {
-				model.setValue(content ?? "");
+				model.setValue(content);
 			}
 			skipWriteRef.current = true;
 			editor.setModel(model);
 			skipWriteRef.current = false;
 			activePathRef.current = normalizedPath;
 			setActivePath(normalizedPath);
+			return true;
 		},
 		[getLanguageFromPath, toFileUri]
 	);
@@ -212,7 +216,7 @@ export function usePlaygroundWorkspace(options: WorkspaceOptions) {
 					if (!uriString.startsWith("file://")) {
 						return false;
 					}
-					return openFile(uriString).then(() => true);
+					return openFile(uriString);
 				}
 			});
 		}
