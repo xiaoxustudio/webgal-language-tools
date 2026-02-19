@@ -884,11 +884,12 @@ export const WebGALKeywords = {
 		],
 		label: "say",
 		kind: CompletionItemKind.Function,
-		documentation: `对话
-		\`\`\`webgal
-		say:你好;
-		\`\`\``,
-		detail: `say:<content> [...args];`,
+		documentation: `\`\`\`webgal
+say:你好，世界！ -speaker=WebGAL;
+say:这是一句旁白 -clear;
+say:<text>;
+\`\`\``,
+		detail: `角色对话/旁白`,
 		insertText: "say:$1;$2"
 	},
 	changeBg: {
@@ -910,11 +911,12 @@ export const WebGALKeywords = {
 		],
 		label: "changeBg",
 		kind: CompletionItemKind.Function,
-		documentation: `更新背景图片
-		\`\`\`webgal
-		changeBg:testBG03.jpg -next;
-		\`\`\``,
-		detail: `changeBg:<fileName> [-next];`,
+		documentation: `\`\`\`webgal
+changeBg:testBG03.jpg -next;
+changeBg:testBG03.jpg -enter=fadeIn -exit=fadeOut;
+changeBg:<fileName> [-next] [-enter=animationName] [-exit=animationName];
+\`\`\``,
+		detail: `更新背景图片`,
 		insertText: "changeBg:$1;$2"
 	},
 	changeFigure: {
@@ -950,11 +952,12 @@ export const WebGALKeywords = {
 		],
 		label: "changeFigure",
 		kind: CompletionItemKind.Function,
-		documentation: `更新立绘
-		\`\`\`webgal
-		changeFigure:testFigure03.png -left -next;
-		\`\`\``,
-		detail: `changeFigure:<fileName> [-left] [-right] [id=figureId] [-next];`,
+		documentation: `\`\`\`webgal
+changeFigure:testFigure03.png -left -next;
+changeFigure:testFigure03.png -left -enter=fadeIn -exit=fadeOut;
+changeFigure:<fileName> [-left] [-right] [id=figureId] [-next] [-enter=animationName] [-exit=animationName];
+\`\`\``,
+		detail: `更新立绘`,
 		insertText: "changeFigure:$1;$2"
 	},
 	bgm: {
@@ -969,11 +972,11 @@ export const WebGALKeywords = {
 		],
 		label: "bgm",
 		kind: CompletionItemKind.Function,
-		documentation: `背景音乐（BGM）
-		\`\`\`webgal
-		bgm:夏影.mp3;
-		\`\`\``,
-		detail: `bgm:<fileName>;`,
+		documentation: `\`\`\`webgal
+bgm:夏影.mp3;
+bgm:<fileName>;
+\`\`\``,
+		detail: `背景音乐（BGM）`,
 		insertText: "bgm:$1;$2"
 	},
 	playVideo: {
@@ -982,11 +985,11 @@ export const WebGALKeywords = {
 		args: [argsMap.when, argsMap.skipOff],
 		label: "playVideo",
 		kind: CompletionItemKind.Function,
-		documentation: `播放视频
-		\`\`\`webgal
-		playVideo:OP.mp4;
-		\`\`\``,
-		detail: `playVideo:<fileName>;`,
+		documentation: `\`\`\`webgal
+playVideo:OP.mp4;
+playVideo:<fileName>;
+\`\`\``,
+		detail: `播放视频`,
 		insertText: "playVideo:$1;$2"
 	},
 	pixiPerform: {
@@ -995,9 +998,11 @@ export const WebGALKeywords = {
 		args: [argsMap.when],
 		label: "pixiPerform",
 		kind: CompletionItemKind.Function,
-		documentation: `初始化 Pixi 特效
-		注意：特效作用后，如果没有初始化，特效会一直运行。`,
-		detail: `pixiPerform:<performName>;`,
+		documentation: `注意：特效作用后，如果没有初始化，特效会一直运行。
+\`\`\`webgal
+pixiPerform:<performName>;
+\`\`\``,
+		detail: `应用 Pixi 特效`,
 		insertText: "pixiPerform:$1;$2"
 	},
 	pixiInit: {
@@ -1006,10 +1011,12 @@ export const WebGALKeywords = {
 		args: [argsMap.when],
 		label: "pixiInit",
 		kind: CompletionItemKind.Function,
-		documentation: `初始化 Pixi 特效
-		1.如果你要使用特效，那么你必须先运行这个命令来初始化 Pixi。
-		2.如果你想要消除已经作用的效果，你可以使用这个语法来清空效果。`,
-		detail: `pixiInit;`,
+		documentation: `1.如果你要使用特效，那么你必须先运行这个命令来初始化 Pixi。
+2.如果你想要消除已经作用的效果，你可以使用这个语法来清空效果。
+\`\`\`webgal
+pixiInit;
+\`\`\``,
+		detail: `初始化 Pixi 特效`,
 		insertText: "pixiInit;"
 	},
 	intro: {
@@ -1028,14 +1035,13 @@ export const WebGALKeywords = {
 		],
 		label: "intro",
 		kind: CompletionItemKind.Function,
-		documentation: `黑屏独白
-		在许多游戏中，会以黑屏显示一些文字，用来引入主题或表现人物的心理活动。你可以使用 intro 命令来演出独白。
-		独白的分拆以分隔符(|)来分割，也就是说，每一个 | 代表一个换行。
-
-		\`\`\`webgal
-		intro:回忆不需要适合的剧本，|反正一说出口，|都成了戏言。;
-		\`\`\``,
-		detail: `intro:<text> [|<text of line 2>] ...;`,
+		documentation: `在许多游戏中，会以黑屏显示一些文字，用来引入主题或表现人物的心理活动。你可以使用 intro 命令来演出独白。
+独白的分拆以分隔符(|)来分割，也就是说，每一个 | 代表一个换行。
+\`\`\`webgal
+intro:回忆不需要适合的剧本，|反正一说出口，|都成了戏言。;
+intro:<text> [|<text of line 2>] ...;
+\`\`\``,
+		detail: `黑屏独白`,
 		insertText: "intro:$1;$2"
 	},
 	miniAvatar: {
@@ -1044,14 +1050,13 @@ export const WebGALKeywords = {
 		args: [argsMap.when],
 		label: "miniAvatar",
 		kind: CompletionItemKind.Function,
-		documentation: `放置小头像
-		很多游戏可以在文本框的左下角放置小头像，以下是在本引擎中使用的语法
-
-		\`\`\`webgal
-		miniAvatar:minipic_test.png;显示
-		miniAvatar:none;关闭
-		\`\`\``,
-		detail: `miniAvatar:<fileName>;`,
+		documentation: `很多游戏可以在文本框的左下角放置小头像，以下是在本引擎中使用的语法
+\`\`\`webgal
+miniAvatar:minipic_test.png;显示
+miniAvatar:none;关闭
+miniAvatar:<fileName>;
+\`\`\``,
+		detail: `放置小头像`,
 		insertText: "miniAvatar"
 	},
 	changeScene: {
@@ -1060,12 +1065,12 @@ export const WebGALKeywords = {
 		args: [argsMap.when],
 		label: "changeScene",
 		kind: CompletionItemKind.Function,
-		documentation: `场景跳转
-		你可以将你的剧本拆分成多个 txt 文档，并使用一个简单的语句来切换当前运行的剧本。
-		\`\`\`webgal
-		changeScene:Chapter-2.txt;
-		\`\`\``,
-		detail: `changeScene:<newSceneFileName>;`,
+		documentation: `你可以将你的剧本拆分成多个 txt 文档，并使用一个简单的语句来切换当前运行的剧本。
+\`\`\`webgal
+changeScene:Chapter-2.txt;
+changeScene:<newSceneFileName>;
+\`\`\``,
+		detail: `场景跳转`,
 		insertText: "changeScene:$1;$2"
 	},
 	choose: {
@@ -1074,13 +1079,13 @@ export const WebGALKeywords = {
 		args: [argsMap.when],
 		label: "choose",
 		kind: CompletionItemKind.Function,
-		documentation: `分支选择
-		如果你的剧本存在分支选项，你希望通过选择不同的选项进入不同的章节，请使用以下语句。
-		其中，|是分隔符。
-		\`\`\`webgal
-		choose:叫住她:Chapter-2.txt|回家:Chapter-3.txt;
-		\`\`\``,
-		detail: `choose:<chooseText:newSceneName> [|<chooseText:newSceneName>] ...;`,
+		documentation: `如果你的剧本存在分支选项，你希望通过选择不同的选项进入不同的章节，请使用以下语句。
+其中，|是分隔符。
+\`\`\`webgal
+choose:叫住她:Chapter-2.txt|回家:Chapter-3.txt;
+choose:<chooseText:newSceneName> [|<chooseText:newSceneName>] ...;
+\`\`\``,
+		detail: `分支选择`,
 		insertText: "choose:$1|$2;"
 	},
 	end: {
@@ -1090,10 +1095,10 @@ export const WebGALKeywords = {
 		label: "end",
 		kind: CompletionItemKind.Function,
 		documentation: `结束游戏并返回到标题
-		\`\`\`webgal
-		end;
-		\`\`\``,
-		detail: `end;`,
+\`\`\`webgal
+end;
+\`\`\``,
+		detail: `结束游戏并返回到标题`,
 		insertText: "end;"
 	},
 	setComplexAnimation: {
@@ -1108,15 +1113,12 @@ export const WebGALKeywords = {
 		],
 		label: "setComplexAnimation",
 		kind: CompletionItemKind.Function,
-		documentation: `填写复杂动画的名称。
-		目前 WebGAL 提供的复杂动画有：
-		universalSoftIn：通用透明度淡入
-		universalSoftOff：通用透明度淡出
-
-		\`\`\`webgal
-		setComplexAnimation:universalSoftIn -target=aaa -duration=1000;
-		\`\`\``,
-		detail: `setComplexAnimation:<name> [-target=...|-duration=...];`,
+		documentation: `为已有的立绘或背景设置复杂动画效果
+\`\`\`webgal
+setComplexAnimation:universalSoftIn -target=fig-center;
+setComplexAnimation:<animationName> -target=<targetId>;
+\`\`\``,
+		detail: `设置复杂动画`,
 		insertText: "setComplexAnimation:$1;$2"
 	},
 	label: {
@@ -1125,8 +1127,23 @@ export const WebGALKeywords = {
 		args: [argsMap.when],
 		label: "label",
 		kind: CompletionItemKind.Function,
-		documentation: `定义标签`,
-		detail: `label:<Name>;`,
+		documentation: `设置标签后，配合 \`jumpLabel\` 或 \`choose\` 可实现语句跳转
+\`\`\`webgal
+......
+jumpLabel:label_1; // 跳转到 label_1
+......
+......
+label:label_1; // 创建名为 label_1 的 label
+......
+......
+choose:分支 1:part_1|分支 2:part_2;
+label:part_1; // 创建名为 part_1 的 label
+......
+......
+label:part_2; // 创建名为 part_2 的 label
+......
+\`\`\``,
+		detail: `设置标签`,
 		insertText: "label:$1;$2"
 	},
 	jumpLabel: {
@@ -1135,8 +1152,23 @@ export const WebGALKeywords = {
 		args: [argsMap.when],
 		label: "jumpLabel",
 		kind: CompletionItemKind.Function,
-		documentation: `跳转到指定标签`,
-		detail: `jumpLabel:<Laebl Name>;`,
+		documentation: `设置标签后，配合 \`jumpLabel\` 或 \`choose\` 可实现语句跳转
+\`\`\`webgal
+......
+jumpLabel:label_1; // 跳转到 label_1
+......
+......
+label:label_1; // 创建名为 label_1 的 label
+......
+......
+choose:分支 1:part_1|分支 2:part_2;
+label:part_1; // 创建名为 part_1 的 label
+......
+......
+label:part_2; // 创建名为 part_2 的 label
+......
+\`\`\``,
+		detail: `设置标签`,
 		insertText: "jumpLabel:$1;$2"
 	},
 	setVar: {
@@ -1145,13 +1177,13 @@ export const WebGALKeywords = {
 		args: [argsMap.when, argsMap.global],
 		label: "setVar",
 		kind: CompletionItemKind.Function,
-		documentation: `使用变量
-		\`\`\`webgal
-		setVar:a=1;可以设置数字
-		setVar:a=true;可以设置布尔值
-		setVar:a=人物名称;可以设置字符串
-		\`\`\``,
-		detail: `setVar:<expression>;`,
+		documentation: `\`\`\`webgal
+setVar:a=1;可以设置数字
+setVar:a=true;可以设置布尔值
+setVar:a=人物名称;可以设置字符串
+setVar:<expression>;
+\`\`\``,
+		detail: `设置变量`,
 		insertText: "setVar:$1;$2"
 	},
 	callScene: {
@@ -1160,12 +1192,12 @@ export const WebGALKeywords = {
 		args: [argsMap.when],
 		label: "callScene",
 		kind: CompletionItemKind.Function,
-		documentation: `
-		如果你需要在执行完调用的场景后回到先前的场景（即父场景），你可以使用 callScene 来调用场景
-		\`\`\`webgal
-		callScene:Chapter-2.txt;
-		\`\`\``,
-		detail: `callScene:<newSceneFileName>;`,
+		documentation: `如果你需要在执行完调用的场景后回到先前的场景（即父场景），你可以使用 callScene 来调用场景
+\`\`\`webgal
+callScene:Chapter-2.txt;
+callScene:<newSceneFileName>;
+\`\`\``,
+		detail: `场景调用`,
 		insertText: "callScene:$1;$2"
 	},
 	showVars: {
@@ -1174,11 +1206,11 @@ export const WebGALKeywords = {
 		args: [argsMap.when],
 		label: "showVars",
 		kind: CompletionItemKind.Function,
-		documentation: `在对话框中，显示所有本地变量与全局变量的值。
-		\`\`\`webgal
-		showVars;
-		\`\`\``,
-		detail: `showVars;`,
+		documentation: `调试时使用，显示当前所有变量及其数值
+\`\`\`webgal
+showVars;
+\`\`\``,
+		detail: `显示当前变量`,
 		insertText: "showVars;"
 	},
 	unlockCg: {
@@ -1187,11 +1219,11 @@ export const WebGALKeywords = {
 		args: [argsMap.when, argsMap.name, argsMap.series],
 		label: "unlockCg",
 		kind: CompletionItemKind.Function,
-		documentation: `解锁 CG 鉴赏
-		\`\`\`webgal
-		unlockCg:xgmain.jpeg -name=星光咖啡馆与死神之蝶 -series=1;
-		\`\`\``,
-		detail: `unlockCg:<fileName> -name=cgName -series=serisId;`,
+		documentation: `\`\`\`webgal
+unlockCg:xgmain.jpeg -name=星光咖啡馆与死神之蝶 -series=1;
+unlockCg:<fileName> -name=cgName -series=serisId;
+\`\`\``,
+		detail: `解锁 CG 鉴赏`,
 		insertText: "unlockCg:$1;$2"
 	},
 	unlockBgm: {
@@ -1200,11 +1232,11 @@ export const WebGALKeywords = {
 		args: [argsMap.when, argsMap.name, argsMap.series],
 		label: "unlockBgm",
 		kind: CompletionItemKind.Function,
-		documentation: `解锁 BGM 鉴赏
-		\`\`\`webgal
-		unlockBgm:s_Title.mp3 -name=Smiling-Swinging!!;
-		\`\`\``,
-		detail: `unlockBgm:<fileName> -name=bgmName;`,
+		documentation: `\`\`\`webgal
+unlockBgm:s_Title.mp3 -name=Smiling-Swinging!!;
+unlockBgm:<fileName> -name=bgmName;
+\`\`\``,
+		detail: `解锁 BGM 鉴赏`,
 		insertText: "unlockBgm:$1;$2"
 	},
 	filmMode: {
@@ -1213,13 +1245,9 @@ export const WebGALKeywords = {
 		args: [argsMap.when],
 		label: "filmMode",
 		kind: CompletionItemKind.Function,
-		documentation: `当不填写或填写 none 时，关闭电影模式。其他任何字符串均表示开启电影模式。
-		\`\`\`webgal
-		filmMode:on;
-		角色A:真相只有一个;
-		filmMode:none;
-		\`\`\``,
-		detail: `filmMode:[on|none];`,
+		documentation: `使用 \`filmMode:enable;\` 来开启电影模式。
+使用 \`filmMode:none;\` 来关闭电影模式。`,
+		detail: `电影模式`,
 		insertText: "filmMode:$1;$2"
 	},
 	setTextbox: {
@@ -1228,12 +1256,12 @@ export const WebGALKeywords = {
 		args: [argsMap.when],
 		label: "setTextbox",
 		kind: CompletionItemKind.Function,
-		documentation: `设置文本框开启/关闭
-		\`\`\`webgal
-		setTextbox:hide;关闭文本框
-		setTextbox:on;开启文本框，可以是除 hide 以外的任意值。
-		\`\`\``,
-		detail: `setTextbox:[hide] [others];`,
+		documentation: `\`\`\`webgal
+setTextbox:hide;关闭文本框
+setTextbox:on;开启文本框，可以是除 hide 以外的任意值。
+setTextbox:[hide] [others];
+\`\`\``,
+		detail: `设置文本框开启/关闭`,
 		insertText: "setTextbox:$1;$2"
 	},
 	setAnimation: {
@@ -1249,11 +1277,11 @@ export const WebGALKeywords = {
 		],
 		label: "setAnimation",
 		kind: CompletionItemKind.Function,
-		documentation: `设置动画
-		\`\`\`webgal
-		setAnimation:enter-from-bottom -target=fig-center -next;为中间立绘设置一个从下方进入的动画，并转到下一句。
-		\`\`\``,
-		detail: `setAnimation:<animationName> -target=targetId;`,
+		documentation: `\`\`\`webgal
+setAnimation:enter-from-bottom -target=fig-center -next;为中间立绘设置一个从下方进入的动画，并转到下一句。
+setAnimation:<animationName> -target=targetId;
+\`\`\``,
+		detail: `设置动画`,
 		insertText: "setAnimation"
 	},
 	playEffect: {
@@ -1262,11 +1290,11 @@ export const WebGALKeywords = {
 		args: [argsMap.when, argsMap.volume, argsMap.idSound],
 		label: "playEffect",
 		kind: CompletionItemKind.Function,
-		documentation: `效果音
-		\`\`\`webgal
-		playEffect:xxx.mp3;
-		\`\`\``,
-		detail: `playEffect:<fileName>;`,
+		documentation: `\`\`\`webgal
+playEffect:xxx.mp3;
+playEffect:<fileName>;
+\`\`\``,
+		detail: `效果音`,
 		insertText: "playEffect:$1;$2"
 	},
 	setTempAnimation: {
@@ -1282,21 +1310,12 @@ export const WebGALKeywords = {
 		],
 		label: "setTempAnimation",
 		kind: CompletionItemKind.Function,
-		documentation: `与 setAnimation 读取动画文件不同，setTempAnimation 允许用户直接在代码里定义多段动画。
-		语句内容格式为动画文件的单行形式，即 [{},{},{}] 。
-
-		相关信息
-
-		如果您想复用动画，请使用 setAnimation 命令。
-		如果您只想设置单段动画，请使用 setTransform 命令。
-		
-		\`\`\`webgal
-		changeFigure:1/open_eyes.png -id=aaa;
-		; 闪光弹动画
-		setTempAnimation:[{"duration":0},{"brightness":2,"contrast":0,"duration":200,"ease":"circIn"},{"brightness":1,"contrast":1,"duration":200},{"brightness":2,"contrast":0,"duration":200,"ease":"circIn"},{"brightness":1,"contrast":1,"duration":2500}] -target=aaa;
-		\`\`\`
-		`,
-		detail: `setTempAnimation:<name>|<JSON> [-target=...|-writeDefault...|-keep=...];";`,
+		documentation: `为已有的立绘或背景设置多段动画
+\`\`\`webgal
+setTempAnimation:[{"duration":0},{"brightness":2,"contrast":0,"duration":200,"ease":"circIn"},{"brightness":1,"contrast":1,"duration":200},{"brightness":2,"contrast":0,"duration":200,"ease":"circIn"},{"brightness":1,"contrast":1,"duration":2500}] -target=fig-center;;
+setTempAnimation: -target=<targetId>r;
+\`\`\``,
+		detail: `设置多段动画`,
 		insertText: "setTempAnimation:$1;$2"
 	},
 	setTransform: {
@@ -1314,8 +1333,12 @@ export const WebGALKeywords = {
 		],
 		label: "setTransform",
 		kind: CompletionItemKind.Function,
-		documentation: `设置效果`,
-		detail: `setTransform:<expression>;`,
+		documentation: `为已有的立绘或背景设置变换效果
+\`\`\`webgal
+setTransform: -target=fig-center -duration=500;
+setTransform: -target=<targetId> -duration=number;
+\`\`\``,
+		detail: `设置变换效果`,
 		insertText: "setTransform:"
 	},
 	setTransition: {
@@ -1329,18 +1352,14 @@ export const WebGALKeywords = {
 		],
 		label: "setTransition",
 		kind: CompletionItemKind.Function,
-		documentation: `不需要填写任何语句内容。
-		详情请见设置进出场效果。
-		
-		\`\`\`webgal
-		changeFigure:1/open_eyes.png -id=aaa -next;
-		setTransition: -target=aaa -enter=enter-from-left;
-		角色A: 你好！
-		setTransition: -target=aaa -exit=exit-to-right;
-		changeFigure:none -id=aaa -next;
-		角色A: 再见！
-		\`\`\``,
-		detail: `setTransition:[name] [-target=...|-enter=...|-exit=...];`,
+		documentation: `注意：只有当立绘或背景被设置后，你才能为其设置进出场效果。
+设置进出场效果的代码写在立绘或背景的设置代码后。
+并且，设置进出场效果的语句必须紧随设置立绘或背景的语句连续执行，否则无法被正确应用。
+\`\`\`webgal
+setTransition: -target=fig-center -enter=enter-from-bottom -exit=exit;
+setTransition: -target=targetId -enter=animationName -exit=animationName;
+\`\`\``,
+		detail: `设置进出场效果`,
 		insertText: "setTransition:$1;$2"
 	},
 	getUserInput: {
@@ -1354,15 +1373,11 @@ export const WebGALKeywords = {
 			argsMap.defaultValue
 		],
 		kind: CompletionItemKind.Function,
-		documentation: `获取用户输入
-		\`\`\`webgal
-		填写变量名称，用户输入的值将保存在该变量中。
-		角色B:真的是太感谢您了，能告诉我您的名字吗？;
-		getUserInput:player_name -title=您的名字 -buttonText=确认 -defaultValue=Bob;
-		角色B:{player_name}，我记住了。;
-		\`\`\`
-`,
-		detail: `getUserInput:[...args];`,
+		documentation: `\`\`\`webgal
+getUserInput:name -title=如何称呼你 -buttonText=确认; 将用户输入写入 name 变量中
+getUserInput:<varName> -title=titleText -buttonText=buttonText;
+\`\`\``,
+		detail: `获取用户输入`,
 		insertText: "getUserInput:$1;$2"
 	},
 	applyStyle: {
@@ -1371,21 +1386,11 @@ export const WebGALKeywords = {
 		args: [argsMap.when],
 		label: "applyStyle",
 		kind: CompletionItemKind.Function,
-		documentation: `首先需要在 UI 模板中新写一个样式，然后可以用 applyStyle 命令，将新样式替换原样式。
-		原样式名与新样式名之间用 -> 连接，您可以同时替换多个样式，每个替换之间用英文逗号 , 分隔。
-		格式如:原样式名->新样式名,原样式名2->新样式名2,...
-		\`\`\`webgal
-		; 将角色名背景替换为红色，前提是在 UI 模板里写了新样式
-		applyStyle:TextBox_ShowName_Background->TextBox_ShowName_Background_Red;
-		角色名:这是一句话;
-		; 同时替换多个样式
-		applyStyle:TextBox_ShowName_Background->TextBox_ShowName_Background_Green,TextBox_main->TextBox_main_Black;
-		无论原样式被替换为什么新样式，替换样式依旧是原样式名在前;
-		applyStyle:原样式名->新样式名1;
-		applyStyle:新样式名1->新样式名2; 错误
-		applyStyle:原样式名->新样式名2;
-		\`\`\``,
-		detail: `applyStyle:<old_style_name>-><new_style_name>;`,
+		documentation: `\`\`\`webgal
+applyStyle:TextBox_ShowName_Background->TextBox_ShowName_Background_Red;
+applyStyle:<origStyleName>-><newStyleName>(,<origStyleName2>-><newStyleName2>,...);
+\`\`\``,
+		detail: `更换 UI 样式`,
 		insertText: "applyStyle:$1;$2"
 	},
 	wait: {
@@ -1394,15 +1399,11 @@ export const WebGALKeywords = {
 		args: [argsMap.when],
 		label: "wait",
 		kind: CompletionItemKind.Function,
-		documentation: `填写一个数字，作为等待时间，单位为毫秒。
-		有时出于演出效果的需要，可能需要等待一段时间，再执行下一句。
-		\`\`\`webgal
-		角色A:让我想想;
-		角色A:......;
-		wait:5000; 等待 5 秒
-		角色A:想不出来，算了。;
-		\`\`\``,
-		detail: `wait:<number>;`,
+		documentation: `等待一段时间，单位为毫秒
+\`\`\`webgal
+wait: 5000; 等待5秒钟
+\`\`\``,
+		detail: `等待一段时间`,
 		insertText: "wait:$1;$2"
 	},
 	callSteam: {
@@ -1411,11 +1412,12 @@ export const WebGALKeywords = {
 		args: [argsMap.when, argsMap.achievementId],
 		label: "callSteam",
 		kind: CompletionItemKind.Function,
-		documentation: `调用 Steam 命令。
-		\`\`\`webgal
-		callSteam:xxx;
-		\`\`\``,
-		detail: `callSteam: <...arguments>;`,
+		documentation: `调用 Steam
+\`\`\`webgal
+callSteam: -achievementId=ACH_WIN_ONE_GAME;
+callSteam: -achievementId=achievementId;
+\`\`\``,
+		detail: `调用 Steam`,
 		insertText: "callSteam:$1;$2"
 	}
 };
