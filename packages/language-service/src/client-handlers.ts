@@ -45,8 +45,10 @@ export function createWebgalClientHandlers(
 		"workspace/documentLink/refresh": () => null,
 		"client/showTip": options.showTip ?? (() => null),
 		"client/currentDirectory": () => options.vfs.currentDirectory(),
-		"client/FJoin": (args) =>
-			options.vfs.join(...(Array.isArray(args) ? args : [args])),
+		"client/FJoin": (args) => {
+			const parts = Array.isArray(args) ? args : [args];
+			return options.vfs.join(...parts.map(toVfsPath));
+		},
 		"client/FStat": (path) => options.vfs.stat(toVfsPath(path)),
 		"client/findFile": ([startPath, targetName]) =>
 			options.vfs.findFile(toVfsPath(startPath), targetName),

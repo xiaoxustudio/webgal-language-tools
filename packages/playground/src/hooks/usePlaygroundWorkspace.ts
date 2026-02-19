@@ -2,14 +2,12 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import * as Monaco from "monaco-editor";
 import type { EditorProps } from "@monaco-editor/react";
 import initWorker from "../init-worker";
+import { pathToUri, uriToPath } from "@webgal/language-service";
+import type { VirtualEntry, VirtualFileSystem } from "@webgal/language-service";
 import {
-	joinPaths,
-	normalizePath,
-	pathToUri,
-	uriToPath,
-	type VirtualEntry,
-	type VirtualFileSystem
-} from "@webgal/language-service";
+	createWebgalMonacoWorkspace,
+	type WebgalMonacoWorkspace
+} from "@webgal/language-service/monaco";
 
 type ApplyRemoteVfsInput = {
 	vfs: VirtualFileSystem;
@@ -45,10 +43,11 @@ const findFirstFile = (
 export function usePlaygroundWorkspace(options: WorkspaceOptions) {
 	const editorRef = useRef<Monaco.editor.IStandaloneCodeEditor | null>(null);
 	const vfsRef = useRef<VirtualFileSystem | null>(null);
-	const activePathRef = useRef<string | null>(null);
-	const skipWriteRef = useRef(false);
-	const linkOpenerRef = useRef<Monaco.IDisposable | null>(null);
+	const workspaceRef = useRef<WebgalMonacoWorkspace | null>(null);
 	const [tree, setTree] = useState<VirtualEntry | null>(null);
+	const [workspace, setWorkspace] = useState<WebgalMonacoWorkspace | null>(
+		null
+	);
 	const [activePath, setActivePath] = useState(
 		options.initialActivePath ?? "file:///game/scene/start.txt"
 	);
@@ -60,51 +59,25 @@ export function usePlaygroundWorkspace(options: WorkspaceOptions) {
 		() => new Set()
 	);
 
-	const getLanguageFromPath = useCallback((path: string) => {
-		if (path.toLowerCase().endsWith("config.txt")) {
-			return "webgal-config";
-		}
-		return "webgal";
+	const attachWorkspace = useCallback(
+		(vfs: VirtualFileSystem, rootUri: string) => {
+			const editor = editorRef.current;
+			if (!editor) return;
+			workspaceRef.current?.dispose();
+			const nextWorkspace = createWebgalMonacoWorkspace({
+				editor,
+				vfs,
+				rootPath: rootUri
+			});
+			workspaceRef.current = nextWorkspace;
+			setWorkspace(nextWorkspace);
+		},
+		[]
+	);
+
+	const toFileUri = useCallback((value: string) => {
+		return workspaceRef.current?.toFileUri(value) ?? null;
 	}, []);
-
-	const rootPathForJoin = useMemo(() => {
-		const base = rootPath.startsWith("file://")
-			? uriToPath(rootPath)
-			: rootPath;
-		return normalizePath(base);
-	}, [rootPath]);
-
-	const toFileUri = useCallback(
-		(value: string) => {
-			const trimmed = value.trim();
-			if (!trimmed) return null;
-			if (trimmed.startsWith("file://")) {
-				return pathToUri(uriToPath(trimmed)).toString();
-			}
-			if (trimmed.startsWith("/")) {
-				return pathToUri(normalizePath(trimmed)).toString();
-			}
-			const joined = joinPaths(rootPathForJoin, trimmed);
-			return pathToUri(joined).toString();
-		},
-		[rootPathForJoin]
-	);
-
-	const getDisplayPath = useCallback(
-		(path: string) => {
-			const normalizedPath = normalizePath(
-				path.startsWith("file://") ? uriToPath(path) : path
-			);
-			if (normalizedPath === rootPathForJoin) {
-				return "";
-			}
-			if (normalizedPath.startsWith(`${rootPathForJoin}/`)) {
-				return normalizedPath.slice(rootPathForJoin.length + 1);
-			}
-			return normalizedPath;
-		},
-		[rootPathForJoin]
-	);
 
 	const normalizeInputPath = useCallback(
 		(value: string) => toFileUri(value),
@@ -117,44 +90,30 @@ export function usePlaygroundWorkspace(options: WorkspaceOptions) {
 		setTree(vfs.getTree());
 	}, []);
 
-	const openFile = useCallback(
-		async (path: string) => {
-			const vfs = vfsRef.current;
-			const editor = editorRef.current;
-			if (!vfs || !editor) return false;
-			const normalizedPath = toFileUri(path);
-			if (!normalizedPath) return false;
-			const content = await vfs.readFile(normalizedPath);
-			if (content === null) {
-				return false;
+	const openFile = useCallback(async (path: string) => {
+		const workspace = workspaceRef.current;
+		if (!workspace) return false;
+		const opened = await workspace.openFile(path);
+		if (opened) {
+			const nextPath = workspace.getActivePath();
+			if (nextPath) {
+				setActivePath(nextPath);
 			}
-			const uri = Monaco.Uri.parse(normalizedPath);
-			let model = Monaco.editor.getModel(uri);
-			if (!model) {
-				model = Monaco.editor.createModel(
-					content,
-					getLanguageFromPath(normalizedPath),
-					uri
-				);
-			} else {
-				model.setValue(content);
-			}
-			skipWriteRef.current = true;
-			editor.setModel(model);
-			skipWriteRef.current = false;
-			activePathRef.current = normalizedPath;
-			setActivePath(normalizedPath);
-			return true;
-		},
-		[getLanguageFromPath, toFileUri]
-	);
+		}
+		return opened;
+	}, []);
 
 	const initWorkspace = useCallback(
 		async (editor: Monaco.editor.IStandaloneCodeEditor) => {
 			const { vfs } = initWorker(editor);
 			vfsRef.current = vfs;
-			setRootPath(pathToUri(vfs.root).toString());
-			await vfs.writeFile("file:///game/scene/start.txt", options.startText);
+			const rootUri = pathToUri(vfs.root).toString();
+			setRootPath(rootUri);
+			attachWorkspace(vfs, rootUri);
+			await vfs.writeFile(
+				"file:///game/scene/start.txt",
+				options.startText
+			);
 			await vfs.writeFile("file:///game/config.txt", options.configText);
 			refreshTree();
 			setExpandedPaths((prev) => {
@@ -163,9 +122,16 @@ export function usePlaygroundWorkspace(options: WorkspaceOptions) {
 				next.add("file:///game/scene");
 				return next;
 			});
-			await openFile(activePathRef.current ?? activePath);
+			await openFile(activePath);
 		},
-		[activePath, openFile, options.configText, options.startText, refreshTree]
+		[
+			activePath,
+			attachWorkspace,
+			openFile,
+			options.configText,
+			options.startText,
+			refreshTree
+		]
 	);
 
 	const ensureWorkerWorkspace = useCallback(async () => {
@@ -184,6 +150,7 @@ export function usePlaygroundWorkspace(options: WorkspaceOptions) {
 					: pathToUri(root).toString()
 				: pathToUri(vfs.root).toString();
 			setRootPath(rootUri);
+			attachWorkspace(vfs, rootUri);
 			setTree(remoteTree);
 			setExpandedPaths(() => {
 				const next = new Set<string>();
@@ -200,32 +167,22 @@ export function usePlaygroundWorkspace(options: WorkspaceOptions) {
 			if (nextFile) {
 				await openFile(nextFile);
 			} else {
-				activePathRef.current = null;
+				workspaceRef.current?.setActivePath(null);
 				setActivePath("");
 			}
 		},
-		[openFile]
+		[attachWorkspace, openFile]
 	);
 
 	const handleEditorDidMount: EditorProps["onMount"] = async (editor) => {
 		editorRef.current = editor as Monaco.editor.IStandaloneCodeEditor;
-		if (!linkOpenerRef.current) {
-			linkOpenerRef.current = Monaco.editor.registerLinkOpener({
-				open: (resource) => {
-					const uriString = resource.toString();
-					if (!uriString.startsWith("file://")) {
-						return false;
-					}
-					return openFile(uriString);
-				}
-			});
+		const vfs = vfsRef.current;
+		if (vfs) {
+			attachWorkspace(vfs, rootPath);
+			if (activePath) {
+				await openFile(activePath);
+			}
 		}
-		editor.onDidChangeModelContent(() => {
-			if (skipWriteRef.current) return;
-			const currentPath = activePathRef.current;
-			if (!currentPath) return;
-			vfsRef.current?.writeFile(currentPath, editor.getValue());
-		});
 		if (!vfsRef.current && (options.autoInitWorker ?? true)) {
 			await initWorkspace(editor as Monaco.editor.IStandaloneCodeEditor);
 		}
@@ -259,7 +216,7 @@ export function usePlaygroundWorkspace(options: WorkspaceOptions) {
 		if (!normalizedSelected) return;
 		await vfs.deletePath(normalizedSelected);
 		refreshTree();
-		if (activePathRef.current?.startsWith(normalizedSelected)) {
+		if (activePath?.startsWith(normalizedSelected)) {
 			const currentTree = vfs.getTree();
 			const nextFile = findFirstFile(
 				currentTree,
@@ -268,21 +225,22 @@ export function usePlaygroundWorkspace(options: WorkspaceOptions) {
 			if (nextFile) {
 				await openFile(nextFile);
 			} else {
-				activePathRef.current = null;
+				workspaceRef.current?.setActivePath(null);
 				setActivePath("");
 			}
 		}
 		setSelectedPath(null);
-	}, [openFile, refreshTree, selectedPath, toFileUri]);
+	}, [activePath, openFile, refreshTree, selectedPath, toFileUri]);
 
 	const currentLanguage = useMemo(() => {
-		if (!activePath) return "webgal";
-		return getLanguageFromPath(activePath);
-	}, [activePath, getLanguageFromPath]);
+		if (!activePath || !workspace) return "webgal";
+		return workspace.getLanguageFromPath(activePath);
+	}, [activePath, workspace]);
 
 	const displayPath = useMemo(() => {
-		return activePath ? getDisplayPath(activePath) : "";
-	}, [activePath, getDisplayPath]);
+		if (!activePath || !workspace) return "";
+		return workspace.getDisplayPath(activePath);
+	}, [activePath, workspace]);
 
 	const handleSelectPath = useCallback(
 		(path: string) => {

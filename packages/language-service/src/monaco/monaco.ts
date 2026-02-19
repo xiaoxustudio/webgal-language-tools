@@ -12,7 +12,7 @@ import {
 	type InitializeParams
 } from "vscode-languageclient/browser.js";
 import { MonacoLanguageClient } from "monaco-languageclient";
-import type * as monaco from "monaco-editor";
+import * as monaco from "monaco-editor";
 import {
 	createMemoryVolarFileSystem,
 	createVirtualFileSystem,
@@ -34,7 +34,7 @@ export interface CreateWebgalMonacoLanguageClientOptions {
  * 创建虚拟文件系统
  * @param options - 配置选项
  * @param options.root - 根目录路径，默认为 "file:///"
- * @param options.tree - 可选的虚拟文件树结构
+ * @param options.tree -  可选的虚拟文件树结构
  * @returns 返回一个虚拟文件系统实例
  */
 export function createMemoryFileSystem(options?: {
