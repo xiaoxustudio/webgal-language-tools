@@ -124,33 +124,117 @@ export async function provideCompletionItems(
 		Position.create(position.line, 0)
 	);
 
+	const getPath = (line: string) => {
+		const result = line.match("(?<=:\\s*)\\S.*/");
+		return result ? result[0] : "";
+	};
+
+	const getChoosePath = (line: string) => {
+		const result0 = line.match("(?<=:\\s*)[^:|\\|]*$");
+		if (!result0) {
+			return null;
+		}
+		const result1 = result0[0].match(".*/");
+		return result1 ? result1[0] : "";
+	};
+
+	const getAnimationArgInput = (line: string) => {
+		const result = line.match(/(?:^|\s)-(?:enter|exit)=([^\s;]*)$/);
+		return result ? result[1] : null;
+	};
+
 	const currentLine = documentTextArray[position.line] ?? "";
 	const commandType = lineCommandTypes[position.line] ?? "";
-	const isSayCommandType = !resourcesMap[commandType as CommandNameSpecial];
+	const isResourceCommand = Object.keys(resourcesMap).includes(commandType);
+	const animationCommandTypes = new Set<string>([
+		WebGALKeywords.changeBg.label!,
+		WebGALKeywords.changeFigure.label!,
+		WebGALKeywords.setTransition.label!
+	]);
+	const isAnimationArgCompletion =
+		!!currentLine.match(/\s\-(enter|exit)=[^\s;]*$/) &&
+		animationCommandTypes.has(commandType);
 
-	if (
-		token.startsWith("./") ||
-		!!~token.indexOf("/") ||
-		Object.keys(resourcesMap).includes(commandType) ||
-		token.startsWith("-")
-	) {
+	if (token.startsWith("-") || isResourceCommand || isAnimationArgCompletion) {
 		if (enableResourceCompletion) {
-			const resourceBaseDir = isSayCommandType
-				? "vocal"
-				: resourcesMap[commandType];
+			let resourceBaseDir: string | undefined;
+			let subDir = "";
+			let filterPrefix: string | null = null;
+			let isAnimationSuggestion = false;
+
+			if (isAnimationArgCompletion) {
+				const argInput = getAnimationArgInput(currentLine);
+				if (argInput !== null) {
+					resourceBaseDir = "animation";
+					isAnimationSuggestion = true;
+					const lastSlashIndex = argInput.lastIndexOf("/");
+					subDir =
+						lastSlashIndex >= 0
+							? argInput.slice(0, lastSlashIndex + 1)
+							: "";
+					filterPrefix =
+						lastSlashIndex >= 0
+							? argInput.slice(lastSlashIndex + 1)
+							: argInput;
+				}
+			} else if (isResourceCommand) {
+				resourceBaseDir = resourcesMap[commandType as CommandNameSpecial];
+				if (commandType === WebGALKeywords.choose.label) {
+					const path = getChoosePath(currentLine);
+					if (path !== null) {
+						subDir = path;
+					}
+				} else {
+					subDir = getPath(currentLine);
+				}
+			}
 			if (resourceBaseDir) {
 				const dirs = await connection.sendRequest<any>(
 					"client/getResourceDirectory",
-					[resourceBaseDir, token]
+					subDir ? [resourceBaseDir, subDir] : [resourceBaseDir]
 				);
 				if (dirs) {
-					for (const dir of dirs) {
-						CompletionItemSuggestions.push({
-							label: dir.name,
-							kind: dir.isDirectory
-								? CompletionItemKind.Folder
-								: CompletionItemKind.File
-						} satisfies CompletionItem);
+					const visibleDirs = dirs.filter(
+						(dir: { name: string }) => !dir.name.startsWith(".")
+					);
+					if (isAnimationSuggestion) {
+						const filtered = visibleDirs
+							.filter(
+								(file: { name: string }) =>
+									file.name !== "animationTable.json"
+							)
+							.filter((file: { name: string }) =>
+								filterPrefix ? file.name.startsWith(filterPrefix) : true
+							);
+						for (const file of filtered) {
+							if (file.isDirectory) {
+								const dirName = `${file.name}/`;
+								CompletionItemSuggestions.push({
+									label: dirName,
+									insertText: dirName,
+									kind: CompletionItemKind.Folder
+								} satisfies CompletionItem);
+							} else {
+								const insertName = file.name.endsWith(".json")
+									? file.name.slice(0, -5)
+									: file.name;
+								CompletionItemSuggestions.push({
+									label: insertName,
+									insertText: insertName,
+									kind: CompletionItemKind.File
+								} satisfies CompletionItem);
+							}
+						}
+					} else {
+						for (const dir of visibleDirs) {
+							CompletionItemSuggestions.push({
+								label: dir.name,
+								insertText: dir.name,
+								kind: dir.isDirectory
+									? CompletionItemKind.Folder
+									: CompletionItemKind.File
+							} satisfies CompletionItem);
+						}
 					}
 				}
 			}

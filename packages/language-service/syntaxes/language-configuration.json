@@ -33,10 +33,6 @@
 			"notIn": ["string", "comment"]
 		},
 		{
-			"open": ":",
-			"close": ";"
-		},
-		{
 			"open": ";area",
 			"close": ";endarea"
 		}
