@@ -73,7 +73,7 @@ Create a `vite` project and install dependencies:
 npm i @webgal/language-service
 ```
 
-Then put the following in `App.tsx` (install other dependencies yourself, see the note at the end):
+Then put the following in `App.tsx` (install other dependencies yourself):
 
 ```ts
 import { useEffect, useRef } from "react";
@@ -159,7 +159,6 @@ export function WebgalEditor() {
   );
 
   useEffect(() => {
-    void initWebgalMonaco();
     void vfsRef.current.applyChanges([
       { type: "mkdir", path: "file:///game/scene" },
       { type: "writeFile", path: "file:///game/config.txt", content: "Game_name:Demo\n" },
@@ -177,6 +176,7 @@ export function WebgalEditor() {
       path="file:///game/scene/start.txt"
       defaultValue={"setVar:heroine=WebGAL;\n"}
       onMount={async (editor: monaco.editor.IStandaloneCodeEditor) => {
+        await initWebgalMonaco();
         if (clientRef.current) return;
         const worker = new Worker(
           new URL("./webgal-lsp.worker.ts", import.meta.url),
@@ -193,7 +193,7 @@ export function WebgalEditor() {
 }
 ```
 
-For more information, please refer to [Playground](https://github.com/xiaoxustudio/webgal-language-tools/tree/master/packages/playground) The writing style
+For more information, please refer to [Playground](https://github.com/xiaoxustudio/webgal-language-tools/tree/master/packages/playground).
 
 ## License
 

@@ -40,25 +40,18 @@
 
 启动语言服务器：
 
-如果你是基于本项目源码
+如果你是基于本项目源码（仅启动语言服务器）
 ```bash
-pnpm dev:lsp-ws
+pnpm dev:nlsp-ws
 ```
 
-如果你是基于本项目构建产物，那么需要在`node`下运行，新建一个空`node`项目后，安装`server`包：
+如果你是独立项目，直接使用语言服务器包：
 ```bash
 npm i @webgal/language-server
 ```
 
-再新建一个文件，例如`webgal-lsp.js`，内容如下：
-```js
-require("@webgal/language-server");
-```
-
-最后启动它：
-
 ```bash
-node webgal-lsp.js --ws --wsPort=5882 --wsPath=/webgal-lsp
+npx webgal-language-server --ws --wsPort=5882 --wsPath=/webgal-lsp
 ```
 
 前端示例（使用 @monaco-editor/react）：
@@ -68,7 +61,7 @@ node webgal-lsp.js --ws --wsPort=5882 --wsPath=/webgal-lsp
 npm i @webgal/language-service
 ```
 
-然后在主界面`App.tsx`写入以下内容（其他依赖自行安装，注意本文最后的ps）：
+然后在主界面`App.tsx`写入以下内容（其他依赖自行安装）：
 
 ```ts
 import { useEffect, useRef } from "react";
@@ -121,6 +114,68 @@ export function WebgalEditor() {
 }
 ```
 
+###### 基础用法：VFS 文件操作
+
+```ts
+import { createMemoryFileSystem } from "@webgal/language-service/monaco";
+
+const vfs = createMemoryFileSystem({ root: "file:///game" });
+
+await vfs.mkdir("file:///game/scene");
+await vfs.writeFile("file:///game/config.txt", "Game_name:Demo\n");
+await vfs.writeFile("file:///game/scene/start.txt", "setVar:heroine=WebGAL;\n");
+await vfs.rename(
+  "file:///game/scene/start.txt",
+  "file:///game/scene/intro.txt"
+);
+await vfs.deletePath("file:///game/scene/intro.txt");
+```
+
+###### 进阶用法：使用 Workspace 管理文件与激活状态
+
+```ts
+import * as monaco from "monaco-editor";
+import {
+  createMemoryFileSystem,
+  createWebgalMonacoWorkspace
+} from "@webgal/language-service/monaco";
+
+const editor = monaco.editor.create(document.getElementById("editor")!);
+const vfs = createMemoryFileSystem({ root: "file:///game" });
+const workspace = createWebgalMonacoWorkspace({
+  editor,
+  vfs,
+  rootPath: "file:///game"
+});
+
+await vfs.writeFile("file:///game/scene/start.txt", "setVar:heroine=WebGAL;\n");
+await workspace.openFile("file:///game/scene/start.txt");
+workspace.setActivePath("file:///game/scene/start.txt");
+const displayPath = workspace.getDisplayPath("file:///game/scene/start.txt");
+```
+
+###### 进阶用法：后端接入真实文件系统并控制功能开关
+
+```ts
+import path from "path";
+import { createNodeFileSystem } from "@webgal/language-service/node";
+import { setFeatureOptions } from "@webgal/language-server/utils";
+
+const vfs = createNodeFileSystem({
+  root: path.resolve(process.cwd(), "game")
+});
+
+setFeatureOptions({
+  completion: true,
+  hover: true,
+  documentLink: true,
+  resourceCompletion: true,
+  diagnostics: true,
+  foldingRange: true,
+  definition: true
+});
+```
+
 ##### 浏览器模式
 
 - 通过 `Web Worker` 在浏览器中启动语言服务器，并与前端语言客户端通信，无需后端。
@@ -143,7 +198,7 @@ import {
   initWebgalMonaco,
   createWebgalMonacoLanguageClientWithWorker,
   createMemoryFileSystem
-} from "@webgal/language-service";
+} from "@webgal/language-service/monaco";
 
 export function WebgalEditor() {
   const clientRef = useRef<{ worker: Worker } | null>(null);
@@ -154,7 +209,6 @@ export function WebgalEditor() {
   );
 
   useEffect(() => {
-    void initWebgalMonaco();
     void vfsRef.current.applyChanges([
       { type: "mkdir", path: "file:///game/scene" },
       { type: "writeFile", path: "file:///game/config.txt", content: "Game_name:Demo\n" },
@@ -172,6 +226,7 @@ export function WebgalEditor() {
       path="file:///game/scene/start.txt"
       defaultValue={"setVar:heroine=WebGAL;\n"}
       onMount={async (editor: monaco.editor.IStandaloneCodeEditor) => {
+        await initWebgalMonaco();
         if (clientRef.current) return;
         const worker = new Worker(
           new URL("./webgal-lsp.worker.ts", import.meta.url),
@@ -188,7 +243,7 @@ export function WebgalEditor() {
 }
 ```
 
-更多信息请参考 [Playground](https://github.com/xiaoxustudio/webgal-language-tools/tree/master/packages/playground) 的写法
+更多信息请参考 [Playground](https://github.com/xiaoxustudio/webgal-language-tools/tree/master/packages/playground)
 
 ## 许可证
 
