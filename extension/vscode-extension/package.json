@@ -24,6 +24,7 @@
 		"workspaceContains:**/game/config.txt"
 	],
 	"main": "./dist/extension.js",
+	"icon": "./resources/icon.png",
 	"contributes": {
 		"marks": [
 			"markdownString"
