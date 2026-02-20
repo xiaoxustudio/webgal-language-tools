@@ -5,13 +5,11 @@
 		"rootDir": "src",
 		"paths": {
 			"@/*": ["./src/*"]
-		}
+		},
+		"module": "CommonJS",
+		"types": ["node"],
+		"composite": true
 	},
 	"include": ["src"],
-	"exclude": ["node_modules", "out", "scripts"],
-	"references": [
-		{
-			"path": "../../packages/language-server"
-		}
-	]
+	"exclude": ["node_modules", "out", "scripts"]
 }

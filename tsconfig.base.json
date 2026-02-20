@@ -10,7 +10,6 @@
 		"skipLibCheck": true,
 		"noUnusedLocals": true,
 		"noUnusedParameters": true,
-		"types": ["@types/node", "node"],
 		"paths": {
 			"@webgal/language-server": ["packages/language-server/src"],
 			"@webgal/language-core": ["packages/language-core/src"],

@@ -23,7 +23,7 @@
 	"activationEvents": [
 		"workspaceContains:**/game/config.txt"
 	],
-	"main": "./dist/client.js",
+	"main": "./dist/extension.js",
 	"contributes": {
 		"marks": [
 			"markdownString"
@@ -188,9 +188,9 @@
 		]
 	},
 	"scripts": {
-		"build": "node scripts/build -- --minify",
-		"watch": "pnpm run build -- --watch",
-		"pack": "pnpm run build && vsce package --pre-release",
+		"build": "rolldown --config rolldown.config.ts",
+		"watch": "pnpm run build --watch",
+		"pack": "pnpm run build && pnpx @vscode/vsce package --no-dependencies",
 		"release": "pnpm run build && vsce publish --pre-release",
 		"format": " prettier --write \"src/**/*.ts\"",
 		"lint": "eslint src --ext ts --fix",
@@ -205,15 +205,16 @@
 		"@typescript-eslint/parser": "^7.18.0",
 		"@volar/language-server": "~2.4.0",
 		"@volar/vscode": "~2.4.0",
+		"@vscode/vsce": "latest",
 		"concurrently": "^9.2.1",
 		"esbuild": "latest",
 		"esbuild-plugin-alias": "^0.2.1",
 		"eslint": "^8.56.0",
 		"prettier": "^3.8.1",
+		"rolldown": "1.0.0-rc.5",
 		"tsc-alias": "^1.8.16",
 		"tsx": "^4.21.0",
-		"typescript": "catalog:",
-		"vsce": "latest"
+		"typescript": "catalog:"
 	},
 	"dependencies": {
 		"@vscode/debugadapter": "^1.65.0",
@@ -229,5 +230,6 @@
 		"vscode-languageserver-textdocument": "^1.0.11",
 		"webgal-parser": "^4.5.18",
 		"ws": "^8.17.1"
-	}
+	},
+	"packageManager": "npm@11.10.1"
 }

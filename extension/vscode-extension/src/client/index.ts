@@ -17,7 +17,9 @@ export async function createClient(
 	);
 
 	const runOptions = { execArgv: <string[]>[] };
-	const debugOptions = { execArgv: ["--nolazy", "--inspect=" + 5882] };
+	const debugOptions = {
+		execArgv: ["--nolazy", "--inspect=" + 5882]
+	};
 	const serverOptions: ServerOptions = {
 		run: {
 			module: serverModule.fsPath,

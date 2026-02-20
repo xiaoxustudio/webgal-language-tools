@@ -11,11 +11,11 @@
 			},
 			"problemMatcher": {
 				"pattern": {
-					"regexp": "__________"
+					"regexp": ""
 				},
 				"background": {
-					"beginsPattern": "building\\.\\.\\.",
-					"endsPattern": "finished\\."
+					"beginsPattern": "rolldown\\.\\.\\.",
+					"endsPattern": "Finished\\."
 				}
 			}
 		},
@@ -33,12 +33,12 @@
 			},
 			"problemMatcher": {
 				"pattern": {
-					"regexp": "__________"
+					"regexp": ""
 				},
 				"background": {
 					"activeOnStart": true,
-					"beginsPattern": "building\\.\\.\\.",
-					"endsPattern": "watching\\.\\.\\."
+					"beginsPattern": "Waiting.*",
+					"endsPattern": "Rebuilt.*"
 				}
 			}
 		}
