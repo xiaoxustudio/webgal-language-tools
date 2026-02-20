@@ -1,0 +1,38 @@
+name: Package VS Code Extension
+
+on:
+  push:
+    tags:
+      - "vscode-v*.*.*"
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "pnpm" # 开启 pnpm 缓存，加速构建
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build Repository Packages
+        run: pnpm run build
+
+      - name: Package Extension
+        run: pnpm run pack
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4 
+        with:
+          name: vscode-extension-vsix
+          path: extension/vscode-extension/*.vsix
