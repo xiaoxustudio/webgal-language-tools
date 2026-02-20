@@ -5,6 +5,10 @@ on:
     tags:
       - "vscode-v*.*.*"
 
+permissions:
+  contents: write
+  discussions: write
+
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -31,8 +35,18 @@ jobs:
       - name: Package Extension
         run: pnpm run pack
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4 
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
         with:
-          name: vscode-extension-vsix
-          path: extension/vscode-extension/*.vsix
+          files: "extension/vscode-extension/*.vsix"
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install vsce
+        run: pnpm install -g @vscode/vsce
+
+      - name: Publish to Visual Studio Code Marketplace
+        run: pnpm run publish
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}

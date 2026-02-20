@@ -192,6 +192,7 @@
 		"watch": "pnpm run build --watch",
 		"pack": "pnpm run build && pnpx @vscode/vsce package --no-dependencies",
 		"release": "pnpm run build && vsce publish --pre-release",
+		"publish": "pnpx @vscode/vsce publish --no-dependencies",
 		"format": " prettier --write \"src/**/*.ts\"",
 		"lint": "eslint src --ext ts --fix",
 		"typecheck": "tsc --noEmit"

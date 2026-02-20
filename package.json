@@ -19,6 +19,7 @@
 		"watch": "lerna run watch --scope webgal-for-vscode",
 		"pack": "lerna run pack --scope webgal-for-vscode",
 		"release": "lerna run release --scope webgal-for-vscode",
+		"publish": "lerna run publish --scope webgal-for-vscode",
 		"lint": "lerna run lint",
 		"lint:vsc": "lerna run lint --scope webgal-for-vscode",
 		"lint:core": "lerna run lint --scope @webgal/language-core",
