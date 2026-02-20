@@ -1,6 +1,6 @@
 {
 	"name": "@webgal/language-server",
-	"version": "0.0.2-alpha.5",
+	"version": "0.0.2",
 	"main": "build/index.cjs",
 	"module": "build/index.mjs",
 	"types": "build/index.d.mts",
