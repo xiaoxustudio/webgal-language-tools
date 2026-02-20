@@ -7,7 +7,7 @@ cd ../language-core
 rimraf node_modules
 cd ../playground
 rimraf node_modules
-cd ../vscode-extension
+cd ../../extension/vscode-extension
 rimraf node_modules
 cd ../../
 pnpm i
