@@ -57,11 +57,7 @@ export async function createClient(
 	const vfs = createNodeFileSystem({ root: rootPath });
 	const handlers = createWebgalClientHandlers({
 		vfs,
-		showTip: (message: string) => window.showInformationMessage(message),
-		overrides: {
-			"client/showTip": (message: string) =>
-				window.showInformationMessage(message)
-		}
+		showTip: (message: string) => window.showInformationMessage(message)
 	});
 
 	registerWebgalClientHandlers(client, handlers);

@@ -4,6 +4,10 @@ All notable changes to the "webgal-for-vscode" extension will be documented in t
 
 ## [Unreleased]
 
+## [2.0.1] - 2026.02.20
+
+- 修复扩展图标问题
+
 ## [2.0.0] - 2026.02.20
 
 - 重构插件
