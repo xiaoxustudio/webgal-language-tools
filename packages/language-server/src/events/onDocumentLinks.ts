@@ -77,7 +77,12 @@ export async function provideDocumentLinks(
 				);
 			}
 		}
-		const tooltip = stat && resolvedPath ? resolvedPath : "unknown file";
+
+		const isFound = stat && resolvedPath;
+		if (!isFound) {
+			continue;
+		}
+		const tooltip = isFound ? resolvedPath : "unknown file";
 
 		documentLinks.push({
 			target: toFileTarget(resolvedPath),
