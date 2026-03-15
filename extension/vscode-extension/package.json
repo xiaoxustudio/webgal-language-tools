@@ -13,8 +13,8 @@
 		"Debuggers",
 		"Snippets"
 	],
-	"displayName": "WebGal Language For VSCode",
-	"description": "WebGal Language For VSCode",
+	"displayName": "%displayName%",
+	"description": "%description%",
 	"author": "xuran",
 	"publisher": "Xuran1783558957",
 	"engines": {
@@ -74,15 +74,15 @@
 		],
 		"commands": [
 			{
-				"title": "(webgal)跳转到插值变量",
+				"title": "%extension.goToDefinition%",
 				"command": "extension.goToDefinition"
 			},
 			{
-				"title": "(webgal)启动WebGal For VSCode",
+				"title": "%extension.XRStartWFV%",
 				"command": "extension.XRStartWFV"
 			},
 			{
-				"title": "(webgal)运行到当前行",
+				"title": "%extension.RunLineScript%",
 				"command": "extension.RunLineScript"
 			}
 		],
@@ -91,14 +91,14 @@
 				{
 					"when": "resourceLangId == webgal",
 					"command": "extension.RunLineScript",
-					"group": "webgal for vscode"
+					"group": "%webgal for vscode%"
 				}
 			]
 		},
 		"debuggers": [
 			{
 				"type": "webgal",
-				"label": "Webgal Debug",
+				"label": "%Webgal Debug%",
 				"program": "./out/DebugAdapter.js",
 				"runtime": "node",
 				"configurationAttributes": {
@@ -109,12 +109,12 @@
 						"properties": {
 							"program": {
 								"type": "string",
-								"description": "需要调试的场景(单文件名称即可,不含路径)：文件名.文件扩展名",
+								"description": "%debugger.program.description%",
 								"default": "${fileBasename}"
 							},
 							"ws": {
 								"type": "string",
-								"description": "WebSoket 地址",
+								"description": "%debugger.ws.description%",
 								"default": "ws://localhost:3001/api/webgalsync"
 							}
 						}
@@ -124,15 +124,15 @@
 					{
 						"type": "webgal",
 						"request": "launch",
-						"name": "Launch Webgal Script",
+						"name": "%Launch Webgal Script%",
 						"program": "${fileBasename}",
 						"ws": "ws://localhost:3001/api/webgalsync"
 					}
 				],
 				"configurationSnippets": [
 					{
-						"label": "webgal Debug: Launch",
-						"description": "A new configuration for launching a webgal debug program",
+						"label": "%webgal Debug: Launch%",
+						"description": "%webgal Debug: Launch.description%",
 						"body": {
 							"type": "webgal",
 							"request": "launch",
@@ -146,32 +146,32 @@
 		],
 		"configuration": {
 			"type": "object",
-			"title": "wabgal configuration",
+			"title": "%configuration.title%",
 			"properties": {
 				"XRWebGalLanguageServer.maxNumberOfProblems": {
 					"scope": "resource",
 					"type": "number",
 					"default": 500,
-					"description": "警告信息的最大数量"
+					"description": "%XRWebGalLanguageServer.maxNumberOfProblems.description%"
 				},
 				"XRWebGalLanguageServer.isShowWarning": {
 					"scope": "resource",
 					"type": "boolean",
 					"default": true,
-					"description": "是否显示警告信息"
+					"description": "%XRWebGalLanguageServer.isShowWarning.description%"
 				},
 				"XRWebGalLanguageServer.isShowHint": {
 					"scope": "resource",
 					"type": "string",
 					"enum": [
-						"关闭",
-						"最前面",
-						"变量名前",
-						"变量名后",
-						"最后面"
+						"%XRWebGalLanguageServer.isShowWarning.enum0%",
+						"%XRWebGalLanguageServer.isShowWarning.enum1%",
+						"%XRWebGalLanguageServer.isShowWarning.enum2%",
+						"%XRWebGalLanguageServer.isShowWarning.enum3%",
+						"%XRWebGalLanguageServer.isShowWarning.enum4%"
 					],
-					"default": "变量名后",
-					"description": "是否显示变量类型镶嵌"
+					"default": "%XRWebGalLanguageServer.isShowWarning.default%",
+					"description": "%XRWebGalLanguageServer.isShowHint.description%"
 				}
 			}
 		},
