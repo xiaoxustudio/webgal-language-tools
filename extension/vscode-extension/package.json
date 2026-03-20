@@ -213,7 +213,7 @@
 		"esbuild-plugin-alias": "^0.2.1",
 		"eslint": "^8.56.0",
 		"prettier": "^3.8.1",
-		"rolldown": "1.0.0-rc.5",
+		"rolldown": "1.0.0-rc.10",
 		"tsc-alias": "^1.8.16",
 		"tsx": "^4.21.0",
 		"typescript": "catalog:"
