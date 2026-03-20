@@ -4,7 +4,7 @@ import {
 	ServerOptions,
 	TransportKind
 } from "vscode-languageclient/node";
-import { ExtensionContext, Uri, window, workspace } from "vscode";
+import { ExtensionContext, Uri, workspace } from "vscode";
 import { selector, selectorConfig } from "@/utils/utils";
 
 export async function createClient(
@@ -57,7 +57,7 @@ export async function createClient(
 	const vfs = createNodeFileSystem({ root: rootPath });
 	const handlers = createWebgalClientHandlers({
 		vfs,
-		showTip: (message: string) => window.showInformationMessage(message)
+		showTip: (message: string) => client.info(message)
 	});
 
 	registerWebgalClientHandlers(client, handlers);
