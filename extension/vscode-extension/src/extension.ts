@@ -4,6 +4,7 @@ import { BaseLanguageClient } from "@volar/vscode/node";
 import * as vscode from "vscode";
 import { createClient } from "./client";
 import { XRDebugAdapterDescriptorFactory } from "./debug/activeDebug";
+import DocumentFormatter from "./formatter";
 
 let client: BaseLanguageClient;
 
@@ -17,6 +18,13 @@ export async function activate(context: vscode.ExtensionContext) {
 		vscode.debug.registerDebugAdapterDescriptorFactory(
 			"webgal",
 			new XRDebugAdapterDescriptorFactory()
+		)
+	);
+
+	context.subscriptions.push(
+		vscode.languages.registerDocumentFormattingEditProvider(
+			"webgal",
+			new DocumentFormatter()
 		)
 	);
 
