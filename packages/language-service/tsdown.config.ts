@@ -13,5 +13,7 @@ export default defineConfig({
 	dts: true,
 	outDir: "build",
 	fixedExtension: true,
-	external: ["monaco-editor", "vscode"]
+	deps: {
+		neverBundle: ["monaco-editor", "vscode"]
+	}
 });

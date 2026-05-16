@@ -10,6 +10,7 @@ onlyBuiltDependencies:
 
 catalogs:
     default:
+        "tsdown": "^0.22.0"
         "typescript": "^5.5.4"
         "@codingame/monaco-vscode-editor-api": "26.1.1"
         "@codingame/monaco-vscode-extension-api": "26.1.1"
