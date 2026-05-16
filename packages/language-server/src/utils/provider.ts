@@ -841,6 +841,59 @@ changeScene:二周目剧情.txt;
 		documentation: markdown(`
 成就ID
   `)
+	},
+	rule: {
+		kind: CompletionItemKind.Constant,
+		label: "rule",
+		insertText: "rule=",
+		detail: "正则表达式规则",
+		documentation: markdown(`
+设置输入验证的正则表达式规则。输入的内容将以此正则进行校验。
+
+\`\`\`webgal
+getUserInput:player_name -rule=^.{1,2}$;
+\`\`\`
+  `)
+	},
+	ruleFlag: {
+		kind: CompletionItemKind.Constant,
+		label: "ruleFlag",
+		insertText: "ruleFlag=",
+		detail: "正则表达式标识",
+		documentation: markdown(`
+设置正则表达式的标识，如 g（全局匹配）、i（不区分大小写）等。
+
+具体参数详情请查看[MDN](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/RegExp/RegExp#flags)
+\`\`\`webgal
+getUserInput:player_name -rule=^.{1,2}$ -ruleFlag=g;
+\`\`\`
+`)
+	},
+	ruleText: {
+		kind: CompletionItemKind.Constant,
+		label: "ruleText",
+		insertText: "ruleText=",
+		detail: "错误弹窗提示文本",
+		documentation: markdown(`
+设置校验不通过时弹出的错误弹窗的提示文本，可使用 $0 获取用户输入的内容。
+\`\`\`webgal
+getUserInput:player_name -rule=^.{1,2}$ -ruleText=$0不符合1-2个字符;
+\`\`\`
+  `)
+	},
+	ruleButtonText: {
+		kind: CompletionItemKind.Constant,
+		label: "ruleText",
+		insertText: "ruleText=",
+		detail: "错误弹窗按钮文本",
+		documentation: markdown(`
+设置校验不通过时弹出的错误弹窗的按钮文本。
+
+默认为\`OK\`
+\`\`\`webgal
+getUserInput:player_name -rule=^.{1,2}$ -ruleText=$0不符合1-2个字符;
+\`\`\`
+  `)
 	}
 } as const;
 
@@ -1370,7 +1423,11 @@ setTransition: -target=targetId -enter=animationName -exit=animationName;
 			argsMap.when,
 			argsMap.title,
 			argsMap.buttonText,
-			argsMap.defaultValue
+			argsMap.defaultValue,
+			argsMap.rule,
+			argsMap.ruleFlag,
+			argsMap.ruleText,
+			argsMap.ruleButtonText,
 		],
 		kind: CompletionItemKind.Function,
 		documentation: `\`\`\`webgal

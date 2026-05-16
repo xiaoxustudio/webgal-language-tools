@@ -43,7 +43,7 @@ export function getTypeDirectory(command: string, fileName: string) {
 	/* 精确匹配 */
 	for (const type in resourcesMap) {
 		const current = resourcesMap[type];
-		if (command == type && resourceExtsMap[current].includes(ext)) {
+		if (command === type && resourceExtsMap[current].includes(ext)) {
 			return current;
 		}
 	}

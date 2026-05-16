@@ -19,3 +19,6 @@ catalogs:
         "@codingame/monaco-vscode-textmate-service-override": "26.1.1"
         "@codingame/monaco-vscode-languages-service-override": "26.1.1"
         "@codingame/monaco-vscode-theme-service-override": "26.1.1"
+
+overrides:
+    vite: "^8.0.0-beta.14"
