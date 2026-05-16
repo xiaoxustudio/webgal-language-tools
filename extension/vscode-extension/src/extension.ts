@@ -13,7 +13,6 @@ let client: BaseLanguageClient;
 export async function activate(context: vscode.ExtensionContext) {
 	client = await createClient(context);
 	await client.start();
-
 	activateAutoInsertion("webgal", client);
 
 	context.subscriptions.push(
@@ -66,10 +65,15 @@ async function initFmtConfig() {
 		}
 	}
 
+	const configObject = {
+		$schema:
+			"https://github.com/xiaoxustudio/webgal-language-tools/raw/refs/heads/master/extension/vscode-extension/fmt.schema.json",
+		...defaultConfig
+	};
 	try {
 		fs.writeFileSync(
 			configPath,
-			JSON.stringify(defaultConfig, null, "\t") + "\n"
+			JSON.stringify(configObject, null, "\t") + "\n"
 		);
 		vscode.window.showInformationMessage("fmt.json 已成功创建");
 	} catch (e) {
