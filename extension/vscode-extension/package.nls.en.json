@@ -4,6 +4,7 @@
   "extension.goToDefinition": "(webgal)Go to Interpolation Variable",
   "extension.XRStartWFV": "(webgal)Start WebGal For VSCode",
   "extension.RunLineScript": "(webgal)Run to Current Line",
+  "extension.initFmtConfig": "(webgal)Initialize Format Config",
   "webgal for vscode": "webgal for vscode",
   "Webgal Debug": "Webgal Debug",
   "debugger.program.description": "Scene to debug (filename only, no path): filename.extension",

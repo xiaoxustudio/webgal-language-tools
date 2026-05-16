@@ -2,8 +2,6 @@
 
 All notable changes to the "webgal-for-vscode" extension will be documented in this file.
 
-## [Unreleased]
-
 ## [2.0.2] - 2026.03.27
 
 - 增加扩展设置本地化（`简体中文`、`English`）

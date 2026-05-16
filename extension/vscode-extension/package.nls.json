@@ -4,6 +4,7 @@
 	"extension.goToDefinition": "(webgal)跳转到插值变量",
 	"extension.XRStartWFV": "(webgal)启动WebGal For VSCode",
 	"extension.RunLineScript": "(webgal)运行到当前行",
+	"extension.initFmtConfig": "(webgal)初始化格式化配置文件",
 	"webgal for vscode": "webgal for vscode",
 	"Webgal Debug": "Webgal Debug",
 	"debugger.program.description": "需要调试的场景(单文件名称即可,不含路径)：文件名.文件扩展名",

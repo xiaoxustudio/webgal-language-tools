@@ -1,0 +1,35 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"title": "WebGal Script Formatter Configuration",
+	"type": "object",
+	"properties": {
+		"indentSize": {
+			"type": "number",
+			"default": 2,
+			"minimum": 1,
+			"maximum": 8,
+			"description": "每个缩进级别所占的空格数量"
+		},
+		"indentStyle": {
+			"type": "string",
+			"enum": ["space", "tab"],
+			"default": "space",
+			"description": "使用空格或制表符进行缩进"
+		},
+		"trailingSemicolon": {
+			"type": "boolean",
+			"default": true,
+			"description": "在语句末尾添加分号"
+		},
+		"keyValueSpace": {
+			"type": "boolean",
+			"default": true,
+			"description": "在键值对中，在冒号周围添加空格"
+		},
+		"normalizeWhitespace": {
+			"type": "boolean",
+			"default": true,
+			"description": "将多个空格转换为单个空格"
+		}
+	}
+}
