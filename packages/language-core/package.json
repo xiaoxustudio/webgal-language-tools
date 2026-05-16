@@ -4,6 +4,7 @@
 	"main": "build/index.cjs",
 	"module": "build/index.mjs",
 	"types": "build/index.d.cts",
+	"type": "module",
 	"license": "MPL-2.0",
 	"repository": {
 		"type": "git",
@@ -33,6 +34,7 @@
 	},
 	"devDependencies": {
 		"@types/node": "^18.0.0",
+		"@types/js-beautify": "^1.14.3",
 		"tsc-alias": "^1.8.16",
 		"tsdown": "^0.20.3"
 	},
@@ -42,6 +44,7 @@
 		"@volar/typescript": "~2.4.0",
 		"angular-expressions": "^1.5.1",
 		"vscode-languageserver-textdocument": "^1.0.11",
-		"vscode-uri": "^3.0.8"
+		"vscode-uri": "^3.0.8",
+		"js-beautify": "^1.15.4"
 	}
 }

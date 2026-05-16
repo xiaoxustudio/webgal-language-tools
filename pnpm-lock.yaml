@@ -68,9 +68,6 @@ importers:
       angular-expressions:
         specifier: ^1.5.1
         version: 1.5.1
-      js-beautify:
-        specifier: ^1.15.3
-        version: 1.15.4
       vscode-debugadapter:
         specifier: ^1.51.0
         version: 1.51.0
@@ -93,9 +90,6 @@ importers:
         specifier: ^8.17.1
         version: 8.19.0
     devDependencies:
-      '@types/js-beautify':
-        specifier: ^1.14.3
-        version: 1.14.3
       '@types/node':
         specifier: ^25.2.2
         version: 25.2.3
@@ -162,6 +156,9 @@ importers:
       angular-expressions:
         specifier: ^1.5.1
         version: 1.5.1
+      js-beautify:
+        specifier: ^1.15.4
+        version: 1.15.4
       vscode-languageserver-textdocument:
         specifier: ^1.0.11
         version: 1.0.12
@@ -169,6 +166,9 @@ importers:
         specifier: ^3.0.8
         version: 3.1.0
     devDependencies:
+      '@types/js-beautify':
+        specifier: ^1.14.3
+        version: 1.14.3
       '@types/node':
         specifier: ^18.0.0
         version: 18.19.130

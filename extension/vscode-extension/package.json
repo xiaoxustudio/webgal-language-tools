@@ -203,7 +203,6 @@
 		"typecheck": "tsc --noEmit"
 	},
 	"devDependencies": {
-		"@types/js-beautify": "^1.14.3",
 		"@types/node": "^25.2.2",
 		"@types/vscode": "^1.82.0",
 		"@types/ws": "^8.5.10",
@@ -228,7 +227,6 @@
 		"@webgal/language-server": "workspace:*",
 		"@webgal/language-service": "workspace:*",
 		"angular-expressions": "^1.5.1",
-		"js-beautify": "^1.15.3",
 		"vscode-debugadapter": "^1.51.0",
 		"vscode-debugprotocol": "^1.51.0",
 		"vscode-languageclient": "^9.0.1",

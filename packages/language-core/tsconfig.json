@@ -3,6 +3,8 @@
 	"compilerOptions": {
 		"outDir": "build",
 		"rootDir": "src",
+		"module": "esnext",
+		"moduleResolution": "bundler",
 		"composite": true,
 		"types": ["node"],
 		"paths": {
