@@ -4,6 +4,7 @@
 		"outDir": "build",
 		"rootDir": "src",
 		"composite": true,
+		"types": ["node"],
 		"paths": {
 			"@/*": ["./src/*"]
 		}
