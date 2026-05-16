@@ -1,6 +1,7 @@
-import { TextDocument } from "vscode-languageserver-textdocument";
+import type { TextDocument } from "vscode-languageserver-textdocument";
 import { source } from "@webgal/language-core";
-import { Diagnostic, DiagnosticSeverity } from "@volar/language-server";
+import type { Diagnostic} from "@volar/language-server";
+import { DiagnosticSeverity } from "@volar/language-server";
 
 interface WarningToken {
 	message: Function;

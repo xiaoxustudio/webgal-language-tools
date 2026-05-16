@@ -1,13 +1,14 @@
-import { LspFeatureOptions, ServerSettings } from "../types";
+import type { LspFeatureOptions, ServerSettings } from "../types";
 import { fsAccessor, type IDefinetionMap, source } from "@webgal/language-core";
 import { warningConfig, getDiagnosticInformation } from "@/warnings";
-import {
+import type {
 	Connection,
 	Diagnostic,
-	DiagnosticSeverity,
 	FoldingRange,
+	Position} from "@volar/language-server";
+import {
+	DiagnosticSeverity,
 	FoldingRangeKind,
-	Position,
 	Range
 } from "@volar/language-server";
 import {
@@ -21,9 +22,9 @@ import type {
 	IScriptSnapshot,
 	VirtualCode
 } from "@volar/language-core";
-import { TextDocument } from "vscode-languageserver-textdocument";
+import type { TextDocument } from "vscode-languageserver-textdocument";
 import { URI } from "vscode-uri";
-import { VirtualFileSystem } from "@webgal/language-service";
+import type { VirtualFileSystem } from "@webgal/language-service";
 
 type SendRequestConnection = {
 	sendRequest: (method: string, ...params: any[]) => Promise<any>;

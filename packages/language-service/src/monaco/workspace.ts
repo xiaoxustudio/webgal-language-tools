@@ -1,10 +1,12 @@
 import * as monaco from "monaco-editor";
+import type {
+	VirtualFileSystem
+} from "@/vfs";
 import {
 	joinPaths,
 	normalizePath,
 	pathToUri,
-	uriToPath,
-	VirtualFileSystem
+	uriToPath
 } from "@/vfs";
 
 export type WebgalMonacoWorkspace = {

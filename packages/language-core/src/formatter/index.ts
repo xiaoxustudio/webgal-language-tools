@@ -1,4 +1,4 @@
-import jsBeautify = require("js-beautify");
+import jsBeautify from "js-beautify";
 const formatRegex = /(\s{2,}-\S+)/;
 
 export interface FormatConfig {

@@ -4,23 +4,25 @@ import {
 	getStageCompletionContext,
 	getWordAtPosition
 } from "@/utils";
+import type {
+	CommandNameSpecial} from "@/utils/provider";
 import {
-	CommandNameSpecial,
 	globalArgs,
 	WebGALConfigCompletionMap,
 	WebGALKeywords,
 	WebgGALKeywordsCompletionMap
 } from "@/utils/provider";
 import { resourcesMap } from "@/utils/resources";
-import {
+import type {
 	Connection,
-	CompletionItem,
+	CompletionItem} from "@volar/language-server";
+import {
 	CompletionItemKind,
 	Position
 } from "@volar/language-server";
 import type { IDefinetionMap } from "@webgal/language-core";
 import type { StateMap } from "@webgal/language-service/utils";
-import { TextDocument } from "vscode-languageserver-textdocument";
+import type { TextDocument } from "vscode-languageserver-textdocument";
 
 export async function provideCompletionItems(
 	document: TextDocument,

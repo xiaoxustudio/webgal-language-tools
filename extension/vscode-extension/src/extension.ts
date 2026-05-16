@@ -1,6 +1,6 @@
 import * as serverProtocol from "@volar/language-server/protocol";
 import { activateAutoInsertion, createLabsInfo } from "@volar/vscode";
-import { BaseLanguageClient } from "@volar/vscode/node";
+import type { BaseLanguageClient } from "@volar/vscode/node";
 import * as vscode from "vscode";
 import * as fs from "fs";
 import * as path from "path";

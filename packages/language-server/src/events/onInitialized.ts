@@ -1,4 +1,4 @@
-import { ConnectionHandler } from "@/types";
+import type { ConnectionHandler } from "@/types";
 import { StateConfig } from "@/utils";
 import { DidChangeConfigurationNotification } from "@volar/language-server";
 

@@ -1,12 +1,13 @@
 import { getWordAtPosition } from "@/utils";
+import type {
+	DefinitionLink} from "@volar/language-server";
 import {
-	DefinitionLink,
 	LocationLink,
 	Range,
 	Position
 } from "@volar/language-server";
 import type { IDefinetionMap } from "@webgal/language-core";
-import { TextDocument } from "vscode-languageserver-textdocument";
+import type { TextDocument } from "vscode-languageserver-textdocument";
 
 export function provideDefinition(
 	document: TextDocument,

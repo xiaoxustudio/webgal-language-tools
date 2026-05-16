@@ -3,21 +3,24 @@ import {
 	WebSocketMessageWriter,
 	toSocket
 } from "vscode-ws-jsonrpc";
+import type {
+	MessageTransports} from "vscode-languageclient/browser.js";
 import {
 	CloseAction,
 	ErrorAction,
-	MessageTransports,
 	BrowserMessageReader,
 	BrowserMessageWriter,
 	type InitializeParams
 } from "vscode-languageclient/browser.js";
 import { MonacoLanguageClient } from "monaco-languageclient";
-import * as monaco from "monaco-editor";
-import {
-	createMemoryVolarFileSystem,
-	createVirtualFileSystem,
+import type * as monaco from "monaco-editor";
+import type {
 	VirtualEntry,
 	VirtualFileSystem
+} from "@/vfs";
+import {
+	createMemoryVolarFileSystem,
+	createVirtualFileSystem
 } from "@/vfs";
 import {
 	createWebgalClientHandlers,

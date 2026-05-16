@@ -1,5 +1,5 @@
 import * as expressions from "angular-expressions";
-import { FileAccessor, IDefinetionMap, IVChooseToken, IVToken } from "./types";
+import { type FileAccessor, type IDefinetionMap, type IVChooseToken, type IVToken } from "./types";
 
 export const source = "WebGal Script";
 export const SCHEME = "webgal-virtual-doc";

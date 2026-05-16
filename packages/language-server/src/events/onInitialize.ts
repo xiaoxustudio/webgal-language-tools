@@ -1,7 +1,8 @@
 import { StateConfig } from "@/utils";
-import {
+import type {
 	InitializeParams,
-	InitializeResult,
+	InitializeResult} from "@volar/language-server";
+import {
 	TextDocumentSyncKind
 } from "@volar/language-server";
 

@@ -5,12 +5,12 @@ import {
 } from "@volar/language-server/node";
 import type { InitializeParams } from "@volar/language-server";
 import type { LanguagePlugin } from "@volar/language-core";
-import { URI } from "vscode-uri";
+import type { URI } from "vscode-uri";
 import {
 	createConnection as createVscodeConnection,
 	type Connection
 } from "vscode-languageserver/node";
-import { IncomingMessage } from "http";
+import type { IncomingMessage } from "http";
 import type { StartServerOptions } from "@/types";
 import { createWebgalService, registerConnectionHandlers } from "./events";
 import {

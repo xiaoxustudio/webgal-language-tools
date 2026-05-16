@@ -5,7 +5,7 @@ import {
 } from "@volar/language-server/browser";
 import type { InitializeParams } from "@volar/language-server";
 import type { LanguagePlugin } from "@volar/language-core";
-import { URI } from "vscode-uri";
+import type { URI } from "vscode-uri";
 import type { StartServerOptions } from "@/types";
 import { createWebgalService, registerConnectionHandlers } from "./events";
 import {

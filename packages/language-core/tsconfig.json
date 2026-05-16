@@ -7,6 +7,7 @@
 		"moduleResolution": "bundler",
 		"composite": true,
 		"types": ["node"],
+		"verbatimModuleSyntax": true,
 		"paths": {
 			"@/*": ["./src/*"]
 		}

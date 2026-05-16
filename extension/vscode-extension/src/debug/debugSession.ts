@@ -12,8 +12,9 @@ import {
 } from "@vscode/debugadapter";
 import { getGameData } from "@/utils/utils";
 import XRRuntime from "@/ws";
-import { DebugProtocol } from "vscode-debugprotocol";
-import { RuntimeVariable, FileAccessor } from "@webgal/language-core";
+import type { DebugProtocol } from "vscode-debugprotocol";
+import { RuntimeVariable } from "@webgal/language-core";
+import type { FileAccessor } from "@webgal/language-core";
 
 interface IAttachRequestArguments extends ILaunchRequestArguments {}
 interface ILaunchRequestArguments extends DebugProtocol.LaunchRequestArguments {

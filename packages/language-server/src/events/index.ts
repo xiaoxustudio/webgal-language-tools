@@ -1,4 +1,4 @@
-import {
+import type {
 	CancellationToken,
 	Connection,
 	CompletionContext,
@@ -11,8 +11,8 @@ import {
 	Position,
 	LanguageServicePlugin
 } from "@volar/language-server";
-import { ConnectionDocumentsType } from "@/types";
-import { TextDocument } from "vscode-languageserver-textdocument";
+import type { ConnectionDocumentsType } from "@/types";
+import type { TextDocument } from "vscode-languageserver-textdocument";
 import {
 	getWebgalDefinitionMap,
 	getWebgalDocumentLinkCandidates,

@@ -1,6 +1,6 @@
 import fs from "fs/promises";
 import path from "path";
-import {
+import type {
 	VirtualDirectoryEntry,
 	VirtualEntry,
 	VirtualFileSystem,

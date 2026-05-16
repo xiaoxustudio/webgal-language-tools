@@ -12,6 +12,7 @@
 		"dev:nlsp-ws": "lerna run dev:ws --scope @webgal/language-server",
 		"build": "lerna run build --ignore=playground --ignore=webgal-for-vscode",
 		"build:vsc": "lerna run build --scope webgal-for-vscode",
+		"build:all-packages": "pnpm run build:core && pnpm run build:service && pnpm run build:server",
 		"build:core": "lerna run build --scope @webgal/language-core",
 		"build:service": "lerna run build --scope @webgal/language-service",
 		"build:server": "lerna run build --scope @webgal/language-server",

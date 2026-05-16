@@ -1,6 +1,6 @@
-import { Connection, Diagnostic } from "@volar/language-server";
+import type { Connection, Diagnostic } from "@volar/language-server";
 import { validateTextDocument } from "@/utils";
-import { TextDocument } from "vscode-languageserver-textdocument";
+import type { TextDocument } from "vscode-languageserver-textdocument";
 
 export async function provideDiagnostics(
 	document: TextDocument,

@@ -1,10 +1,12 @@
+import type {
+	LanguageClientOptions,
+	ServerOptions} from "vscode-languageclient/node";
 import {
 	LanguageClient,
-	LanguageClientOptions,
-	ServerOptions,
 	TransportKind
 } from "vscode-languageclient/node";
-import { ExtensionContext, Uri, workspace } from "vscode";
+import type { ExtensionContext} from "vscode";
+import { Uri, workspace } from "vscode";
 import { selector, selectorConfig } from "@/utils/utils";
 
 export async function createClient(

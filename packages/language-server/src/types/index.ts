@@ -1,9 +1,9 @@
-import {
+import type {
 	Connection,
 	Event,
 	TextDocumentChangeEvent
 } from "@volar/language-server";
-import { TextDocument } from "vscode-languageserver-textdocument";
+import type { TextDocument } from "vscode-languageserver-textdocument";
 export interface ServerSettings {
 	maxNumberOfProblems: number;
 	isShowWarning: boolean; // 是否显示警告

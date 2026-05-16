@@ -1,22 +1,24 @@
 import { getPatternAtPosition, getWordAtPosition } from "@/utils";
+import type {
+	CommandNameSpecial} from "@/utils/provider";
 import {
 	WebGALConfigMap,
 	WebGALKeywords,
-	CommandNameSpecial,
 	WebGALCommandPrefix,
 	argsMap
 } from "@/utils/provider";
-import {
+import type {
 	Connection,
 	Hover,
-	MarkupKind,
 	MarkupContent,
-	Position,
+	Position} from "@volar/language-server";
+import {
+	MarkupKind,
 	Range
 } from "@volar/language-server";
 import type { IDefinetionMap } from "@webgal/language-core";
 import type { StateMap } from "@webgal/language-service/utils";
-import { TextDocument } from "vscode-languageserver-textdocument";
+import type { TextDocument } from "vscode-languageserver-textdocument";
 
 export async function provideHover(
 	document: TextDocument,

@@ -1,8 +1,9 @@
-import {
+import type {
 	CompletionItem,
+	MarkupContent} from "@volar/language-server";
+import {
 	CompletionItemKind,
 	MarkupKind,
-	MarkupContent,
 	InsertTextFormat
 } from "@volar/language-server";
 

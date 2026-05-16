@@ -1,4 +1,4 @@
-import { ConnectionHandler, ServerSettings } from "@/types";
+import type { ConnectionHandler, ServerSettings } from "@/types";
 import {
 	documentSettings,
 	StateConfig,

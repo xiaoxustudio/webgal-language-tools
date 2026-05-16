@@ -1,7 +1,8 @@
 import * as vscode from "vscode";
 import * as fs from "fs";
 import * as path from "path";
-import { FormatConfig, defaultConfig, formatText } from "@webgal/language-core";
+import { defaultConfig, formatText } from "@webgal/language-core";
+import type { FormatConfig } from "@webgal/language-core";
 
 function loadFormatConfig(
 	workspaceFolder: vscode.WorkspaceFolder | undefined

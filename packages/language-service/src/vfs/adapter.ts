@@ -1,6 +1,6 @@
 import { FileType, type FileSystem } from "@volar/language-service";
 import type { URI } from "vscode-uri";
-import { VolarWritableFileSystem, VirtualFileSystem } from "./types";
+import type { VolarWritableFileSystem, VirtualFileSystem } from "./types";
 import { joinPaths, pathToUri, uriToPath } from "./utils";
 
 /**
