@@ -1,6 +1,6 @@
 {
 	"name": "@webgal/language-core",
-	"version": "0.0.2-alpha.1",
+	"version": "0.1.0",
 	"main": "build/index.cjs",
 	"module": "build/index.mjs",
 	"types": "build/index.d.cts",
@@ -33,8 +33,8 @@
 		"typecheck": "tsc --noEmit"
 	},
 	"devDependencies": {
-		"@types/node": "^18.0.0",
 		"@types/js-beautify": "^1.14.3",
+		"@types/node": "^18.0.0",
 		"tsdown": "catalog:"
 	},
 	"dependencies": {
@@ -42,8 +42,8 @@
 		"@volar/language-server": "~2.4.0",
 		"@volar/typescript": "~2.4.0",
 		"angular-expressions": "^1.5.1",
+		"js-beautify": "^1.15.4",
 		"vscode-languageserver-textdocument": "^1.0.11",
-		"vscode-uri": "^3.0.8",
-		"js-beautify": "^1.15.4"
+		"vscode-uri": "^3.0.8"
 	}
 }
