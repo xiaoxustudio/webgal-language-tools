@@ -1,6 +1,4 @@
-import type {
-	CompletionItem,
-	MarkupContent} from "@volar/language-server";
+import type { CompletionItem, MarkupContent } from "@volar/language-server";
 import {
 	CompletionItemKind,
 	MarkupKind,
@@ -895,6 +893,15 @@ getUserInput:player_name -rule=^.{1,2}$ -ruleText=$0不符合1-2个字符;
 getUserInput:player_name -rule=^.{1,2}$ -ruleText=$0不符合1-2个字符;
 \`\`\`
   `)
+	},
+	nobreak: {
+		kind: CompletionItemKind.Constant,
+		label: "nobreak",
+		insertText: "nobreak",
+		detail: "等待时不可打断",
+		documentation: markdown(`
+等待时不可打断
+  `)
 	}
 } as const;
 
@@ -1428,7 +1435,7 @@ setTransition: -target=targetId -enter=animationName -exit=animationName;
 			argsMap.rule,
 			argsMap.ruleFlag,
 			argsMap.ruleText,
-			argsMap.ruleButtonText,
+			argsMap.ruleButtonText
 		],
 		kind: CompletionItemKind.Function,
 		documentation: `\`\`\`webgal
@@ -1454,7 +1461,7 @@ applyStyle:<origStyleName>-><newStyleName>(,<origStyleName2>-><newStyleName2>,..
 	wait: {
 		type: commandType.wait,
 		desc: "等待命令。",
-		args: [argsMap.when],
+		args: [argsMap.when,argsMap.nobreak],
 		label: "wait",
 		kind: CompletionItemKind.Function,
 		documentation: `等待一段时间，单位为毫秒
