@@ -1,6 +1,6 @@
 cd ./packages/language-service
-rimraf build
+rimraf build dist
 cd ../language-server
-rimraf build
+rimraf build dist
 cd ../language-core
-rimraf build
+rimraf build dist
