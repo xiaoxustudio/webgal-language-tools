@@ -48,7 +48,7 @@ export const warningConfig: { [key: string]: WarningToken } = {
 			let _offset = 0;
 			for (let i = 0; i < _newarr.length; i++) {
 				const _data = _newarr[i];
-				if (/(\r\n)/.test(_data) || _data == "\\r\\n") {
+				if (/(\r\n)/.test(_data) || _data === "\\r\\n") {
 					_offset += 2;
 				} else {
 					_offset += _data.length;
@@ -114,7 +114,7 @@ export const warningConfig: { [key: string]: WarningToken } = {
 			let _offset = 0;
 			for (let i = 0; i < _newarr.length; i++) {
 				const _data = _newarr[i];
-				if (/(\r\n)/.test(_data) || _data == "\\r\\n") {
+				if (/(\r\n)/.test(_data) || _data === "\\r\\n") {
 					_offset += 2;
 				} else {
 					_offset += _data.length;
