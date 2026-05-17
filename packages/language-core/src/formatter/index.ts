@@ -67,7 +67,7 @@ export function formatLine(
 	if (processedLine.includes(":")) {
 		const colonIndex = processedLine.indexOf(":");
 		const key = processedLine.substring(0, colonIndex).trim();
-		const value = processedLine.substring(colonIndex + 1).trimEnd();
+		const value = processedLine.substring(colonIndex + 1).trim();
 		if (config.keyValueSpace) {
 			processedLine = `${key}: ${value}`;
 		} else {
@@ -98,7 +98,7 @@ export function formatLine(
 	}
 
 	if (config.keepWhitespaceBeginComment && processedLine.startsWith(";")) {
-		processedLine = processedLine.replace(/^;+/, "; ");
+		processedLine = processedLine.replace(/^;+\s*/, "; ");
 	}
 
 	return processedLine;
