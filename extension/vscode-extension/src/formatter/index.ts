@@ -11,15 +11,23 @@ function loadFormatConfig(
 		return defaultConfig;
 	}
 
-	const configPath = path.join(workspaceFolder.uri.fsPath, "fmt.json");
-	try {
-		if (fs.existsSync(configPath)) {
-			const content = fs.readFileSync(configPath, "utf-8");
-			const userConfig = JSON.parse(content);
-			return { ...defaultConfig, ...userConfig };
+	let currentDir = workspaceFolder.uri.fsPath;
+	while (currentDir) {
+		const configPath = path.join(currentDir, "fmt.json");
+		try {
+			if (fs.existsSync(configPath)) {
+				const content = fs.readFileSync(configPath, "utf-8");
+				const userConfig = JSON.parse(content);
+				return { ...defaultConfig, ...userConfig };
+			}
+		} catch (e) {
+			console.error("Failed to load fmt.json:", e);
 		}
-	} catch (e) {
-		console.error("Failed to load fmt.json:", e);
+		const parentDir = path.dirname(currentDir);
+		if (parentDir === currentDir) {
+			break;
+		}
+		currentDir = parentDir;
 	}
 	return defaultConfig;
 }
