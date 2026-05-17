@@ -6,9 +6,8 @@
 		"paths": {
 			"@/*": ["./src/*"]
 		},
-		"module": "CommonJS",
-		"types": ["node"],
-		"composite": true
+		"esModuleInterop": true,
+		"skipLibCheck": true
 	},
 	"include": ["src"],
 	"exclude": ["node_modules", "out", "scripts"]
