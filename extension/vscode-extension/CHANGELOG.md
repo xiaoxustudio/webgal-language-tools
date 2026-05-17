@@ -2,6 +2,12 @@
 
 All notable changes to the "webgal-for-vscode" extension will be documented in this file.
 
+## [2.0.3] - 2026.03.27
+
+- 增加格式化文件`fmt.json`，可通过指令生成该文件
+- 增加`nobreak`、`rule`、`ruleFlag`、`ruleText`、`ruleButtonText`
+- 同步`webgal`高亮文件
+
 ## [2.0.2] - 2026.03.27
 
 - 增加扩展设置本地化（`简体中文`、`English`）
