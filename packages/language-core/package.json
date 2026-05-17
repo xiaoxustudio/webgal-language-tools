@@ -35,7 +35,6 @@
 	"devDependencies": {
 		"@types/node": "^18.0.0",
 		"@types/js-beautify": "^1.14.3",
-		"tsc-alias": "^1.8.16",
 		"tsdown": "catalog:"
 	},
 	"dependencies": {

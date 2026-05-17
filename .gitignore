@@ -5,6 +5,5 @@ node_modules
 *.vsix
 *.log
 
-pnpm-lock.yaml
 
 example/.vscode
