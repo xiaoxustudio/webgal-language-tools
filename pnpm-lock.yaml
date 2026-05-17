@@ -53,6 +53,9 @@ importers:
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
+      unrun:
+        specifier: ^0.3.0
+        version: 0.3.0
 
   extension/vscode-extension:
     dependencies:
@@ -174,7 +177,7 @@ importers:
         version: 18.19.130
       tsdown:
         specifier: 'catalog:'
-        version: 0.22.0(tsx@4.22.1)(typescript@5.9.3)
+        version: 0.22.0(tsx@4.22.1)(typescript@5.9.3)(unrun@0.3.0)
 
   packages/language-server:
     dependencies:
@@ -217,7 +220,7 @@ importers:
         version: 8.18.1
       tsdown:
         specifier: 'catalog:'
-        version: 0.22.0(tsx@4.22.1)(typescript@5.9.3)
+        version: 0.22.0(tsx@4.22.1)(typescript@5.9.3)(unrun@0.3.0)
       tsx:
         specifier: ^4.21.0
         version: 4.22.1
@@ -266,7 +269,7 @@ importers:
         version: 18.19.130
       tsdown:
         specifier: 'catalog:'
-        version: 0.22.0(tsx@4.22.1)(typescript@5.9.3)
+        version: 0.22.0(tsx@4.22.1)(typescript@5.9.3)(unrun@0.3.0)
       tsx:
         specifier: ^4.21.0
         version: 4.22.1
@@ -4758,6 +4761,16 @@ packages:
   universalify@2.0.1:
     resolution: {integrity: sha512-gptHNQghINnc/vTGIk0SOFGFNXw7JVrlRUtConJRlvaw6DuX0wO5Jeko9sWrMBhh+PsYAZ7oXAiOnf/UKogyiw==}
     engines: {node: '>= 10.0.0'}
+
+  unrun@0.3.0:
+    resolution: {integrity: sha512-5xw2AIVS2WR9Lqhz76qDIQLxipKRidf7Nq+Iz5SZ8shk1OmRlxnc6FyI/1Q2m99WLj6cbqaKFdESfWE99KPzlA==}
+    engines: {node: ^22.13.0 || >=24.0.0}
+    hasBin: true
+    peerDependencies:
+      synckit: ^0.11.11
+    peerDependenciesMeta:
+      synckit:
+        optional: true
 
   upath@2.0.1:
     resolution: {integrity: sha512-1uEe95xksV1O0CYKXo8vQvN1JEbtJp7lb7C5U9HMsIp6IVwntkH/oNUzyVNQSd4S1sYk2FpSSW44FqMc8qee5w==}
@@ -9862,7 +9875,7 @@ snapshots:
       minimist: 1.2.8
       strip-bom: 3.0.0
 
-  tsdown@0.22.0(tsx@4.22.1)(typescript@5.9.3):
+  tsdown@0.22.0(tsx@4.22.1)(typescript@5.9.3)(unrun@0.3.0):
     dependencies:
       ansis: 4.3.0
       cac: 7.0.0
@@ -9882,6 +9895,7 @@ snapshots:
     optionalDependencies:
       tsx: 4.22.1
       typescript: 5.9.3
+      unrun: 0.3.0
     transitivePeerDependencies:
       - '@ts-macro/tsc'
       - '@typescript/native-preview'
@@ -9983,6 +9997,10 @@ snapshots:
   universal-user-agent@6.0.1: {}
 
   universalify@2.0.1: {}
+
+  unrun@0.3.0:
+    dependencies:
+      rolldown: 1.0.1
 
   upath@2.0.1: {}
 
