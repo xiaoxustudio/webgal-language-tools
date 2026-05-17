@@ -29,7 +29,7 @@
 	"scripts": {
 		"build": "tsdown",
 		"format": " prettier --write \"src/**/*.ts\"",
-		"lint": "eslint src --ext ts --fix",
+		"lint": "eslint \"src/**/*.ts\" --fix",
 		"typecheck": "tsc --noEmit"
 	},
 	"devDependencies": {
