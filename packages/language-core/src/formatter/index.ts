@@ -7,6 +7,7 @@ export interface FormatConfig {
 	trailingSemicolon: boolean; // 是否添加尾随分号
 	keyValueSpace: boolean; // 键值对之间是否添加空格
 	normalizeWhitespace: boolean; // 是否规范化空白字符
+	keepWhitespaceBeginComment: boolean; // 注释开头保留空格
 }
 
 export const defaultConfig: FormatConfig = {
@@ -14,7 +15,8 @@ export const defaultConfig: FormatConfig = {
 	indentStyle: "space",
 	trailingSemicolon: true,
 	keyValueSpace: true,
-	normalizeWhitespace: true
+	normalizeWhitespace: true,
+	keepWhitespaceBeginComment: true
 };
 
 export function formatText(
@@ -93,6 +95,10 @@ export function formatLine(
 
 	if (processedLine.startsWith(" ")) {
 		processedLine = processedLine.trimStart();
+	}
+
+	if (config.keepWhitespaceBeginComment && processedLine.startsWith(";")) {
+		processedLine = processedLine.replace(/^;+/, "; ");
 	}
 
 	return processedLine;

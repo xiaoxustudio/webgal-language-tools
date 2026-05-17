@@ -30,6 +30,11 @@
 			"type": "boolean",
 			"default": true,
 			"description": "将多个空格转换为单个空格"
+		},
+		"keepWhitespaceBeginComment": {
+			"type": "boolean",
+			"default": true,
+			"description": "在注释符号;后保留一个空格"
 		}
 	}
 }
