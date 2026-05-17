@@ -1,4 +1,4 @@
-rimraf node_modules package-lock.yaml
+rimraf node_modules pnpm-lock.yaml
 cd ./packages/language-service
 rimraf node_modules
 cd ../language-server

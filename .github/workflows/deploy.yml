@@ -34,7 +34,7 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v4
       - name: Install dependencies
-        run: pnpm install # 安装全量依赖，自动链接 monorepo 内部包
+        run: pnpm install --no-frozen-lockfile
       - name: Build dependent packages first
         run: pnpm run build
         env:
