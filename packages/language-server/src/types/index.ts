@@ -1,8 +1,11 @@
 import type {
 	Connection,
 	Event,
-	TextDocumentChangeEvent
+	FoldingRange,
+	TextDocumentChangeEvent,
+	VirtualCode
 } from "@volar/language-server";
+import type { IDefinetionMap } from "@webgal/language-core";
 import type { TextDocument } from "vscode-languageserver-textdocument";
 export interface ServerSettings {
 	maxNumberOfProblems: number;
@@ -32,3 +35,20 @@ export type ConnectionHandler = (
 	documents: ConnectionDocumentsType,
 	connection: Connection
 ) => void;
+
+export type WebgalDocumentLinkCandidate = {
+	line: number;
+	start: number;
+	end: number;
+	text: string;
+	command: string;
+};
+
+export type WebgalVirtualCode = VirtualCode & {
+	webgalDefinitionMap?: IDefinetionMap;
+	webgalDocumentLinkCandidates?: WebgalDocumentLinkCandidate[];
+	webgalFoldingRanges?: FoldingRange[];
+	webgalLines?: string[];
+	webgalLineCommandTypes?: string[];
+	webgalOriginalId?: string;
+};
