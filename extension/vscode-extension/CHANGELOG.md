@@ -2,7 +2,7 @@
 
 All notable changes to the "webgal-for-vscode" extension will be documented in this file.
 
-## [2.0.3] - 2026.03.27
+## [2.0.3] - 2026.05.17
 
 - 增加格式化文件`fmt.json`，可通过指令生成该文件
 - 增加`nobreak`、`rule`、`ruleFlag`、`ruleText`、`ruleButtonText`
