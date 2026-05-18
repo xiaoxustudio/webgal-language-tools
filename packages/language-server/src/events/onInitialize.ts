@@ -1,10 +1,9 @@
-import { StateConfig } from "@/utils";
+import { StateConfig } from "@/server/setting";
 import type {
 	InitializeParams,
-	InitializeResult} from "@volar/language-server";
-import {
-	TextDocumentSyncKind
+	InitializeResult
 } from "@volar/language-server";
+import { TextDocumentSyncKind } from "@volar/language-server";
 
 export function applyClientCapabilities(params: InitializeParams) {
 	// 统一记录客户端能力，供其他模块判断是否启用相关功能

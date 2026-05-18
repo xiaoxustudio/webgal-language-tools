@@ -19,8 +19,7 @@ import {
 	getWebgalFoldingRanges,
 	getWebgalLineCommandTypes,
 	getWebgalSourceUriString,
-	getWebgalVirtualCodeText,
-	StateConfig
+	getWebgalVirtualCodeText
 } from "@/utils";
 import { getWebgalVirtualCodeLines } from "@/utils";
 
@@ -32,6 +31,7 @@ import { provideDocumentLinks } from "./onDocumentLinks";
 import { provideFoldingRanges } from "./onFoldingRanges";
 import { provideHover } from "./onHover";
 import { provideDiagnostics } from "./onDiagnostics";
+import { StateConfig } from "@/server/setting";
 
 export function registerConnectionHandlers(
 	documents: ConnectionDocumentsType,
@@ -74,9 +74,7 @@ export function createWebgalService(
 			...(featureOptions.foldingRange
 				? { foldingRangeProvider: true }
 				: {}),
-			...(featureOptions.definition
-				? { definitionProvider: true }
-				: {})
+			...(featureOptions.definition ? { definitionProvider: true } : {})
 		},
 		create(context) {
 			const getDefinitionMap = (document: TextDocument) =>

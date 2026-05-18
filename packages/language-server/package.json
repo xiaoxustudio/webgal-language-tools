@@ -40,15 +40,20 @@
 			"types": "./build/browser.worker.d.mts",
 			"import": "./build/browser.worker.mjs",
 			"require": "./build/browser.worker.cjs"
+		},
+		"./node": {
+			"types": "./build/node.d.mts",
+			"import": "./build/node.mjs",
+			"require": "./build/node.cjs"
 		}
 	},
 	"bin": {
-		"webgal-language-server": "./bin/webgal-language-server.js"
+		"webgal-lsp": "./bin/webgal-language-server.cjs"
 	},
 	"scripts": {
 		"build": "tsdown",
-		"dev": "pnpm build && node bin/webgal-language-server.js --stdio",
-		"dev:ws": "pnpm build && node bin/webgal-language-server.js --ws",
+		"dev": "pnpm build && npx webgal-lsp --stdio",
+		"dev:ws": "pnpm build && npx webgal-lsp --ws",
 		"format": " prettier --write \"src/**/*.ts\"",
 		"lint": "eslint \"src/**/*.ts\" --fix",
 		"typecheck": "tsc --noEmit",

@@ -1,42 +1,26 @@
-import {
-	createConnection,
-	createServer,
-	createSimpleProject
-} from "@volar/language-server/node";
+import { createServer, createSimpleProject } from "@volar/language-server/node";
 import type { InitializeParams } from "@volar/language-server";
-import type { LanguagePlugin } from "@volar/language-core";
-import type { URI } from "vscode-uri";
+
 import {
 	createConnection as createVscodeConnection,
 	type Connection
 } from "vscode-languageserver/node";
 import type { IncomingMessage } from "http";
 import type { StartServerOptions } from "@/types";
-import { createWebgalService, registerConnectionHandlers } from "./events";
+import { createWebgalService, registerConnectionHandlers } from "../events";
 import {
 	applyClientCapabilities,
 	applyServerCapabilities
-} from "./events/onInitialize";
-import {
-	bindCoreFileAccessorToClientVfs,
-	createClientVfsFileSystem,
-	createWebgalVirtualCode,
-	updateWebgalVirtualCode,
-	setFeatureOptions
-} from "@/utils";
+} from "../events/onInitialize";
+import { bindCoreFileAccessorToClientVfs } from "@/utils";
+import { createClientVfsFileSystem } from "./code";
+import webgalLanguagePlugin from "./plugin";
+import { setFeatureOptions } from "./setting";
 
 type WsOptions = {
 	port: number;
 	path: string | null;
 };
-
-const args = process.argv.slice(2);
-const useWs = args.some((arg) => arg === "--ws" || arg.startsWith("--ws="));
-if (useWs) {
-	void startWebSocketServer(getWsOptions(args));
-} else {
-	startServer(createConnection(), false);
-}
 
 /**
  * 启动WebSocket服务器
@@ -44,7 +28,7 @@ if (useWs) {
  * @param options - WebSocket服务器配置选项，包含端口和路径等信息
  * @returns void
  */
-async function startWebSocketServer(options: WsOptions) {
+export async function startWebSocketServer(options: WsOptions) {
 	const [
 		{ WebSocketServer },
 		{ WebSocketMessageReader, WebSocketMessageWriter, toSocket }
@@ -63,7 +47,7 @@ async function startWebSocketServer(options: WsOptions) {
 	});
 }
 
-function getWsOptions(argv: string[]): WsOptions {
+export function getWsOptions(argv: string[]): WsOptions {
 	let port = Number(process.env.WEBGAL_LSP_WS_PORT ?? 5882);
 	let path = process.env.WEBGAL_LSP_WS_PATH ?? "/webgal-lsp";
 	for (const arg of argv) {
@@ -89,7 +73,7 @@ function getWsOptions(argv: string[]): WsOptions {
 	};
 }
 
-function startServer(
+export function startServer(
 	connection: Connection,
 	useClientVfs: boolean,
 	options?: StartServerOptions
@@ -107,45 +91,7 @@ function startServer(
 
 	connection.onInitialize((params: InitializeParams) => {
 		applyClientCapabilities(params);
-		const webgalLanguagePlugin: LanguagePlugin<URI> = {
-			getLanguageId(scriptId) {
-				const path = scriptId.path.toLowerCase();
-				if (scriptId.scheme !== "file") {
-					if (
-						path.endsWith("/game/config.txt") ||
-						path.endsWith("config.txt")
-					) {
-						return "webgal-config";
-					}
-					if (path.endsWith(".txt")) {
-						return "webgal";
-					}
-					return "webgal";
-				}
-				if (path.endsWith("/game/config.txt")) {
-					return "webgal-config";
-				}
-				if (path.endsWith(".txt") && path.includes("/game/scene/")) {
-					return "webgal";
-				}
-				return undefined;
-			},
-			createVirtualCode(scriptId, languageId, snapshot) {
-				if (languageId !== "webgal" && languageId !== "webgal-config") {
-					return;
-				}
-				return createWebgalVirtualCode(scriptId, languageId, snapshot);
-			},
-			updateVirtualCode(_scriptId, virtualCode, newSnapshot) {
-				if (
-					virtualCode.languageId !== "webgal" &&
-					virtualCode.languageId !== "webgal-config"
-				) {
-					return;
-				}
-				return updateWebgalVirtualCode(virtualCode, newSnapshot);
-			}
-		};
+
 		const result = server.initialize(
 			params,
 			createSimpleProject([webgalLanguagePlugin]),

@@ -4,8 +4,7 @@ import {
 	getStageCompletionContext,
 	getWordAtPosition
 } from "@/utils";
-import type {
-	CommandNameSpecial} from "@/utils/provider";
+import type { CommandNameSpecial } from "@/utils/provider";
 import {
 	globalArgs,
 	WebGALConfigCompletionMap,
@@ -13,13 +12,8 @@ import {
 	WebgGALKeywordsCompletionMap
 } from "@/utils/provider";
 import { resourcesMap } from "@/utils/resources";
-import type {
-	Connection,
-	CompletionItem} from "@volar/language-server";
-import {
-	CompletionItemKind,
-	Position
-} from "@volar/language-server";
+import type { Connection, CompletionItem } from "@volar/language-server";
+import { CompletionItemKind, Position } from "@volar/language-server";
 import type { IDefinetionMap } from "@webgal/language-core";
 import type { StateMap } from "@webgal/language-service/utils";
 import type { TextDocument } from "vscode-languageserver-textdocument";
@@ -154,10 +148,14 @@ export async function provideCompletionItems(
 		WebGALKeywords.setTransition.label!
 	]);
 	const isAnimationArgCompletion =
-		!!currentLine.match(/\s\-(enter|exit)=[^\s;]*$/) &&
+		!!currentLine.match(/\s-(enter|exit)=[^\s;]*$/) &&
 		animationCommandTypes.has(commandType);
 
-	if (token.startsWith("-") || isResourceCommand || isAnimationArgCompletion) {
+	if (
+		token.startsWith("-") ||
+		isResourceCommand ||
+		isAnimationArgCompletion
+	) {
 		if (enableResourceCompletion) {
 			let resourceBaseDir: string | undefined;
 			let subDir = "";
@@ -180,7 +178,8 @@ export async function provideCompletionItems(
 							: argInput;
 				}
 			} else if (isResourceCommand) {
-				resourceBaseDir = resourcesMap[commandType as CommandNameSpecial];
+				resourceBaseDir =
+					resourcesMap[commandType as CommandNameSpecial];
 				if (commandType === WebGALKeywords.choose.label) {
 					const path = getChoosePath(currentLine);
 					if (path !== null) {
@@ -206,7 +205,9 @@ export async function provideCompletionItems(
 									file.name !== "animationTable.json"
 							)
 							.filter((file: { name: string }) =>
-								filterPrefix ? file.name.startsWith(filterPrefix) : true
+								filterPrefix
+									? file.name.startsWith(filterPrefix)
+									: true
 							);
 						for (const file of filtered) {
 							if (file.isDirectory) {

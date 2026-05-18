@@ -2,9 +2,9 @@ import { defineConfig } from "tsdown";
 
 export default defineConfig({
 	entry: {
-		index: "src/index.ts",
 		utils: "src/utils/index.ts",
-		browser: "src/browser.ts"
+		browser: "src/browser.ts",
+		node: "src/node.ts"
 	},
 	format: ["esm", "cjs"],
 	dts: true,

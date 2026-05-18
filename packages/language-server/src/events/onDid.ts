@@ -1,10 +1,10 @@
-import type { ConnectionHandler, ServerSettings } from "@/types";
 import {
 	documentSettings,
 	StateConfig,
 	setGlobalSettings,
 	defaultSettings
-} from "@/utils";
+} from "@/server/setting";
+import type { ConnectionHandler, ServerSettings } from "@/types";
 
 export default <ConnectionHandler>function (documents, connection) {
 	// 关闭文档时删除设置缓存

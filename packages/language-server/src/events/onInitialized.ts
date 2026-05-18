@@ -1,5 +1,5 @@
+import { StateConfig } from "@/server/setting";
 import type { ConnectionHandler } from "@/types";
-import { StateConfig } from "@/utils";
 import { DidChangeConfigurationNotification } from "@volar/language-server";
 
 export default <ConnectionHandler>function (_, connection) {

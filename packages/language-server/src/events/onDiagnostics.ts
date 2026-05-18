@@ -1,5 +1,5 @@
+import { validateTextDocument } from "@/server/setting";
 import type { Connection, Diagnostic } from "@volar/language-server";
-import { validateTextDocument } from "@/utils";
 import type { TextDocument } from "vscode-languageserver-textdocument";
 
 export async function provideDiagnostics(

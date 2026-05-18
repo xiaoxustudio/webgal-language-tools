@@ -4,21 +4,16 @@ import {
 	createSimpleProject
 } from "@volar/language-server/browser";
 import type { InitializeParams } from "@volar/language-server";
-import type { LanguagePlugin } from "@volar/language-core";
-import type { URI } from "vscode-uri";
 import type { StartServerOptions } from "@/types";
 import { createWebgalService, registerConnectionHandlers } from "./events";
 import {
 	applyClientCapabilities,
 	applyServerCapabilities
 } from "./events/onInitialize";
-import {
-	bindCoreFileAccessorToClientVfs,
-	createClientVfsFileSystem,
-	createWebgalVirtualCode,
-	updateWebgalVirtualCode,
-	setFeatureOptions
-} from "@/utils";
+import { bindCoreFileAccessorToClientVfs } from "@/utils";
+import { createClientVfsFileSystem } from "./server/code";
+import webgalLanguagePlugin from "./server/plugin";
+import { setFeatureOptions } from "./server/setting";
 
 export { createConnection } from "@volar/language-server/browser";
 
@@ -41,46 +36,6 @@ export function startServer(
 		"file",
 		createClientVfsFileSystem(resolvedConnection)
 	);
-
-	const webgalLanguagePlugin: LanguagePlugin<URI> = {
-		getLanguageId(scriptId) {
-			const path = scriptId.path.toLowerCase();
-			if (scriptId.scheme !== "file") {
-				if (
-					path.endsWith("/game/config.txt") ||
-					path.endsWith("config.txt")
-				) {
-					return "webgal-config";
-				}
-				if (path.endsWith(".txt")) {
-					return "webgal";
-				}
-				return "webgal";
-			}
-			if (path.endsWith("/game/config.txt")) {
-				return "webgal-config";
-			}
-			if (path.endsWith(".txt") && path.includes("/game/scene/")) {
-				return "webgal";
-			}
-			return undefined;
-		},
-		createVirtualCode(scriptId, languageId, snapshot) {
-			if (languageId !== "webgal" && languageId !== "webgal-config") {
-				return;
-			}
-			return createWebgalVirtualCode(scriptId, languageId, snapshot);
-		},
-		updateVirtualCode(_scriptId, virtualCode, newSnapshot) {
-			if (
-				virtualCode.languageId !== "webgal" &&
-				virtualCode.languageId !== "webgal-config"
-			) {
-				return;
-			}
-			return updateWebgalVirtualCode(virtualCode, newSnapshot);
-		}
-	};
 
 	resolvedConnection.onInitialize((params: InitializeParams) => {
 		applyClientCapabilities(params);
