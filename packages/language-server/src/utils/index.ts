@@ -5,7 +5,8 @@ import type {
 	Connection,
 	Diagnostic,
 	FoldingRange,
-	Position} from "@volar/language-server";
+	Position
+} from "@volar/language-server";
 import {
 	DiagnosticSeverity,
 	FoldingRangeKind,
@@ -497,7 +498,7 @@ export function getPatternAtPosition(
 	for (let i = offset - 1; i >= lookBehindLimit; i--) {
 		const char = text[i];
 		// 如果遇到，则认为这很可能是单词的边界
-		if (/[\s\[\(\;\,\>]/.test(char)) {
+		if (/[\s[(;,>]/.test(char)) {
 			startSearch = i + 1;
 			break;
 		}
@@ -564,7 +565,7 @@ export function getTokenOrPatternAtPosition(
 }
 /** Helper: 判断是否属于 路径字符 */
 export function isPathChar(ch: string): boolean {
-	return /[A-Za-z0-9_.\-\/~]/.test(ch);
+	return /[A-Za-z0-9_.\-/~]/.test(ch);
 }
 
 /** 从 position 找到当前 token 的 start offset（用于 replacement range） */
@@ -659,7 +660,7 @@ export async function listPathCandidates(
 			});
 
 		return candidates;
-	} catch (err) {
+	} catch {
 		return [];
 	}
 }
@@ -741,7 +742,7 @@ export function setGlobalSettings(settings: ServerSettings) {
 export function setFeatureOptions(options?: Partial<LspFeatureOptions>) {
 	StateConfig.featureOptions = {
 		...defaultFeatureOptions,
-		...(options ?? {})
+		...options
 	};
 }
 
