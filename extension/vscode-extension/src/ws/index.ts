@@ -1,9 +1,11 @@
 import EventEmitter from "events";
 import WebSocket from "ws";
-import type {
-	FileAccessor,
-	IDebugMessage,
-	RuntimeVariable
+import * as vscode from "vscode";
+import {
+	DebugCommand,
+	RuntimeVariable,
+	type FileAccessor,
+	type IDebugMessage
 } from "@webgal/language-core";
 import {
 	disableGameStatus,
@@ -12,8 +14,6 @@ import {
 	setGameData
 } from "@/utils/utils";
 
-type LanguageCore = typeof import("@webgal/language-core");
-type VscodeApi = typeof import("vscode");
 type ScopeKey = "local" | "env" | "scene";
 
 export type XRRuntimeConfig = {
@@ -25,11 +25,8 @@ const defaultWs = "ws://localhost:3001/api/webgalsync";
 
 export default class XRRuntime extends EventEmitter {
 	private socket: WebSocket | null = null;
-	private core: LanguageCore | null = null;
 	private config: XRRuntimeConfig | null = null;
-	private vscode: VscodeApi | null = null;
-	private decorationType: import("vscode").TextEditorDecorationType | null =
-		null;
+	private decorationType: vscode.TextEditorDecorationType | null = null;
 	private currentLine = -1;
 
 	public variables = new Map<ScopeKey, Map<string, RuntimeVariable>>([
@@ -43,8 +40,6 @@ export default class XRRuntime extends EventEmitter {
 	}
 
 	async start(config: XRRuntimeConfig) {
-		this.core = await import("@webgal/language-core");
-		this.vscode = await this.loadVscode();
 		this.config = {
 			program: config.program,
 			ws: config.ws || defaultWs
@@ -103,15 +98,14 @@ export default class XRRuntime extends EventEmitter {
 	}
 
 	sendRunLine(line: number) {
-		const core = this.core;
 		const config = this.config;
-		if (!core || !config) {
+		if (!config) {
 			return;
 		}
 		this.sendMessage({
 			event: "message",
 			data: {
-				command: core.DebugCommand.JUMP,
+				command: DebugCommand.JUMP,
 				sceneMsg: {
 					scene: config.program,
 					sentence: line
@@ -123,15 +117,14 @@ export default class XRRuntime extends EventEmitter {
 	}
 
 	sendScript(script: string) {
-		const core = this.core;
 		const config = this.config;
-		if (!core || !config) {
+		if (!config) {
 			return;
 		}
 		this.sendMessage({
 			event: "message",
 			data: {
-				command: core.DebugCommand.EXE_COMMAND,
+				command: DebugCommand.EXE_COMMAND,
 				sceneMsg: {
 					scene: config.program,
 					sentence: 1
@@ -190,10 +183,6 @@ export default class XRRuntime extends EventEmitter {
 	}
 
 	private updateVariables(payload: IDebugMessage) {
-		const core = this.core;
-		if (!core) {
-			return;
-		}
 		const stageSyncMsg = payload?.data?.stageSyncMsg ?? {};
 		const sceneMsg = (payload?.data?.sceneMsg ?? {}) as Record<
 			string,
@@ -208,10 +197,7 @@ export default class XRRuntime extends EventEmitter {
 		]);
 
 		for (const key of Object.keys(gameVar)) {
-			next.get("local")?.set(
-				key,
-				new core.RuntimeVariable(key, gameVar[key])
-			);
+			next.get("local")?.set(key, new RuntimeVariable(key, gameVar[key]));
 		}
 
 		for (const key of Object.keys(stageSyncMsg)) {
@@ -220,14 +206,14 @@ export default class XRRuntime extends EventEmitter {
 			}
 			next.get("env")?.set(
 				key,
-				new core.RuntimeVariable(key, stageSyncMsg[key])
+				new RuntimeVariable(key, stageSyncMsg[key])
 			);
 		}
 
 		for (const key of Object.keys(sceneMsg)) {
 			next.get("scene")?.set(
 				key,
-				new core.RuntimeVariable(key, sceneMsg[key] as any)
+				new RuntimeVariable(key, sceneMsg[key] as any)
 			);
 		}
 
@@ -235,10 +221,6 @@ export default class XRRuntime extends EventEmitter {
 	}
 
 	private updateDecoration(sceneMsg: Record<string, any>) {
-		const vscode = this.vscode;
-		if (!vscode) {
-			return;
-		}
 		const editor = vscode.window.activeTextEditor;
 		if (!editor || !editor.document) {
 			return;
@@ -274,8 +256,7 @@ export default class XRRuntime extends EventEmitter {
 	}
 
 	private clearDecorations() {
-		const vscode = this.vscode;
-		if (!vscode || !this.decorationType) {
+		if (!this.decorationType) {
 			return;
 		}
 		const editor = vscode.window.activeTextEditor;
@@ -300,18 +281,10 @@ export default class XRRuntime extends EventEmitter {
 	}
 
 	private showInfo(message: string) {
-		this.vscode?.window.showInformationMessage(message);
+		vscode.window.showInformationMessage(message);
 	}
 
 	private showError(message: string) {
-		this.vscode?.window.showErrorMessage(message);
-	}
-
-	private async loadVscode(): Promise<VscodeApi | null> {
-		try {
-			return await import("vscode");
-		} catch {
-			return null;
-		}
+		vscode.window.showErrorMessage(message);
 	}
 }
