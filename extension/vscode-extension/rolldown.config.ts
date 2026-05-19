@@ -3,11 +3,13 @@ import { defineConfig } from "rolldown";
 export default defineConfig({
 	input: {
 		extension: "./src/extension.ts",
-		server: "./src/server.ts"
+		server: "./src/server.ts",
+		debugger: "./src/debug/debugAdapter.ts"
 	},
 	output: {
 		format: "cjs",
-		minify: true
+		minify: true,
+		dir: "./build"
 	},
 	external: ["vscode"],
 	tsconfig: "tsconfig.json",

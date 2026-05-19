@@ -1,14 +1,14 @@
 {
-	"extends": "../../tsconfig.base.json",
-	"compilerOptions": {
-		"outDir": "out",
-		"rootDir": "src",
-		"paths": {
-			"@/*": ["./src/*"]
-		},
-		"esModuleInterop": true,
-		"skipLibCheck": true
-	},
-	"include": ["src"],
-	"exclude": ["node_modules", "out", "scripts"]
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "build",
+    "rootDir": "src",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "esModuleInterop": true,
+    "skipLibCheck": true
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "build", "scripts"]
 }

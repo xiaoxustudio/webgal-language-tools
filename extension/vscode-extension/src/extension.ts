@@ -7,6 +7,9 @@ import * as path from "path";
 import { createClient } from "./client";
 import { XRDebugAdapterDescriptorFactory } from "./debug/activeDebug";
 import { DocumentFormatter, defaultConfig } from "./formatter";
+import { debug } from "vscode";
+import { selector } from "./utils/utils";
+import { XRDebugConfigurationProvider } from "./ws/config";
 
 let client: BaseLanguageClient;
 
@@ -19,6 +22,13 @@ export async function activate(context: vscode.ExtensionContext) {
 		vscode.debug.registerDebugAdapterDescriptorFactory(
 			"webgal",
 			new XRDebugAdapterDescriptorFactory()
+		)
+	);
+
+	context.subscriptions.push(
+		debug.registerDebugConfigurationProvider(
+			selector.language,
+			new XRDebugConfigurationProvider()
 		)
 	);
 
@@ -40,7 +50,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	return labsInfo.extensionExports;
 }
 
-export function deactivate(): Thenable<any> | undefined {
+export function deactivate() {
 	return client?.stop();
 }
 

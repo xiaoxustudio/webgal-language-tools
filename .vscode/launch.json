@@ -11,7 +11,7 @@
 				"--extensionDevelopmentPath=${workspaceRoot}/extension/vscode-extension",
 				"--folder-uri=${workspaceRoot}/example"
 			],
-			"outFiles": ["${workspaceRoot}/extension/vscode-extension/dist/*.js"],
+			"outFiles": ["${workspaceRoot}/extension/vscode-extension/build/*.js"],
 			"preLaunchTask": {
 				"type": "npm",
 				"script": "watch"
@@ -23,7 +23,7 @@
 			"request": "attach",
 			"port": 5882,
 			"restart": true,
-			"outFiles": ["${workspaceRoot}/extension/vscode-extension/dist/*.js"]
+			"outFiles": ["${workspaceRoot}/extension/vscode-extension/build/*.js"]
 		}
 	]
 }

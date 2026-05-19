@@ -1,11 +1,9 @@
 import type {
 	LanguageClientOptions,
-	ServerOptions} from "vscode-languageclient/node";
-import {
-	LanguageClient,
-	TransportKind
+	ServerOptions
 } from "vscode-languageclient/node";
-import type { ExtensionContext} from "vscode";
+import { LanguageClient, TransportKind } from "vscode-languageclient/node";
+import type { ExtensionContext } from "vscode";
 import { Uri, workspace } from "vscode";
 import { selector, selectorConfig } from "@/utils/utils";
 
@@ -14,7 +12,7 @@ export async function createClient(
 ): Promise<LanguageClient> {
 	const serverModule = Uri.joinPath(
 		context.extensionUri,
-		"dist",
+		"build",
 		"server.js"
 	);
 

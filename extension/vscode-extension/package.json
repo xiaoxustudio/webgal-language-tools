@@ -23,7 +23,7 @@
 	"activationEvents": [
 		"workspaceContains:**/game/config.txt"
 	],
-	"main": "./dist/extension.js",
+	"main": "./build/extension.js",
 	"icon": "./resources/icon.png",
 	"contributes": {
 		"marks": [
@@ -103,7 +103,7 @@
 			{
 				"type": "webgal",
 				"label": "%Webgal Debug%",
-				"program": "./out/DebugAdapter.js",
+				"program": "./build/DebugAdapter.js",
 				"runtime": "node",
 				"configurationAttributes": {
 					"launch": {

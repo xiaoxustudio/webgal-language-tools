@@ -283,7 +283,7 @@ export class XRDebugSession extends LoggingDebugSession {
 	}
 	private convertFromRuntime(v: RuntimeVariable): DebugProtocol.Variable {
 		const rawValue = v.value as unknown;
-		let dapVariable: DebugProtocol.Variable = {
+		const dapVariable: DebugProtocol.Variable = {
 			name: v.name,
 			value: "null",
 			type: typeof rawValue,
