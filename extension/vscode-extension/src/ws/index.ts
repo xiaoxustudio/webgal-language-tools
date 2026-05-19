@@ -37,6 +37,7 @@ export default class XRRuntime extends EventEmitter {
 
 	constructor(public fileAccessor: FileAccessor) {
 		super();
+		this.initializeVariables();
 	}
 
 	async start(config: XRRuntimeConfig) {
@@ -50,11 +51,7 @@ export default class XRRuntime extends EventEmitter {
 	dispose() {
 		this.clearDecorations();
 		this.currentLine = -1;
-		this.variables = new Map<ScopeKey, Map<string, RuntimeVariable>>([
-			["local", new Map<string, RuntimeVariable>()],
-			["env", new Map<string, RuntimeVariable>()],
-			["scene", new Map<string, RuntimeVariable>()]
-		]);
+		this.initializeVariables();
 		if (this.socket) {
 			this.socket.removeAllListeners();
 			if (
@@ -147,39 +144,44 @@ export default class XRRuntime extends EventEmitter {
 		const socket = new WebSocket(config.ws || defaultWs);
 		this.socket = socket;
 
-		socket.on("open", () => {
-			if (socket.readyState !== WebSocket.OPEN) {
-				return;
-			}
-			enableGameStatus(socket);
-			this.sendRunLine(0);
-			this.showInfo(`(webgal)调试连接到：${config.ws || defaultWs}`);
-			this.emit("connected");
-		});
+		socket.on("open", () => this.onOpen(socket, config));
+		socket.on("error", () => this.onError());
+		socket.on("close", () => this.onClose());
+		socket.on("message", (data: Buffer) => this.onMessage(data));
+	}
 
-		socket.on("error", () => {
-			this.showError("(webgal)调试连接错误，请重试！");
-			this.emit("error");
-			this.dispose();
-		});
+	private onOpen(socket: WebSocket, config: XRRuntimeConfig) {
+		if (socket.readyState !== WebSocket.OPEN) {
+			return;
+		}
+		enableGameStatus(socket);
+		this.sendRunLine(0);
+		this.showInfo(`(webgal)调试连接到：${config.ws || defaultWs}`);
+		this.emit("connected");
+	}
 
-		socket.on("close", () => {
-			setGameData({});
-			this.showError("(webgal)调试关闭！");
-			this.dispose();
-			this.emit("terminated");
-		});
+	private onError() {
+		this.showError("(webgal)调试连接错误，请重试！");
+		this.emit("error");
+		this.dispose();
+	}
 
-		socket.on("message", (data: Buffer) => {
-			const text = data.toString();
-			if (!is_JSON(text)) {
-				return;
-			}
-			const payload = JSON.parse(text) as IDebugMessage;
-			this.updateVariables(payload);
-			setGameData(payload);
-			this.updateDecoration(payload?.data?.sceneMsg ?? {});
-		});
+	private onClose() {
+		setGameData({});
+		this.showError("(webgal)调试关闭！");
+		this.dispose();
+		this.emit("terminated");
+	}
+
+	private onMessage(data: Buffer) {
+		const text = data.toString();
+		if (!is_JSON(text)) {
+			return;
+		}
+		const payload = JSON.parse(text) as IDebugMessage;
+		this.updateVariables(payload);
+		setGameData(payload);
+		this.updateDecoration(payload?.data?.sceneMsg ?? {});
 	}
 
 	private updateVariables(payload: IDebugMessage) {
@@ -271,6 +273,14 @@ export default class XRRuntime extends EventEmitter {
 		const normalized = filePath.replace(/\\/g, "/");
 		const parts = normalized.split("/");
 		return parts[parts.length - 1] ?? "";
+	}
+
+	private initializeVariables() {
+		this.variables = new Map<ScopeKey, Map<string, RuntimeVariable>>([
+			["local", new Map<string, RuntimeVariable>()],
+			["env", new Map<string, RuntimeVariable>()],
+			["scene", new Map<string, RuntimeVariable>()]
+		]);
 	}
 
 	private sendMessage(message: IDebugMessage) {
