@@ -1,9 +1,9 @@
 {
 	"name": "@webgal/language-server",
 	"version": "0.1.0",
-	"main": "build/index.cjs",
-	"module": "build/index.mjs",
-	"types": "build/index.d.mts",
+	"main": "build/node.cjs",
+	"module": "build/node.mjs",
+	"types": "build/node.d.mts",
 	"type": "module",
 	"license": "MPL-2.0",
 	"repository": {
@@ -23,8 +23,8 @@
 		".": {
 			"types": "./build/index.d.mts",
 			"browser": "./build/browser.mjs",
-			"import": "./build/index.mjs",
-			"require": "./build/index.cjs"
+			"import": "./build/node.mjs",
+			"require": "./build/node.cjs"
 		},
 		"./utils": {
 			"types": "./build/utils.d.mts",

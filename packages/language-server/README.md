@@ -13,11 +13,11 @@ npm i @webgal/language-server
 ## 启动
 
 ```bash
-npx webgal-language-server --stdio
+npx webgal-lsp --stdio
 ```
 
 ```bash
-npx webgal-language-server --ws --wsPort=5882 --wsPath=/webgal-lsp
+npx webgal-lsp --ws --wsPort=5882 --wsPath=/webgal-lsp
 ```
 
 ## 仓库

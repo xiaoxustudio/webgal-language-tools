@@ -51,7 +51,7 @@ npm i @webgal/language-server
 ```
 
 ```bash
-npx webgal-language-server --ws --wsPort=5882 --wsPath=/webgal-lsp
+npx webgal-lsp --ws --wsPort=5882 --wsPath=/webgal-lsp
 ```
 
 前端示例（使用 @monaco-editor/react）：

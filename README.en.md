@@ -47,22 +47,14 @@ If you are using this repo source:
 pnpm dev:lsp-ws
 ```
 
-If you are using this repo build output, run it under `node`. Create an empty `node` project and install the `server` package:
+If you are using the package directly:
 
 ```bash
 npm i @webgal/language-server
 ```
 
-Then create a file like `webgal-lsp.js`:
-
-```js
-require("@webgal/language-server");
-```
-
-Finally start it:
-
 ```bash
-node webgal-lsp.js --ws --wsPort=5882 --wsPath=/webgal-lsp
+npx webgal-lsp --ws --wsPort=5882 --wsPath=/webgal-lsp
 ```
 
 Frontend example (with @monaco-editor/react):

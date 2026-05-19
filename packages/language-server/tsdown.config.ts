@@ -2,9 +2,10 @@ import { defineConfig } from "tsdown";
 
 export default defineConfig({
 	entry: {
-		utils: "src/utils/index.ts",
+		node: "src/node.ts",
 		browser: "src/browser.ts",
-		node: "src/node.ts"
+		"browser-worker": "src/browser.worker.ts",
+		utils: "src/utils/index.ts"
 	},
 	format: ["esm", "cjs"],
 	dts: true,

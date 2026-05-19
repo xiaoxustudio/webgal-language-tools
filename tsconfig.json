@@ -4,7 +4,6 @@
 		{ "path": "./extension/vscode-extension" },
 		{ "path": "./packages/language-server" },
 		{ "path": "./packages/language-core" },
-		{ "path": "./packages/language-service" },
-		{ "path": "./packages/playground" }
+		{ "path": "./packages/language-service" }
 	]
 }
