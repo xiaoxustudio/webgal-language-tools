@@ -1,6 +1,6 @@
 import type { LanguagePlugin } from "@volar/language-core";
 import type { URI } from "vscode-uri";
-import { createWebgalVirtualCode, updateWebgalVirtualCode } from "../utils";
+import { createWebgalVirtualCode, updateWebgalVirtualCode } from "./virtualCode";
 
 const webgalLanguagePlugin: LanguagePlugin<URI> = {
 	getLanguageId(scriptId) {

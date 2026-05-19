@@ -8,7 +8,7 @@ import {
 } from "@volar/language-server";
 import type { TextDocument } from "vscode-languageserver-textdocument";
 import { URI } from "vscode-uri";
-import type { WebgalDocumentLinkCandidate } from "@/utils";
+import type { WebgalDocumentLinkCandidate } from "@/types";
 
 export async function provideDocumentLinks(
 	document: TextDocument,

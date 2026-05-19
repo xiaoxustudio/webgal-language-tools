@@ -1,11 +1,12 @@
-import { fsAccessor, type IDefinetionMap } from "@webgal/language-core";
+import { fsAccessor } from "@webgal/language-core";
+import type { IDefinetionMap } from "@webgal/language-core";
 import type {
 	Connection,
 	FoldingRange,
 	Position
 } from "@volar/language-server";
 import { Range } from "@volar/language-server";
-import { type LanguageServiceContext } from "@volar/language-service";
+import type { LanguageServiceContext } from "@volar/language-service";
 import type { CodeInformation, IScriptSnapshot } from "@volar/language-core";
 import type { TextDocument } from "vscode-languageserver-textdocument";
 import { URI } from "vscode-uri";
