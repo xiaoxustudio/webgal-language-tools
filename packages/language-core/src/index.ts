@@ -1,5 +1,10 @@
 import * as expressions from "angular-expressions";
-import type { FileAccessor, IDefinetionMap, IVChooseToken, IVToken } from "./types";
+import type {
+	FileAccessor,
+	IDefinetionMap,
+	IVChooseToken,
+	IVToken
+} from "./types";
 
 export const source = "WebGal Script";
 export const SCHEME = "webgal-virtual-doc";
@@ -49,9 +54,11 @@ const getIsWindows = () => {
 	if (isNodeRuntime && process.platform) {
 		return process.platform === "win32";
 	}
-	// @ts-ignore
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-expect-error
 	if (typeof navigator !== "undefined" && navigator.userAgent) {
-		// @ts-ignore
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-expect-error
 		return /windows/i.test(navigator.userAgent);
 	}
 	return false;
