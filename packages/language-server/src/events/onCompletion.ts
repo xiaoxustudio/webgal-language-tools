@@ -15,6 +15,7 @@ import { resourcesMap } from "@/utils/resources";
 import type { Connection, CompletionItem } from "@volar/language-server";
 import { CompletionItemKind, Position } from "@volar/language-server";
 import type { IDefinetionMap } from "@webgal/language-core";
+import type { DirectoryEntry } from "@webgal/language-service";
 import type { StateMap } from "@webgal/language-service/utils";
 import type { TextDocument } from "vscode-languageserver-textdocument";
 
@@ -190,21 +191,18 @@ export async function provideCompletionItems(
 				}
 			}
 			if (resourceBaseDir) {
-				const dirs = await connection.sendRequest<any>(
+				const dirs = await connection.sendRequest<DirectoryEntry[]>(
 					"client/getResourceDirectory",
 					subDir ? [resourceBaseDir, subDir] : [resourceBaseDir]
 				);
 				if (dirs) {
 					const visibleDirs = dirs.filter(
-						(dir: { name: string }) => !dir.name.startsWith(".")
+						(dir) => !dir.name.startsWith(".")
 					);
 					if (isAnimationSuggestion) {
 						const filtered = visibleDirs
-							.filter(
-								(file: { name: string }) =>
-									file.name !== "animationTable.json"
-							)
-							.filter((file: { name: string }) =>
+							.filter((file) => file.name !== "animationTable.json")
+							.filter((file) =>
 								filterPrefix
 									? file.name.startsWith(filterPrefix)
 									: true
@@ -244,7 +242,7 @@ export async function provideCompletionItems(
 		}
 
 		if (wordMeta && token.startsWith("-")) {
-			let keyData =
+			const keyData =
 				WebGALKeywords[wordMeta.word as CommandNameSpecial] ??
 				WebGALKeywords["say"];
 

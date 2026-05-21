@@ -2,14 +2,20 @@
 	"extends": "../../tsconfig.base.json",
 	"compilerOptions": {
 		"outDir": "build",
-		"rootDir": "src",
-		"lib": ["esnext", "dom"],
-		"resolveJsonModule": true,
+		"lib": ["ES2021", "DOM"],
 		"module": "esnext",
 		"moduleResolution": "bundler",
+		"resolveJsonModule": true,
+		"types": ["@types/node"],
 		"paths": {
 			"@/*": ["./src/*"]
 		}
 	},
-	"include": ["src"]
+	"include": ["src/**/*.ts", "syntaxes/**/*.json", "themes/**/*.json"],
+	"exclude": ["node_modules", "build", "scripts"],
+	"references": [
+		{
+			"path": "../language-core/tsconfig.json"
+		}
+	]
 }

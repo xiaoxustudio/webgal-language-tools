@@ -23,7 +23,8 @@ export const defaultFeatureOptions: LspFeatureOptions = {
 	resourceCompletion: true,
 	diagnostics: true,
 	foldingRange: true,
-	definition: true
+	definition: true,
+	formatting: true
 };
 
 export const StateConfig = {
@@ -78,15 +79,15 @@ export async function validateTextDocument(
 	let m: RegExpExecArray | null;
 	let problems = 0;
 	const diagnostics: Diagnostic[] = [];
-	let _sp = text.split(/\n|\t\n|\r\n/);
-	for (let i in warningConfig) {
+	const _sp = text.split(/\n|\t\n|\r\n/);
+	for (const i in warningConfig) {
 		const _token = warningConfig[i];
 		const _pattern = _token.pattern as RegExp;
 		if (_token.is_line) {
 			continue;
 		}
-		if (_token.customCheck && _token.customCheck instanceof Function) {
-			const _custom_res = _token.customCheck(textDocument, text);
+		if (_token.customCheck) {
+			const _custom_res = _token.customCheck(textDocument, text, 0, _sp);
 			if (typeof _custom_res === "object" && _custom_res !== null) {
 				diagnostics.push(_custom_res);
 			}
@@ -129,14 +130,14 @@ export async function validateTextDocument(
 	}
 	for (let _line_index = 0; _line_index < _sp.length; _line_index++) {
 		const _line_text = _sp[_line_index];
-		for (let i in warningConfig) {
+		for (const i in warningConfig) {
 			const _token = warningConfig[i];
 			const _pattern = _token.pattern as RegExp;
 			if (!_token.is_line) {
 				continue;
 			}
 			const _newarr = _sp.slice(0, _line_index).join();
-			if (_token.customCheck && _token.customCheck instanceof Function) {
+			if (_token.customCheck) {
 				const _custom_res = _token.customCheck(
 					textDocument,
 					_line_text,

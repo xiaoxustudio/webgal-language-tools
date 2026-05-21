@@ -1,14 +1,23 @@
 import type { TextDocument } from "vscode-languageserver-textdocument";
 import { source } from "@webgal/language-core";
-import type { Diagnostic} from "@volar/language-server";
+import type { Diagnostic } from "@volar/language-server";
 import { DiagnosticSeverity } from "@volar/language-server";
 
+type WarningMessage = (...args: string[]) => string;
+type WarningCustomCheck = (
+	this: WarningToken,
+	textDocument: TextDocument,
+	_text: string,
+	_base_offset: number,
+	_newarr: string[]
+) => Diagnostic | null;
+
 interface WarningToken {
-	message: Function;
+	message: WarningMessage;
 	DiagnosticInformation: string; // 警告类型
 	pattern: RegExp;
 	is_line: boolean; // 是否是行内警告
-	customCheck?: Function; // 自定义检测警告
+	customCheck?: WarningCustomCheck; // 自定义检测警告
 	id: string; // id
 	enable?: boolean;
 }
@@ -22,7 +31,7 @@ function remove_space(_text: string) {
 export const warningConfig: { [key: string]: WarningToken } = {
 	"0001": {
 		id: "0001",
-		message: (...args: any[]) => {
+		message: (...args: string[]) => {
 			return `${args[0]} 前面包含一个以上的空格或换行`;
 		},
 		DiagnosticInformation: "指令格式不规范（%id%）",
@@ -31,7 +40,7 @@ export const warningConfig: { [key: string]: WarningToken } = {
 	},
 	"0002": {
 		id: "0002",
-		message: (...args: any[]) => {
+		message: (...args: string[]) => {
 			return `${args[0]} 变量名开头为数字`;
 		},
 		DiagnosticInformation: "变量命名不规范（%id%）",
@@ -81,7 +90,7 @@ export const warningConfig: { [key: string]: WarningToken } = {
 	},
 	"0003": {
 		id: "0003",
-		message: (...args: any[]) => {
+		message: (...args: string[]) => {
 			return `${args[0]} 冒号后面需要添加一个空格`;
 		},
 		DiagnosticInformation: "指令不规范（%id%）",
@@ -90,7 +99,7 @@ export const warningConfig: { [key: string]: WarningToken } = {
 	},
 	"0004": {
 		id: "0004",
-		message: (...args: any[]) => {
+		message: (...args: string[]) => {
 			return `${args[0]} 插值变量周围存在空格`;
 		},
 		DiagnosticInformation: "变量插值不规范（%id%）",
@@ -99,7 +108,7 @@ export const warningConfig: { [key: string]: WarningToken } = {
 	},
 	"0005": {
 		id: "0005",
-		message: (...args: any[]) => {
+		message: (...args: string[]) => {
 			return `${args[0]} 语句缺少结束标识`;
 		},
 		DiagnosticInformation: "语句不规范（%id%）",
@@ -160,10 +169,10 @@ export const warningConfig: { [key: string]: WarningToken } = {
  * @param {array} args
  * @return {*}
  */
-export function message(id: string, ...args: any[]): any {
+export function message(id: string, ...args: string[]): string {
 	const _data = warningConfig[id];
 	if (!_data) {
-		return false;
+		return "";
 	}
 	return _data.message(...args);
 }
@@ -173,7 +182,7 @@ export function message(id: string, ...args: any[]): any {
  * @param {string} id
  * @return {*}
  */
-export function getDiagnosticInformation(id: string): any {
+export function getDiagnosticInformation(id: string): string {
 	const _data = warningConfig[id];
 	if (!_data) {
 		return "未知错误类型";

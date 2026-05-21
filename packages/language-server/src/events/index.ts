@@ -1,7 +1,5 @@
 import type {
-	CancellationToken,
 	Connection,
-	CompletionContext,
 	CompletionList,
 	DefinitionLink,
 	Diagnostic,
@@ -25,6 +23,7 @@ import { getWebgalVirtualCodeLines } from "@/utils";
 
 import onDid from "./onDid";
 import onInitialized from "./onInitialized";
+import onDocumentFormattingConnection from "./onDocumentFormattingConnection";
 import { provideCompletionItems } from "./onCompletion";
 import { provideDefinition } from "./onDefinition";
 import { provideDocumentLinks } from "./onDocumentLinks";
@@ -39,13 +38,14 @@ export function registerConnectionHandlers(
 ) {
 	onInitialized(documents, connection);
 	onDid(documents, connection);
+	onDocumentFormattingConnection(documents, connection);
 }
 
 export function createWebgalService(
 	connection: Connection
 ): LanguageServicePlugin {
 	const featureOptions = StateConfig.featureOptions;
-	return {
+	const services: LanguageServicePlugin = {
 		name: "webgal-service",
 		capabilities: {
 			...(featureOptions.completion
@@ -74,9 +74,10 @@ export function createWebgalService(
 			...(featureOptions.foldingRange
 				? { foldingRangeProvider: true }
 				: {}),
-			...(featureOptions.definition ? { definitionProvider: true } : {})
+			...(featureOptions.definition ? { definitionProvider: true } : {}),
 		},
 		create(context) {
+			connection.sendRequest("client/showTip", "Create webgal-service");
 			const getDefinitionMap = (document: TextDocument) =>
 				getWebgalDefinitionMap(context, document);
 			const getVirtualCodeText = (document: TextDocument) =>
@@ -96,9 +97,7 @@ export function createWebgalService(
 					? {
 							async provideCompletionItems(
 								document: TextDocument,
-								position: Position,
-								_context: CompletionContext,
-								_token: CancellationToken
+								position: Position
 							): Promise<CompletionList> {
 								return {
 									isIncomplete: false,
@@ -120,8 +119,7 @@ export function createWebgalService(
 					? {
 							async provideHover(
 								document: TextDocument,
-								position: Position,
-								_token: CancellationToken
+								position: Position
 							): Promise<Hover> {
 								return provideHover(
 									document,
@@ -138,8 +136,7 @@ export function createWebgalService(
 					? {
 							provideDefinition(
 								document: TextDocument,
-								position: Position,
-								_token: CancellationToken
+								position: Position
 							): DefinitionLink[] {
 								return provideDefinition(
 									document,
@@ -152,8 +149,7 @@ export function createWebgalService(
 				...(featureOptions.documentLink
 					? {
 							async provideDocumentLinks(
-								document: TextDocument,
-								_token: CancellationToken
+								document: TextDocument
 							): Promise<DocumentLink[]> {
 								return provideDocumentLinks(
 									document,
@@ -166,8 +162,7 @@ export function createWebgalService(
 				...(featureOptions.foldingRange
 					? {
 							provideFoldingRanges(
-								document: TextDocument,
-								_token: CancellationToken
+								document: TextDocument
 							): FoldingRange[] {
 								return provideFoldingRanges(
 									document,
@@ -179,8 +174,7 @@ export function createWebgalService(
 				...(featureOptions.diagnostics
 					? {
 							async provideDiagnostics(
-								document: TextDocument,
-								_token: CancellationToken
+								document: TextDocument
 							): Promise<Diagnostic[]> {
 								return provideDiagnostics(
 									document,
@@ -189,8 +183,9 @@ export function createWebgalService(
 								);
 							}
 						}
-					: {})
+					: {}),
 			};
 		}
 	};
+	return services;
 }

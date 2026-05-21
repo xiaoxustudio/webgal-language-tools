@@ -74,7 +74,7 @@ export function createWebgalClientHandlers(
 	};
 	return {
 		...baseHandlers,
-		...(options.overrides ?? {})
+		...options.overrides
 	};
 }
 

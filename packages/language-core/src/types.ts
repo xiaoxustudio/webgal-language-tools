@@ -21,6 +21,10 @@ export type IRuntimeVariableType =
 	| string
 	| RuntimeVariable[];
 
+export type StageSyncMessage = Record<string, unknown> & {
+	GameVar?: Record<string, IRuntimeVariableType>;
+};
+
 export enum DebugCommand {
 	// 跳转
 	JUMP,
@@ -43,13 +47,13 @@ export interface IDebugMessage {
 			scene: string;
 		};
 		message: string;
-		stageSyncMsg: any;
+		stageSyncMsg: StageSyncMessage;
 	};
 }
 
 export interface IVToken {
 	word: string; // 名称
-	position?: any; // 位置
+	position?: { line: number; character: number }; // 位置
 	input?: string; // 原始文本
 	value?: string; // 值
 	desc?: string; // 描述

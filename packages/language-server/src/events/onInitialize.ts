@@ -57,6 +57,9 @@ export function applyServerCapabilities(result: InitializeResult) {
 	if (featureOptions.definition) {
 		result.capabilities.definitionProvider = true;
 	}
+	if (featureOptions.formatting) {
+		result.capabilities.documentFormattingProvider = true;
+	}
 
 	if (StateConfig.hasWorkspaceFolderCapability) {
 		result.capabilities.workspace = {

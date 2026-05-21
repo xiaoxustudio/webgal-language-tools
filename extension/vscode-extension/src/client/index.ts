@@ -36,7 +36,7 @@ export async function createClient(
 	const clientOptions: LanguageClientOptions = {
 		documentSelector: [selector, selectorConfig],
 		synchronize: {
-			fileEvents: workspace.createFileSystemWatcher("**/.clientrc")
+			fileEvents: workspace.createFileSystemWatcher("*")
 		}
 	};
 

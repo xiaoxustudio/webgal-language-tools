@@ -29,7 +29,7 @@ import {
 
 export interface CreateWebgalMonacoLanguageClientOptions {
 	languageServerUrl: string;
-	editor: any;
+	editor: monaco.editor.IStandaloneCodeEditor;
 	virtualFileSystem?: VirtualFileSystem;
 }
 
@@ -60,7 +60,6 @@ export const createWebgalMonacoLanguageClient = (
 	options: CreateWebgalMonacoLanguageClientOptions
 ): { webSocket: WebSocket; vfs: VirtualFileSystem } => {
 	const { languageServerUrl, editor } = options;
-	const editorInstance = editor as monaco.editor.IStandaloneCodeEditor;
 	const vfs =
 		options.virtualFileSystem ||
 		createMemoryFileSystem({ root: "file:///game" });
@@ -82,7 +81,7 @@ export const createWebgalMonacoLanguageClient = (
 				reader,
 				writer
 			},
-			{ editor: editorInstance, vfs }
+			{ editor, vfs }
 		);
 		languageClient.start();
 
@@ -93,7 +92,7 @@ export const createWebgalMonacoLanguageClient = (
 };
 
 export interface CreateWebgalMonacoLanguageClientWorkerOptions {
-	editor: any;
+	editor: monaco.editor.IStandaloneCodeEditor;
 	worker: Worker;
 	virtualFileSystem?: VirtualFileSystem;
 }

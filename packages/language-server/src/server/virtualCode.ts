@@ -8,6 +8,7 @@ import {
 	getSnapshotText,
 	getVariableDesc
 } from "@/utils";
+import { languageId } from "@/utils/resources";
 import type { IScriptSnapshot } from "@volar/language-core";
 import type { IDefinetionMap } from "@webgal/language-core";
 import { FoldingRangeKind, type FoldingRange } from "vscode-languageserver";
@@ -188,7 +189,7 @@ export const updateWebgalVirtualCode = (
 		];
 	}
 	virtualCode.snapshot = newSnapshot;
-	if (virtualCode.languageId === "webgal") {
+	if (virtualCode.languageId === languageId) {
 		const text = getSnapshotText(newSnapshot);
 		const lines = text.split(/\r?\n/);
 		virtualCode.webgalLines = lines;

@@ -9,6 +9,7 @@
 		}
 	},
 	"include": ["src"],
+	"exclude": ["node_modules", "build", "scripts"],
 	"references": [
 		{
 			"path": "../language-service/tsconfig.json"

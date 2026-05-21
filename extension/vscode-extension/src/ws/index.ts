@@ -5,7 +5,9 @@ import {
 	DebugCommand,
 	RuntimeVariable,
 	type FileAccessor,
-	type IDebugMessage
+	type IDebugMessage,
+	type IRuntimeVariableType,
+	type StageSyncMessage
 } from "@webgal/language-core";
 import {
 	disableGameStatus,
@@ -22,6 +24,20 @@ export type XRRuntimeConfig = {
 };
 
 const defaultWs = "ws://localhost:3001/api/webgalsync";
+
+function toRuntimeVariableValue(value: unknown): IRuntimeVariableType {
+	if (
+		typeof value === "string" ||
+		typeof value === "number" ||
+		typeof value === "boolean"
+	) {
+		return value;
+	}
+	if (value === null || value === undefined) {
+		return String(value);
+	}
+	return JSON.stringify(value);
+}
 
 export default class XRRuntime extends EventEmitter {
 	private socket: WebSocket | null = null;
@@ -185,12 +201,13 @@ export default class XRRuntime extends EventEmitter {
 	}
 
 	private updateVariables(payload: IDebugMessage) {
-		const stageSyncMsg = payload?.data?.stageSyncMsg ?? {};
+		const stageSyncMsg: StageSyncMessage =
+			payload?.data?.stageSyncMsg ?? {};
 		const sceneMsg = (payload?.data?.sceneMsg ?? {}) as Record<
 			string,
 			unknown
 		>;
-		const gameVar = stageSyncMsg?.GameVar ?? {};
+		const gameVar = stageSyncMsg.GameVar ?? {};
 
 		const next = new Map<ScopeKey, Map<string, RuntimeVariable>>([
 			["local", new Map<string, RuntimeVariable>()],
@@ -198,31 +215,34 @@ export default class XRRuntime extends EventEmitter {
 			["scene", new Map<string, RuntimeVariable>()]
 		]);
 
-		for (const key of Object.keys(gameVar)) {
-			next.get("local")?.set(key, new RuntimeVariable(key, gameVar[key]));
+		for (const [key, value] of Object.entries(gameVar)) {
+			next.get("local")?.set(
+				key,
+				new RuntimeVariable(key, toRuntimeVariableValue(value))
+			);
 		}
 
-		for (const key of Object.keys(stageSyncMsg)) {
+		for (const [key, value] of Object.entries(stageSyncMsg)) {
 			if (key === "GameVar") {
 				continue;
 			}
 			next.get("env")?.set(
 				key,
-				new RuntimeVariable(key, stageSyncMsg[key])
+				new RuntimeVariable(key, toRuntimeVariableValue(value))
 			);
 		}
 
 		for (const key of Object.keys(sceneMsg)) {
 			next.get("scene")?.set(
 				key,
-				new RuntimeVariable(key, sceneMsg[key] as any)
+				new RuntimeVariable(key, sceneMsg[key] as string)
 			);
 		}
 
 		this.variables = next;
 	}
 
-	private updateDecoration(sceneMsg: Record<string, any>) {
+	private updateDecoration(sceneMsg: Record<string, unknown>) {
 		const editor = vscode.window.activeTextEditor;
 		if (!editor || !editor.document) {
 			return;

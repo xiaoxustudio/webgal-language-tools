@@ -354,7 +354,7 @@ export function createNodeFileSystem(
 			}
 			return Object.entries(entry.children).map(([name, child]) => ({
 				name,
-				isDirectory: (child as any).type === "dir"
+				isDirectory: child.type === "dir"
 			}));
 		}
 		return listDirectory(absolute);

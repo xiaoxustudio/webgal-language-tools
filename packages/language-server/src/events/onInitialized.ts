@@ -10,7 +10,7 @@ export default <ConnectionHandler>function (_, connection) {
 		);
 	}
 	if (StateConfig.hasWorkspaceFolderCapability) {
-		connection.workspace.onDidChangeWorkspaceFolders((_event) => {
+		connection.workspace.onDidChangeWorkspaceFolders(() => {
 			connection.console.log("Workspace folder change event received.");
 		});
 	}

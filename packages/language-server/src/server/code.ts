@@ -1,4 +1,7 @@
-import type { VirtualFileSystem } from "@webgal/language-service";
+import {
+	createVolarFileSystem,
+	type VirtualFileSystem
+} from "@webgal/language-service";
 import {
 	FileType,
 	type FileStat,
@@ -18,8 +21,7 @@ export function createVolarFileSystemFromVirtualFileSystem(
 		if (cached) {
 			return cached;
 		}
-		const module = await import("@webgal/language-service");
-		cached = module.createVolarFileSystem(vfs, options);
+		cached = createVolarFileSystem(vfs, options);
 		return cached;
 	};
 	return {

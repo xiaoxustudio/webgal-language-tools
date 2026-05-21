@@ -1,5 +1,8 @@
 import { WebGALKeywords } from "./provider";
 
+export const languageId = "webgal";
+export const languageConfigId = "webgal-config";
+
 enum ResourceType {
 	animation = "animation",
 	background = "background",

@@ -7,6 +7,7 @@ import type {
 } from "@volar/language-server";
 import type { IDefinetionMap } from "@webgal/language-core";
 import type { TextDocument } from "vscode-languageserver-textdocument";
+import type { URI } from "vscode-uri";
 export interface ServerSettings {
 	maxNumberOfProblems: number;
 	isShowWarning: boolean; // 是否显示警告
@@ -21,6 +22,7 @@ export type LspFeatureOptions = {
 	diagnostics: boolean;
 	foldingRange: boolean;
 	definition: boolean;
+	formatting: boolean;
 };
 
 export type StartServerOptions = {
@@ -29,6 +31,7 @@ export type StartServerOptions = {
 
 export type ConnectionDocumentsType = {
 	onDidClose: Event<TextDocumentChangeEvent<TextDocument>>;
+	get(uri: URI): TextDocument | undefined;
 };
 
 export type ConnectionHandler = (

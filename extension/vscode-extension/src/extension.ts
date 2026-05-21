@@ -6,10 +6,10 @@ import * as fs from "fs";
 import * as path from "path";
 import { createClient } from "./client";
 import { XRDebugAdapterDescriptorFactory } from "./debug/activeDebug";
-import { DocumentFormatter, defaultConfig } from "./formatter";
 import { debug } from "vscode";
 import { selector } from "./utils/utils";
 import { XRDebugConfigurationProvider } from "./ws/config";
+import { defaultConfig } from "@webgal/language-core";
 
 let client: BaseLanguageClient;
 
@@ -29,13 +29,6 @@ export async function activate(context: vscode.ExtensionContext) {
 		debug.registerDebugConfigurationProvider(
 			selector.language,
 			new XRDebugConfigurationProvider()
-		)
-	);
-
-	context.subscriptions.push(
-		vscode.languages.registerDocumentFormattingEditProvider(
-			"webgal",
-			new DocumentFormatter()
 		)
 	);
 
