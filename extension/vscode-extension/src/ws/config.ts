@@ -4,8 +4,7 @@ export class XRDebugConfigurationProvider
 {
 	resolveDebugConfiguration?(
 		_: vscode.WorkspaceFolder | undefined,
-		debugConfiguration: vscode.DebugConfiguration,
-		__?: vscode.CancellationToken
+		debugConfiguration: vscode.DebugConfiguration
 	): vscode.ProviderResult<vscode.DebugConfiguration> {
 		return debugConfiguration;
 	}

@@ -156,16 +156,20 @@ const displayPath = workspace.getDisplayPath("file:///game/scene/start.txt");
 
 ###### 进阶用法：后端接入真实文件系统并控制功能开关
 
+服务端支持通过 `StartServerOptions` 传递功能开关配置：
+
 ```ts
 import path from "path";
 import { createNodeFileSystem } from "@webgal/language-service/node";
-import { setFeatureOptions } from "@webgal/language-server/utils";
+import { startServer } from "@webgal/language-server/node";
+import type { LspFeatureOptions } from "@webgal/language-server";
 
 const vfs = createNodeFileSystem({
   root: path.resolve(process.cwd(), "game")
 });
 
-setFeatureOptions({
+// 通过代码配置功能开关（需在服务端启动前设置）
+const featureOptions: Partial<LspFeatureOptions> = {
   completion: true,
   hover: true,
   documentLink: true,
@@ -173,8 +177,13 @@ setFeatureOptions({
   diagnostics: true,
   foldingRange: true,
   definition: true
-});
+};
+
+// startServer 接受 options 参数传入功能配置
+startServer(connection, useClientVfs, { features: featureOptions });
 ```
+
+所有功能默认启用。服务端启动时通过 `options.features` 参数控制。
 
 ##### 浏览器模式
 

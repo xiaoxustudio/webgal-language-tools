@@ -13,9 +13,10 @@ import {
 import { bindCoreFileAccessorToClientVfs } from "@/utils";
 import { createClientVfsFileSystem } from "./server/code";
 import webgalLanguagePlugin from "./server/plugin";
-import { setFeatureOptions } from "./server/setting";
+import { LanguageServerSettings } from "./server/setting";
 
 export { createConnection } from "@volar/language-server/browser";
+export type { StartServerOptions, LspFeatureOptions } from "./types";
 
 /**
  * 启动服务器并建立连接
@@ -27,7 +28,12 @@ export function startServer(
 	options?: StartServerOptions
 ) {
 	const resolvedConnection = connection ?? createConnection();
-	setFeatureOptions(options?.features);
+	// Create a settings instance for this server
+	const settings = new LanguageServerSettings();
+	// Apply feature options if provided
+	if (options?.features) {
+		settings.setFeatureOptions(options.features);
+	}
 	const server = createServer(resolvedConnection);
 	const documents = server.documents;
 	bindCoreFileAccessorToClientVfs(resolvedConnection);
@@ -38,19 +44,19 @@ export function startServer(
 	);
 
 	resolvedConnection.onInitialize((params: InitializeParams) => {
-		applyClientCapabilities(params);
+		applyClientCapabilities(settings, params);
 		const result = server.initialize(
 			params,
 			createSimpleProject([webgalLanguagePlugin]),
-			[createWebgalService(resolvedConnection)]
+			[createWebgalService(resolvedConnection, settings)]
 		);
-		applyServerCapabilities(result);
+		applyServerCapabilities(settings, result);
 		return result;
 	});
 
 	resolvedConnection.onInitialized(() => {
 		server.initialized();
-		registerConnectionHandlers(documents, resolvedConnection);
+		registerConnectionHandlers(documents, resolvedConnection, settings);
 	});
 
 	resolvedConnection.onShutdown(server.shutdown);

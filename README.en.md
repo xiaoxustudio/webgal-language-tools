@@ -118,6 +118,75 @@ export function WebgalEditor() {
 }
 ```
 
+##### Basic Usage: VFS File Operations
+
+```ts
+import { createMemoryFileSystem } from "@webgal/language-service/monaco";
+
+const vfs = createMemoryFileSystem({ root: "file:///game" });
+
+await vfs.mkdir("file:///game/scene");
+await vfs.writeFile("file:///game/config.txt", "Game_name:Demo\n");
+await vfs.writeFile("file:///game/scene/start.txt", "setVar:heroine=WebGAL;\n");
+await vfs.rename(
+  "file:///game/scene/start.txt",
+  "file:///game/scene/intro.txt"
+);
+await vfs.deletePath("file:///game/scene/intro.txt");
+```
+
+##### Advanced Usage: Managing Files and Active States with Workspace
+
+```ts
+import * as monaco from "monaco-editor";
+import {
+  createMemoryFileSystem,
+  createWebgalMonacoWorkspace
+} from "@webgal/language-service/monaco";
+
+const editor = monaco.editor.create(document.getElementById("editor")!);
+const vfs = createMemoryFileSystem({ root: "file:///game" });
+const workspace = createWebgalMonacoWorkspace({
+  editor,
+  vfs,
+  rootPath: "file:///game"
+});
+
+await vfs.writeFile("file:///game/scene/start.txt", "setVar:heroine=WebGAL;\n");
+await workspace.openFile("file:///game/scene/start.txt");
+workspace.setActivePath("file:///game/scene/start.txt");
+const displayPath = workspace.getDisplayPath("file:///game/scene/start.txt");
+```
+
+##### Advanced Usage: Backend with Real File System and Feature Toggle
+
+The server supports passing feature toggle configuration via `StartServerOptions`:
+
+```ts
+import path from "path";
+import { createNodeFileSystem } from "@webgal/language-service/node";
+import { startServer } from "@webgal/language-server/node";
+import type { LspFeatureOptions } from "@webgal/language-server";
+
+const vfs = createNodeFileSystem({
+  root: path.resolve(process.cwd(), "game")
+});
+
+const featureOptions: Partial<LspFeatureOptions> = {
+  completion: true,
+  hover: true,
+  documentLink: true,
+  resourceCompletion: true,
+  diagnostics: true,
+  foldingRange: true,
+  definition: true
+};
+
+startServer(connection, useClientVfs, { features: featureOptions });
+```
+
+All features are enabled by default. Use the `options.features` parameter to control them during server startup.
+
 ##### Browser Mode
 
 - Start the language server in the browser via `Web Worker`, and communicate with the frontend language client without a backend.
@@ -140,7 +209,7 @@ import {
   initWebgalMonaco,
   createWebgalMonacoLanguageClientWithWorker,
   createMemoryFileSystem
-} from "@webgal/language-service";
+} from "@webgal/language-service/monaco";
 
 export function WebgalEditor() {
   const clientRef = useRef<{ worker: Worker } | null>(null);

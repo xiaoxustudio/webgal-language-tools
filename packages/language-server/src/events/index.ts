@@ -24,27 +24,38 @@ import { getWebgalVirtualCodeLines } from "@/utils";
 import onDid from "./onDid";
 import onInitialized from "./onInitialized";
 import onDocumentFormattingConnection from "./onDocumentFormattingConnection";
-import { provideCompletionItems } from "./onCompletion";
-import { provideDefinition } from "./onDefinition";
-import { provideDocumentLinks } from "./onDocumentLinks";
-import { provideFoldingRanges } from "./onFoldingRanges";
-import { provideHover } from "./onHover";
-import { provideDiagnostics } from "./onDiagnostics";
-import { StateConfig } from "@/server/setting";
+import onCompletion from "./onCompletion";
+import onDefinition from "./onDefinition";
+import onDocumentLinks from "./onDocumentLinks";
+import onFoldingRanges from "./onFoldingRanges";
+import onHover from "./onHover";
+import onDiagnostics from "./onDiagnostics";
+import type { LanguageServerSettings } from "../server/setting";
 
 export function registerConnectionHandlers(
 	documents: ConnectionDocumentsType,
-	connection: Connection
+	connection: Connection,
+	settings: LanguageServerSettings
 ) {
-	onInitialized(documents, connection);
-	onDid(documents, connection);
+	const onDidHandler = onDid(settings);
+	const onInitializedHandler = onInitialized(settings);
+
+	onInitializedHandler(documents, connection);
+	onDidHandler(documents, connection);
 	onDocumentFormattingConnection(documents, connection);
 }
 
 export function createWebgalService(
-	connection: Connection
+	connection: Connection,
+	settings: LanguageServerSettings
 ): LanguageServicePlugin {
-	const featureOptions = StateConfig.featureOptions;
+	const featureOptions = settings.getFeatureOptions();
+	const onCompletionHandler = onCompletion();
+	const onHoverHandler = onHover();
+	const onDefinitionHandler = onDefinition();
+	const onDocumentLinksHandler = onDocumentLinks();
+	const onFoldingRangesHandler = onFoldingRanges();
+	const onDiagnosticsHandler = onDiagnostics(settings);
 	const services: LanguageServicePlugin = {
 		name: "webgal-service",
 		capabilities: {
@@ -74,7 +85,7 @@ export function createWebgalService(
 			...(featureOptions.foldingRange
 				? { foldingRangeProvider: true }
 				: {}),
-			...(featureOptions.definition ? { definitionProvider: true } : {}),
+			...(featureOptions.definition ? { definitionProvider: true } : {})
 		},
 		create(context) {
 			connection.sendRequest("client/showTip", "Create webgal-service");
@@ -101,7 +112,7 @@ export function createWebgalService(
 							): Promise<CompletionList> {
 								return {
 									isIncomplete: false,
-									items: await provideCompletionItems(
+									items: await onCompletionHandler(
 										document,
 										position,
 										connection,
@@ -121,7 +132,7 @@ export function createWebgalService(
 								document: TextDocument,
 								position: Position
 							): Promise<Hover> {
-								return provideHover(
+								return onHoverHandler(
 									document,
 									position,
 									connection,
@@ -138,7 +149,7 @@ export function createWebgalService(
 								document: TextDocument,
 								position: Position
 							): DefinitionLink[] {
-								return provideDefinition(
+								return onDefinitionHandler(
 									document,
 									position,
 									getDefinitionMap(document)
@@ -151,7 +162,7 @@ export function createWebgalService(
 							async provideDocumentLinks(
 								document: TextDocument
 							): Promise<DocumentLink[]> {
-								return provideDocumentLinks(
+								return onDocumentLinksHandler(
 									document,
 									connection,
 									getDocumentLinkCandidates(document)
@@ -164,7 +175,7 @@ export function createWebgalService(
 							provideFoldingRanges(
 								document: TextDocument
 							): FoldingRange[] {
-								return provideFoldingRanges(
+								return onFoldingRangesHandler(
 									document,
 									getFoldingRanges(document)
 								);
@@ -176,14 +187,14 @@ export function createWebgalService(
 							async provideDiagnostics(
 								document: TextDocument
 							): Promise<Diagnostic[]> {
-								return provideDiagnostics(
+								return onDiagnosticsHandler(
 									document,
 									connection,
 									getVirtualCodeText(document)
 								);
 							}
 						}
-					: {}),
+					: {})
 			};
 		}
 	};
