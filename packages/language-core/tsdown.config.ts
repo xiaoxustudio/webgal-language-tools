@@ -5,5 +5,8 @@ export default defineConfig({
 	format: ["esm", "cjs"],
 	dts: true,
 	outDir: "build",
-	fixedExtension: true
+	fixedExtension: true,
+	deps: {
+		neverBundle: ["fs", "fs/promises"]
+	}
 });

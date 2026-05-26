@@ -14,5 +14,8 @@ export default defineConfig({
 	env: {
 		WEBGAL_LSP_WS_PATH: "/webgal-lsp",
 		WEBGAL_LSP_WS_PORT: 5882
+	},
+	deps: {
+		neverBundle: ["fs", "fs/promises", "path", "url"]
 	}
 });

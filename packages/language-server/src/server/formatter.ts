@@ -1,10 +1,8 @@
-import * as fs from "fs";
-import * as path from "path";
 import { defaultConfig, formatText } from "@webgal/language-core";
 import type { FormatConfig } from "@webgal/language-core";
 import type { URI } from "vscode-uri";
 
-function loadFormatConfig(documentUri: URI): FormatConfig {
+async function loadFormatConfig(documentUri: URI): Promise<FormatConfig> {
 	const uriPath =
 		documentUri.scheme === "file" ? documentUri.fsPath : documentUri.path;
 
@@ -12,6 +10,19 @@ function loadFormatConfig(documentUri: URI): FormatConfig {
 		return defaultConfig;
 	}
 
+	const isNodeRuntime =
+		typeof process !== "undefined" &&
+		!!process.versions &&
+		!!process.versions.node;
+
+	if (!isNodeRuntime) {
+		return defaultConfig;
+	}
+
+	const [path, fs] = await Promise.all([
+			import("path"),
+			import("fs")
+		]);
 	let currentDir = path.dirname(uriPath);
 	while (currentDir) {
 		const configPath = path.join(currentDir, "fmt.json");
@@ -34,8 +45,11 @@ function loadFormatConfig(documentUri: URI): FormatConfig {
 	return defaultConfig;
 }
 
-export function formatDocumentText(text: string, documentUri: URI): string {
-	const config = loadFormatConfig(documentUri);
+export async function formatDocumentText(
+	text: string,
+	documentUri: URI
+): Promise<string> {
+	const config = await loadFormatConfig(documentUri);
 	return formatText(text, config);
 }
 

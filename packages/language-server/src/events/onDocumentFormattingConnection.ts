@@ -3,13 +3,13 @@ import { formatFullDocument } from "./onDocumentFormatting";
 import { URI } from "vscode-uri";
 
 export default <ConnectionHandler>function (documents, connection) {
-	connection.onDocumentFormatting((params) => {
+	connection.onDocumentFormatting(async (params) => {
 		const uri = URI.parse(params.textDocument.uri);
 		const document = documents.get(uri);
 		if (!document) {
 			return null;
 		}
-		const edits = formatFullDocument(document.getText(), uri);
+		const edits = await formatFullDocument(document.getText(), uri);
 		if (!edits.length) {
 			return [];
 		}
