@@ -18,17 +18,21 @@ catalogs:
     '@codingame/monaco-vscode-theme-service-override':
       specifier: 26.1.1
       version: 26.1.1
+    monaco-editor:
+      specifier: npm:@codingame/monaco-vscode-editor-api@26.1.1
+      version: 26.1.1
     tsdown:
       specifier: ^0.22.0
       version: 0.22.0
     typescript:
       specifier: ^5.5.4
       version: 5.9.3
+    vscode:
+      specifier: npm:@codingame/monaco-vscode-extension-api@26.1.1
+      version: 26.1.1
 
 overrides:
   vite: ^8.0.13
-  vscode: npm:@codingame/monaco-vscode-extension-api@26.1.1
-  monaco-editor: npm:@codingame/monaco-vscode-editor-api@26.1.1
 
 importers:
 
@@ -248,13 +252,13 @@ importers:
         specifier: ^2.4.28
         version: 2.4.28
       monaco-editor:
-        specifier: npm:@codingame/monaco-vscode-editor-api@26.1.1
+        specifier: 'catalog:'
         version: '@codingame/monaco-vscode-editor-api@26.1.1'
       monaco-languageclient:
         specifier: ^10.7.0
         version: 10.7.0
       vscode:
-        specifier: npm:@codingame/monaco-vscode-extension-api@26.1.1
+        specifier: 'catalog:'
         version: '@codingame/monaco-vscode-extension-api@26.1.1'
       vscode-languageclient:
         specifier: ^9.0.1
@@ -294,7 +298,7 @@ importers:
         specifier: workspace:*
         version: link:../language-service
       monaco-editor:
-        specifier: npm:@codingame/monaco-vscode-editor-api@26.1.1
+        specifier: 'catalog:'
         version: '@codingame/monaco-vscode-editor-api@26.1.1'
       react:
         specifier: ^19.2.0
@@ -303,7 +307,7 @@ importers:
         specifier: ^19.2.0
         version: 19.2.6(react@19.2.6)
       vscode:
-        specifier: npm:@codingame/monaco-vscode-extension-api@26.1.1
+        specifier: 'catalog:'
         version: '@codingame/monaco-vscode-extension-api@26.1.1'
     devDependencies:
       '@eslint/js':
@@ -8759,7 +8763,7 @@ snapshots:
       '@codingame/monaco-vscode-theme-service-override': 25.1.2
       '@codingame/monaco-vscode-views-service-override': 25.1.2
       '@codingame/monaco-vscode-workbench-service-override': 25.1.2
-      vscode: '@codingame/monaco-vscode-extension-api@26.1.1'
+      vscode: '@codingame/monaco-vscode-extension-api@25.1.2'
       vscode-languageclient: 9.0.1
       vscode-languageserver-protocol: 3.17.5
       vscode-ws-jsonrpc: 3.5.0

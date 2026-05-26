@@ -21,8 +21,8 @@ catalogs:
         "@codingame/monaco-vscode-textmate-service-override": "26.1.1"
         "@codingame/monaco-vscode-languages-service-override": "26.1.1"
         "@codingame/monaco-vscode-theme-service-override": "26.1.1"
+        "monaco-editor": "npm:@codingame/monaco-vscode-editor-api@26.1.1"
+        vscode: "npm:@codingame/monaco-vscode-extension-api@26.1.1"
 
 overrides:
     vite: "^8.0.13"
-    vscode: "npm:@codingame/monaco-vscode-extension-api@26.1.1"
-    monaco-editor: "npm:@codingame/monaco-vscode-editor-api@26.1.1"
