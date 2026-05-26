@@ -15,7 +15,7 @@ import {
 import { bindCoreFileAccessorToClientVfs } from "@/utils";
 import { createClientVfsFileSystem } from "./code";
 import webgalLanguagePlugin from "./plugin";
-import { setFeatureOptions } from "./setting";
+import { LanguageServerSettings } from "./setting";
 
 type WsOptions = {
 	port: number;
@@ -78,7 +78,12 @@ export function startServer(
 	useClientVfs: boolean,
 	options?: StartServerOptions
 ) {
-	setFeatureOptions(options?.features);
+	// Create a settings instance for this server
+	const settings = new LanguageServerSettings();
+	// Apply feature options if provided
+	if (options?.features) {
+		settings.setFeatureOptions(options.features);
+	}
 	const server = createServer(connection);
 	const documents = server.documents;
 	bindCoreFileAccessorToClientVfs(connection);
@@ -90,19 +95,19 @@ export function startServer(
 	}
 
 	connection.onInitialize((params: InitializeParams) => {
-		applyClientCapabilities(params);
+		applyClientCapabilities(settings, params);
 
 		const result = server.initialize(
 			params,
 			createSimpleProject([webgalLanguagePlugin]),
-			[createWebgalService(connection)]
+			[createWebgalService(connection, settings)]
 		);
-		applyServerCapabilities(result);
+		applyServerCapabilities(settings, result);
 		return result;
 	});
 
 	connection.onInitialized(() => {
-		registerConnectionHandlers(documents, connection);
+		registerConnectionHandlers(documents, connection, settings);
 		server.initialized();
 	});
 

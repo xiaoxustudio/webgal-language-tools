@@ -24,3 +24,5 @@ catalogs:
 
 overrides:
     vite: "^8.0.13"
+    vscode: "npm:@codingame/monaco-vscode-extension-api@26.1.1"
+    monaco-editor: "npm:@codingame/monaco-vscode-editor-api@26.1.1"

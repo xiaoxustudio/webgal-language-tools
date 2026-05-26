@@ -29,9 +29,7 @@ export default function EditorPane({
 	return (
 		<section className="editor-pane">
 			<div className="editor-toolbar">
-				<div className="path-label">
-					{displayPath || "未选择文件"}
-				</div>
+				<div className="path-label">{displayPath || "未选择文件"}</div>
 				<button onClick={onWebSocketMode}>
 					{buttonLabel}
 					<span className={statusClass} />

@@ -71,9 +71,9 @@
 		"@codingame/monaco-vscode-theme-service-override": "catalog:",
 		"@volar/language-core": "^2.4.28",
 		"@volar/language-service": "^2.4.28",
-		"monaco-editor": "npm:@codingame/monaco-vscode-editor-api@26.1.1",
+		"monaco-editor": "catalog:",
 		"monaco-languageclient": "^10.7.0",
-		"vscode": "npm:@codingame/monaco-vscode-extension-api@26.1.1",
+		"vscode": "catalog:",
 		"vscode-languageclient": "^9.0.1",
 		"vscode-uri": "^3.1.0",
 		"vscode-ws-jsonrpc": "^3.5.0"

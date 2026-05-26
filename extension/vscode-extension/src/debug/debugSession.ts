@@ -40,6 +40,7 @@ export class XRDebugSession extends LoggingDebugSession {
 				locals: number;
 				env: number;
 				scene: number;
+				// eslint-disable-next-line no-mixed-spaces-and-tabs
 		  }
 		| undefined;
 	private _valuesInHex = false;
@@ -146,6 +147,8 @@ export class XRDebugSession extends LoggingDebugSession {
 					variablesReference: 0
 				};
 			} else if (_start === "@") {
+				const _ex = /@set\s+(\S+)\s+(\S+)/.exec(expression);
+				const _ex_run = /@script\s+(.*)/.exec(expression);
 				switch (expression) {
 					case "@run":
 						response.body = {
@@ -160,8 +163,6 @@ export class XRDebugSession extends LoggingDebugSession {
 						};
 						break;
 					default:
-						const _ex = /@set\s+(\S+)\s+(\S+)/.exec(expression);
-						const _ex_run = /@script\s+(.*)/.exec(expression);
 						if (_ex) {
 							this.runtime.setVariable(_ex[1], _ex[2]);
 							response.body = {

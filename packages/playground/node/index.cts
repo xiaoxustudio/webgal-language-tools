@@ -2,7 +2,6 @@
 import { createServer } from "http";
 import path from "path";
 import { createNodeFileSystem } from "@webgal/language-service/node";
-import { setFeatureOptions } from "@webgal/language-server/utils";
 
 const lspPort = Number(process.env.WEBGAL_LSP_PORT ?? "5882");
 const lspPath = process.env.WEBGAL_LSP_PATH ?? "/webgal-lsp";
@@ -13,15 +12,6 @@ const sourceRoot =
 	path.resolve(process.cwd(), "../../example/game");
 
 const vfs = createNodeFileSystem({ root: sourceRoot });
-setFeatureOptions({
-	completion: true,
-	hover: true,
-	documentLink: true,
-	resourceCompletion: true,
-	diagnostics: true,
-	foldingRange: true,
-	definition: true
-});
 const textExtensions = new Set([
 	".txt",
 	".json",

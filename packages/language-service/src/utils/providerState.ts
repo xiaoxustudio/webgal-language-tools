@@ -12,9 +12,8 @@ export interface StateMap {
 	__WG$description?: string; // 父级描述
 }
 
-let index = 0;
 // 获取属性 xxxx.xxxx.xxx
-export const getState = (propertiesArray: string[], prev: any = definedMap) => {
+export const getState = (propertiesArray: string[], prev = definedMap) => {
 	if (!propertiesArray || propertiesArray.length === 0) {
 		return undefined;
 	}

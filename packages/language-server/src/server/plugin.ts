@@ -30,28 +30,16 @@ const webgalLanguagePlugin: LanguagePlugin<URI> = {
 		return undefined;
 	},
 	createVirtualCode(scriptId, langId, snapshot) {
-		if (langId !== languageId && langId !== languageConfigId) {
+		if (![languageId, languageConfigId].includes(langId)) {
 			return;
 		}
 		return createWebgalVirtualCode(scriptId, languageId, snapshot);
 	},
 	updateVirtualCode(_scriptId, virtualCode, newSnapshot) {
-		if (
-			virtualCode.languageId !== languageId &&
-			virtualCode.languageId !== languageConfigId
-		) {
+		if (![languageId, languageConfigId].includes(virtualCode.languageId)) {
 			return;
 		}
 		return updateWebgalVirtualCode(virtualCode, newSnapshot);
-	},
-	isAssociatedFileOnly(scriptId, langId) {
-		if (langId === languageId) {
-			return scriptId.path.toLowerCase().endsWith(".txt");
-		}
-		if (langId === languageConfigId) {
-			return scriptId.path.toLowerCase().endsWith("/game/config.txt");
-		}
-		return false;
 	}
 };
 export default webgalLanguagePlugin;
