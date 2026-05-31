@@ -12,31 +12,34 @@ export interface StateMap {
 	__WG$description?: string; // 父级描述
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type StateNode = Record<string, any>;
+
 // 获取属性 xxxx.xxxx.xxx
-export const getState = (propertiesArray: string[], prev = definedMap) => {
+export const getState = (propertiesArray: string[], prev = definedMap): StateMap | undefined => {
 	if (!propertiesArray || propertiesArray.length === 0) {
 		return undefined;
 	}
 
+	let current: StateNode = prev;
 	for (const curr of propertiesArray) {
-		const result = prev[curr as keyof typeof prev];
+		const result = current[curr];
 		if (result) {
+			const value = result.value;
 			if (
-				"value" in result &&
-				result.value &&
-				typeof result?.value === "object" &&
-				Object.keys(result?.value).length > 0
+				value &&
+				typeof value === "object" &&
+				Object.keys(value).length > 0
 			) {
-				prev = result.value;
+				current = value;
 			} else {
-				prev = result;
+				current = result;
 			}
 		} else {
 			// 就没有这个属性
 			return undefined;
 		}
-		index++;
 	}
 
-	return prev;
+	return current as StateMap;
 };
