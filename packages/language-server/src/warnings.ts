@@ -8,7 +8,6 @@ type WarningCustomCheck = (
 	this: WarningToken,
 	textDocument: TextDocument,
 	_text: string,
-	_base_offset: number,
 	_newarr: string[]
 ) => Diagnostic | null;
 
@@ -49,18 +48,22 @@ export const warningConfig: { [key: string]: WarningToken } = {
 		customCheck: function (
 			textDocument: TextDocument,
 			_text: string,
-			_base_offset: number,
 			_newarr: string[]
 		) {
 			const _ori_text = _text;
 			_text = remove_space(_text);
 			let _offset = 0;
-			for (let i = 0; i < _newarr.length; i++) {
-				const _data = _newarr[i];
-				if (/(\r\n)/.test(_data) || _data === "\\r\\n") {
-					_offset += 2;
-				} else {
-					_offset += _data.length;
+			const _full_text = textDocument.getText();
+			if (_newarr.length > 0) {
+				const _prefix = _newarr.join("");
+				const _line_start = _full_text.indexOf(_ori_text, _prefix.length);
+				if (_line_start >= 0) {
+					_offset = _line_start;
+				}
+			} else {
+				const _line_start = _full_text.indexOf(_ori_text);
+				if (_line_start >= 0) {
+					_offset = _line_start;
 				}
 			}
 			const _res_match = this.pattern.exec(_text);
@@ -69,7 +72,9 @@ export const warningConfig: { [key: string]: WarningToken } = {
 					severity: DiagnosticSeverity.Warning,
 					range: {
 						start: textDocument.positionAt(_offset),
-						end: textDocument.positionAt(_offset + _text.length)
+						end: textDocument.positionAt(
+							_offset + _res_match[0].length
+						)
 					},
 					message: message(this.id, _ori_text.trim()),
 					source
@@ -116,18 +121,20 @@ export const warningConfig: { [key: string]: WarningToken } = {
 		customCheck: function (
 			textDocument: TextDocument,
 			_text: string,
-			_base_offset: number,
 			_newarr: string[]
 		) {
 			_text = remove_space(_text);
+			const _ori_text = _text;
 			let _offset = 0;
-			for (let i = 0; i < _newarr.length; i++) {
-				const _data = _newarr[i];
-				if (/(\r\n)/.test(_data) || _data === "\\r\\n") {
-					_offset += 2;
-				} else {
-					_offset += _data.length;
-				}
+			const _full_text = textDocument.getText();
+			if (_newarr.length > 0) {
+				const _prefix = _newarr.join("");
+				_offset = _full_text.indexOf(_ori_text, _prefix.length);
+			} else {
+				_offset = _full_text.indexOf(_ori_text);
+			}
+			if (_offset < 0) {
+				_offset = 0;
 			}
 			const _res_match_start = _text.endsWith(";") ? true : false;
 			const _res =

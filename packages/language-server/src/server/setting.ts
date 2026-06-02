@@ -189,28 +189,26 @@ export class LanguageServerSettings {
 		const settings = await this.getDocumentSettings(
 			connection,
 			textDocument.uri
-		);
-		if (!settings?.isShowWarning) {
+		) ?? defaultSettings;
+		if (!settings.isShowWarning) {
 			return [];
 		}
 		const text = textOverride ?? textDocument.getText();
 		let m: RegExpExecArray | null;
 		let problems = 0;
 		const diagnostics: Diagnostic[] = [];
-		const _sp = text.split(/\n|\t\n|\r\n/);
+		const _sp = text.split(/\r\n|\n/);
 		for (const i in warningConfig) {
 			const _token = warningConfig[i];
 			const _pattern = _token.pattern as RegExp;
 			if (_token.is_line) {
 				continue;
 			}
+			if (_token.enable === false) {
+				continue;
+			}
 			if (_token.customCheck) {
-				const _custom_res = _token.customCheck(
-					textDocument,
-					text,
-					0,
-					_sp
-				);
+				const _custom_res = _token.customCheck(textDocument, text, _sp);
 				if (typeof _custom_res === "object" && _custom_res !== null) {
 					diagnostics.push(_custom_res);
 				}
@@ -220,11 +218,6 @@ export class LanguageServerSettings {
 				(m = _pattern.exec(text)) &&
 				problems < settings.maxNumberOfProblems
 			) {
-				// enable
-				if (_token?.enable === false) {
-					continue;
-				}
-				// 通过
 				problems++;
 				const range = {
 					start: textDocument.positionAt(m.index),
@@ -260,13 +253,15 @@ export class LanguageServerSettings {
 				if (!_token.is_line) {
 					continue;
 				}
-				const _newarr = _sp.slice(0, _line_index).join();
+				if (_token.enable === false) {
+					continue;
+				}
+				const _newarr = _sp.slice(0, _line_index);
 				if (_token.customCheck) {
 					const _custom_res = _token.customCheck(
 						textDocument,
 						_line_text,
-						_newarr.length,
-						_sp.slice(0, _line_index)
+						_newarr
 					);
 					if (
 						typeof _custom_res === "object" &&
@@ -280,22 +275,23 @@ export class LanguageServerSettings {
 					(m = _pattern.exec(_line_text)) &&
 					problems < settings.maxNumberOfProblems
 				) {
-					// enable
-					if (_token?.enable === false) {
-						continue;
-					}
-					// 通过
+					const _line_start = text.indexOf(
+						_line_text,
+						_newarr.length
+					);
+					const _line_offset =
+						_line_start >= 0 ? _line_start : _newarr.length;
+					const _match_start =
+						_line_offset + _line_text.indexOf(m[0]);
 					problems++;
 					const range = {
-						start: textDocument.positionAt(_newarr.length + 1),
-						end: textDocument.positionAt(
-							_newarr.length + m.input.length
-						)
+						start: textDocument.positionAt(_match_start),
+						end: textDocument.positionAt(_match_start + m[0].length)
 					};
 					const diagnostic: Diagnostic = {
 						severity: DiagnosticSeverity.Warning,
 						range,
-						message: `(${i})${m.input.trim()}`,
+						message: `(${i})${m[0].trim()}`,
 						source: "WebGal Script"
 					};
 					if (
