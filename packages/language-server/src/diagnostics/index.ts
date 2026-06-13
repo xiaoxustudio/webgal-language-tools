@@ -1,2 +1,1 @@
-export { validateTextDocument } from "./validator";
-export type { DiagnosticRule, RuleContext } from "./types";
+export { toLspDiagnostics } from "./convert";

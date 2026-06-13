@@ -167,3 +167,4 @@ export const analyzeWebgalText = (text: string): IDefinetionMap => {
 
 export * from "./types";
 export * from "./formatter";
+export * from "./diagnostics";

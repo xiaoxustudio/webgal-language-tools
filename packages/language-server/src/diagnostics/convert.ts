@@ -1,13 +1,10 @@
 import type { Diagnostic } from "@volar/language-server";
 import { DiagnosticSeverity } from "@volar/language-server";
 import type { TextDocument } from "vscode-languageserver-textdocument";
+import type { DiagnosticItem } from "@webgal/language-core";
 import { source } from "@webgal/language-core";
 
-export function removeLeadingWhitespace(text: string): string {
-	return text.replace(/^[\n\r\t]+/, "");
-}
-
-export function makeDiagnostic(
+function makeDiagnostic(
 	document: TextDocument,
 	offset: number,
 	length: number,
@@ -36,4 +33,21 @@ export function makeDiagnostic(
 		];
 	}
 	return diagnostic;
+}
+
+export function toLspDiagnostics(
+	items: DiagnosticItem[],
+	document: TextDocument,
+	hasRelatedInfo: boolean
+): Diagnostic[] {
+	return items.map((item) =>
+		makeDiagnostic(
+			document,
+			item.offset,
+			item.length,
+			item.message,
+			item.category,
+			hasRelatedInfo
+		)
+	);
 }

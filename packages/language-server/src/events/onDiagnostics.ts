@@ -1,6 +1,7 @@
 import type { Connection, Diagnostic } from "@volar/language-server";
 import type { TextDocument } from "vscode-languageserver-textdocument";
-import { validateTextDocument } from "@/diagnostics";
+import { validateText } from "@webgal/language-core";
+import { toLspDiagnostics } from "@/diagnostics/convert";
 import type { LanguageServerSettings } from "@/server/setting";
 import { defaultSettings } from "@/server/setting";
 
@@ -16,10 +17,10 @@ export default function (settings: LanguageServerSettings) {
 		if (!config.isShowWarning) {
 			return [];
 		}
-		return validateTextDocument(
+		const items = validateText(text, config.maxNumberOfProblems);
+		return toLspDiagnostics(
+			items,
 			document,
-			text,
-			config.maxNumberOfProblems,
 			settings.hasDiagnosticRelatedInformationCapability
 		);
 	};
