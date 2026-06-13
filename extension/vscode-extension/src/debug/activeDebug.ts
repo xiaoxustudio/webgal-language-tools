@@ -1,8 +1,8 @@
 import * as vscode from "vscode";
-import { XRDebugSession } from "./debugSession";
+import { DebugSession } from "./debugSession";
 import { fsAccessor } from "@webgal/language-core";
 
-export class XRDebugAdapterDescriptorFactory
+export class DebugAdapterDescriptorFactory
 	implements vscode.DebugAdapterDescriptorFactory
 {
 	createDebugAdapterDescriptor(
@@ -10,7 +10,7 @@ export class XRDebugAdapterDescriptorFactory
 	): vscode.ProviderResult<vscode.DebugAdapterDescriptor> {
 		void session;
 		return new vscode.DebugAdapterInlineImplementation(
-			new XRDebugSession(fsAccessor)
+			new DebugSession(fsAccessor)
 		);
 	}
 }

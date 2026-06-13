@@ -11,7 +11,7 @@ import {
 	TerminatedEvent
 } from "@vscode/debugadapter";
 import { getGameData } from "@/utils/utils";
-import XRRuntime from "@/ws";
+import Runtime from "@/ws";
 import type { DebugProtocol } from "vscode-debugprotocol";
 import { RuntimeVariable } from "@webgal/language-core";
 import type { FileAccessor } from "@webgal/language-core";
@@ -31,9 +31,9 @@ type VariableHandle =
 	| { type: "collection"; items: RuntimeVariable[] }
 	| RuntimeVariable;
 
-export class XRDebugSession extends LoggingDebugSession {
+export class DebugSession extends LoggingDebugSession {
 	private static threadID = 1;
-	private runtime: XRRuntime;
+	private runtime: Runtime;
 	private variableHandles = new Handles<VariableHandle>();
 	private scopeHandles:
 		| {
@@ -48,7 +48,7 @@ export class XRDebugSession extends LoggingDebugSession {
 		super("webgal-debug.txt");
 		this.setDebuggerLinesStartAt1(false);
 		this.setDebuggerColumnsStartAt1(false);
-		this.runtime = new XRRuntime(FileAccess);
+		this.runtime = new Runtime(FileAccess);
 		this.runtime.on("terminated", () => {
 			this.sendEvent(new TerminatedEvent());
 		});
@@ -101,7 +101,7 @@ export class XRDebugSession extends LoggingDebugSession {
 				program: args.program,
 				ws: args.ws
 			});
-			this.sendEvent(new StoppedEvent("entry", XRDebugSession.threadID));
+			this.sendEvent(new StoppedEvent("entry", DebugSession.threadID));
 			this.sendResponse(response);
 		} catch (error) {
 			this.sendErrorResponse(response, {
@@ -205,7 +205,7 @@ export class XRDebugSession extends LoggingDebugSession {
 	}
 	protected threadsRequest(response: DebugProtocol.Response) {
 		response.body = {
-			threads: [new Thread(XRDebugSession.threadID, "thread 1")]
+			threads: [new Thread(DebugSession.threadID, "thread 1")]
 		};
 
 		this.sendResponse(response);

@@ -159,7 +159,7 @@ export class LanguageServerSettings {
 		if (!result) {
 			result = connection.workspace.getConfiguration({
 				scopeUri: url,
-				section: "WEBGAL Language Server"
+				section: "WebGalLanguageServer"
 			});
 			this.documentSettings.set(url, result);
 		}

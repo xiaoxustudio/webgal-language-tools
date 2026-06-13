@@ -1,5 +1,5 @@
 import type * as vscode from "vscode";
-export class XRDebugConfigurationProvider
+export class DebugConfigurationProvider
 	implements vscode.DebugConfigurationProvider
 {
 	resolveDebugConfiguration?(

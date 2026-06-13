@@ -18,7 +18,7 @@ import {
 
 type ScopeKey = "local" | "env" | "scene";
 
-export type XRRuntimeConfig = {
+export type RuntimeConfig = {
 	program: string;
 	ws?: string;
 };
@@ -39,9 +39,9 @@ function toRuntimeVariableValue(value: unknown): IRuntimeVariableType {
 	return JSON.stringify(value);
 }
 
-export default class XRRuntime extends EventEmitter {
+export default class Runtime extends EventEmitter {
 	private socket: WebSocket | null = null;
-	private config: XRRuntimeConfig | null = null;
+	private config: RuntimeConfig | null = null;
 	private decorationType: vscode.TextEditorDecorationType | null = null;
 	private currentLine = -1;
 
@@ -56,7 +56,7 @@ export default class XRRuntime extends EventEmitter {
 		this.initializeVariables();
 	}
 
-	async start(config: XRRuntimeConfig) {
+	async start(config: RuntimeConfig) {
 		this.config = {
 			program: config.program,
 			ws: config.ws || defaultWs
@@ -166,7 +166,7 @@ export default class XRRuntime extends EventEmitter {
 		socket.on("message", (data: Buffer) => this.onMessage(data));
 	}
 
-	private onOpen(socket: WebSocket, config: XRRuntimeConfig) {
+	private onOpen(socket: WebSocket, config: RuntimeConfig) {
 		if (socket.readyState !== WebSocket.OPEN) {
 			return;
 		}

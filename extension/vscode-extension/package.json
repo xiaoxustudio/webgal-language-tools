@@ -78,8 +78,8 @@
 				"command": "extension.goToDefinition"
 			},
 			{
-				"title": "%extension.XRStartWFV%",
-				"command": "extension.XRStartWFV"
+				"title": "%extension.StartWFV%",
+				"command": "extension.StartWFV"
 			},
 			{
 				"title": "%extension.RunLineScript%",
@@ -152,30 +152,30 @@
 			"type": "object",
 			"title": "%configuration.title%",
 			"properties": {
-				"XRWebGalLanguageServer.maxNumberOfProblems": {
+				"WebGalLanguageServer.maxNumberOfProblems": {
 					"scope": "resource",
 					"type": "number",
 					"default": 500,
-					"description": "%XRWebGalLanguageServer.maxNumberOfProblems.description%"
+					"description": "%WebGalLanguageServer.maxNumberOfProblems.description%"
 				},
-				"XRWebGalLanguageServer.isShowWarning": {
+				"WebGalLanguageServer.isShowWarning": {
 					"scope": "resource",
 					"type": "boolean",
 					"default": true,
-					"description": "%XRWebGalLanguageServer.isShowWarning.description%"
+					"description": "%WebGalLanguageServer.isShowWarning.description%"
 				},
-				"XRWebGalLanguageServer.isShowHint": {
+				"WebGalLanguageServer.isShowHint": {
 					"scope": "resource",
 					"type": "string",
 					"enum": [
-						"%XRWebGalLanguageServer.isShowWarning.enum0%",
-						"%XRWebGalLanguageServer.isShowWarning.enum1%",
-						"%XRWebGalLanguageServer.isShowWarning.enum2%",
-						"%XRWebGalLanguageServer.isShowWarning.enum3%",
-						"%XRWebGalLanguageServer.isShowWarning.enum4%"
+						"%WebGalLanguageServer.isShowWarning.enum0%",
+						"%WebGalLanguageServer.isShowWarning.enum1%",
+						"%WebGalLanguageServer.isShowWarning.enum2%",
+						"%WebGalLanguageServer.isShowWarning.enum3%",
+						"%WebGalLanguageServer.isShowWarning.enum4%"
 					],
-					"default": "%XRWebGalLanguageServer.isShowWarning.default%",
-					"description": "%XRWebGalLanguageServer.isShowHint.description%"
+					"default": "%WebGalLanguageServer.isShowWarning.default%",
+					"description": "%WebGalLanguageServer.isShowHint.description%"
 				}
 			}
 		},

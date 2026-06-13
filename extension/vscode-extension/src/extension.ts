@@ -5,10 +5,10 @@ import * as vscode from "vscode";
 import * as fs from "fs";
 import * as path from "path";
 import { createClient } from "./client";
-import { XRDebugAdapterDescriptorFactory } from "./debug/activeDebug";
+import { DebugAdapterDescriptorFactory } from "./debug/activeDebug";
 import { debug } from "vscode";
 import { selector } from "./utils/utils";
-import { XRDebugConfigurationProvider } from "./ws/config";
+import { DebugConfigurationProvider } from "./ws/config";
 import { defaultConfig } from "@webgal/language-core";
 
 let client: BaseLanguageClient;
@@ -21,14 +21,14 @@ export async function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
 		vscode.debug.registerDebugAdapterDescriptorFactory(
 			"webgal",
-			new XRDebugAdapterDescriptorFactory()
+			new DebugAdapterDescriptorFactory()
 		)
 	);
 
 	context.subscriptions.push(
 		debug.registerDebugConfigurationProvider(
 			selector.language,
-			new XRDebugConfigurationProvider()
+			new DebugConfigurationProvider()
 		)
 	);
 

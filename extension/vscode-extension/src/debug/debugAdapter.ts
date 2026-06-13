@@ -1,5 +1,5 @@
 import * as Net from "net";
-import { XRDebugSession } from "./debugSession";
+import { DebugSession } from "./debugSession";
 import { fsAccessor } from "@webgal/language-core";
 
 let port = 0;
@@ -19,12 +19,12 @@ if (port > 0) {
 		socket.on("end", () => {
 			console.error(">> client connection closed\n");
 		});
-		const session = new XRDebugSession(fsAccessor);
+		const session = new DebugSession(fsAccessor);
 		session.setRunAsServer(true);
 		session.start(socket, socket);
 	}).listen(port);
 } else {
-	const session = new XRDebugSession(fsAccessor);
+	const session = new DebugSession(fsAccessor);
 	process.on("SIGTERM", () => {
 		session.shutdown();
 	});

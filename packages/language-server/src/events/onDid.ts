@@ -16,7 +16,7 @@ export default function (settings: LanguageServerSettings) {
 			} else {
 				// 客户端不支持 workspace/configuration，settings 值随 didChangeConfiguration 通过参数下发
 				const newSettings = <ServerSettings>(
-					(change.settings.XRWebGalLanguageServer ||
+					(change.settings.WebGalLanguageServer ||
 						settings.getGlobalSettings())
 				);
 				settings.setGlobalSettings(newSettings);
