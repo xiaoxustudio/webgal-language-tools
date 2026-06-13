@@ -1,6 +1,8 @@
 import type { Connection, Diagnostic } from "@volar/language-server";
 import type { TextDocument } from "vscode-languageserver-textdocument";
+import { validateTextDocument } from "@/diagnostics";
 import type { LanguageServerSettings } from "@/server/setting";
+import { defaultSettings } from "@/server/setting";
 
 export default function (settings: LanguageServerSettings) {
 	return async function provideDiagnostics(
@@ -8,6 +10,17 @@ export default function (settings: LanguageServerSettings) {
 		connection: Connection,
 		text: string
 	): Promise<Diagnostic[]> {
-		return settings.validateTextDocument(connection, document, text);
+		const config =
+			(await settings.getDocumentSettings(connection, document.uri)) ??
+			defaultSettings;
+		if (!config.isShowWarning) {
+			return [];
+		}
+		return validateTextDocument(
+			document,
+			text,
+			config.maxNumberOfProblems,
+			settings.hasDiagnosticRelatedInformationCapability
+		);
 	};
 }

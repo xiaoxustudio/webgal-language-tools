@@ -43,9 +43,11 @@ export default function () {
 		if (findWordWithPattern) {
 			const commandData =
 				WebGALKeywords[commandType as CommandNameSpecial]?.args;
-			const argsData = Object.values(commandData).find(
-				(item) => item.label === findWordWithPattern!.text
-			);
+			const argsData = commandData
+				? Object.values(commandData).find(
+						(item) => item.label === findWordWithPattern!.text
+					)
+				: undefined;
 			if (argsData) {
 				return {
 					contents: {
