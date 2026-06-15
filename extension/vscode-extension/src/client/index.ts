@@ -36,6 +36,7 @@ export async function createClient(
 	const clientOptions: LanguageClientOptions = {
 		documentSelector: [selector, selectorConfig],
 		synchronize: {
+			configurationSection: "WebGalLanguageServer",
 			fileEvents: workspace.createFileSystemWatcher("*")
 		}
 	};

@@ -193,7 +193,7 @@
 		]
 	},
 	"scripts": {
-		"build": "rolldown --config rolldown.config.ts",
+		"build": "rolldown --config rolldown.config.mts",
 		"watch": "pnpm run build --watch",
 		"pack": "pnpm run build && pnpx @vscode/vsce package --no-dependencies",
 		"release": "pnpm run build && vsce publish --pre-release",
