@@ -19,6 +19,12 @@ export function startServer(
 	options?: StartServerOptions
 ) {
 	const resolvedConnection = connection ?? createConnection();
-	startLanguageServer(resolvedConnection, true, createServer, createSimpleProject, options);
+	startLanguageServer(
+		resolvedConnection,
+		true,
+		createServer,
+		createSimpleProject,
+		options
+	);
 	return resolvedConnection;
 }

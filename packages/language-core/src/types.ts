@@ -99,13 +99,13 @@ export type DirectoryEntry = {
  * 状态映射条目
  */
 export interface StateMap {
-	key: string;
-	description: string;
+	key: string; // 键名
+	description: string; // 描述
 	type?: {
-		key: string;
-		description: string;
-	};
-	value?: StateMap | Record<string, StateMap> | string;
-	__WG$key?: string;
-	__WG$description?: string;
+		key: string; // 类型
+		description: string; // 描述
+	}; // 类型
+	value?: StateMap | Record<string, StateMap> | string; // 值
+	__WG$key?: string; // 父级键名
+	__WG$description?: string; // 父级描述
 }

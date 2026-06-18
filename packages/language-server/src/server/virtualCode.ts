@@ -1,7 +1,5 @@
 import type { WebgalDocumentLinkCandidate, WebgalVirtualCode } from "@/types";
-import {
-	analyzeWebgalText
-} from "@webgal/language-core";
+import { analyzeWebgalText } from "@webgal/language-core";
 import {
 	buildLineStarts,
 	emptyDefinitionMap,

@@ -1,8 +1,5 @@
 import { createConnection as createVscodeConnection } from "vscode-languageserver/node";
-import {
-	createServer,
-	createSimpleProject
-} from "@volar/language-server/node";
+import { createServer, createSimpleProject } from "@volar/language-server/node";
 import type { IncomingMessage } from "http";
 import { startServer } from "./startServer";
 export { startServer } from "./startServer";

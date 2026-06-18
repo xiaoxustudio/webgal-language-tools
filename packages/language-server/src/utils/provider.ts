@@ -1461,7 +1461,7 @@ applyStyle:<origStyleName>-><newStyleName>(,<origStyleName2>-><newStyleName2>,..
 	wait: {
 		type: commandType.wait,
 		desc: "等待命令。",
-		args: [argsMap.when,argsMap.nobreak],
+		args: [argsMap.when, argsMap.nobreak],
 		label: "wait",
 		kind: CompletionItemKind.Function,
 		documentation: `等待一段时间，单位为毫秒

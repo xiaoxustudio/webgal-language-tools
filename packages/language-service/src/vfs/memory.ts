@@ -193,14 +193,23 @@ export function createMemoryVolarFileSystem(options?: {
 			const toName = toSegments[toSegments.length - 1]!;
 			const toParent = ensureDirectoryEntry(toSegments.slice(0, -1));
 			toParent.children[toName] = entry;
-			emit([{ type: "rename", from: normalizePath(from), to: normalizePath(to) }]);
+			emit([
+				{
+					type: "rename",
+					from: normalizePath(from),
+					to: normalizePath(to)
+				}
+			]);
 		},
 		getTree: () => rootEntry,
 		setTree: (tree) => {
 			rootEntry =
 				tree.type === "dir"
 					? tree
-					: { type: "dir", children: {} as Record<string, VirtualEntry> };
+					: {
+							type: "dir",
+							children: {} as Record<string, VirtualEntry>
+						};
 			emit([{ type: "setTree", tree: rootEntry }]);
 		},
 		onDidChange: (listener) => {

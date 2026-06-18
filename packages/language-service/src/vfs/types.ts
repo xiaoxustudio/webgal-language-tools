@@ -169,7 +169,10 @@ export type WebgalClientHandlers = {
  */
 export type LanguageClientLike = {
 	/** 注册请求处理器 */
-	onRequest: (method: string, handler: (...args: unknown[]) => unknown) => void;
+	onRequest: (
+		method: string,
+		handler: (...args: unknown[]) => unknown
+	) => void;
 };
 
 /**

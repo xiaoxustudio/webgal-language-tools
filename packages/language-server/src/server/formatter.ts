@@ -19,10 +19,7 @@ async function loadFormatConfig(documentUri: URI): Promise<FormatConfig> {
 		return defaultConfig;
 	}
 
-	const [path, fs] = await Promise.all([
-			import("path"),
-			import("fs")
-		]);
+	const [path, fs] = await Promise.all([import("path"), import("fs")]);
 	let currentDir = path.dirname(uriPath);
 	while (currentDir) {
 		const configPath = path.join(currentDir, "fmt.json");
