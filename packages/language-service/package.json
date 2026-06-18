@@ -70,6 +70,7 @@
 		"@codingame/monaco-vscode-textmate-service-override": "catalog:",
 		"@codingame/monaco-vscode-theme-service-override": "catalog:",
 		"@volar/language-core": "^2.4.28",
+		"@webgal/language-core": "workspace:*",
 		"@volar/language-service": "^2.4.28",
 		"monaco-editor": "catalog:",
 		"monaco-languageclient": "^10.7.0",

@@ -202,9 +202,6 @@ importers:
       '@webgal/language-core':
         specifier: workspace:*
         version: link:../language-core
-      '@webgal/language-service':
-        specifier: workspace:*
-        version: link:../language-service
       vscode-languageserver:
         specifier: ^9.0.1
         version: 9.0.1
@@ -251,6 +248,9 @@ importers:
       '@volar/language-service':
         specifier: ^2.4.28
         version: 2.4.28
+      '@webgal/language-core':
+        specifier: workspace:*
+        version: link:../language-core
       monaco-editor:
         specifier: 'catalog:'
         version: '@codingame/monaco-vscode-editor-api@26.1.1'
