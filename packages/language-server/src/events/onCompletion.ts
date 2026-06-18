@@ -14,9 +14,7 @@ import {
 import { resourcesMap } from "@/utils/resources";
 import type { Connection, CompletionItem } from "@volar/language-server";
 import { CompletionItemKind, Position } from "@volar/language-server";
-import type { IDefinetionMap } from "@webgal/language-core";
-import type { DirectoryEntry } from "@webgal/language-service";
-import type { StateMap } from "@webgal/language-service/utils";
+import type { IDefinetionMap, DirectoryEntry, StateMap } from "@webgal/language-core";
 import type { TextDocument } from "vscode-languageserver-textdocument";
 
 export default function () {

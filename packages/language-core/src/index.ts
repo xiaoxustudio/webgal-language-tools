@@ -9,42 +9,6 @@ import type {
 export const source = "WebGal Script";
 export const SCHEME = "webgal-virtual-doc";
 
-// 作用域映射表
-const ScopeMap = new Map<string, IDefinetionMap>();
-
-/**
- * 获取指定作用域的映射表
- * @param scope 作用域标识符 (默认为 'global')
- */
-export const getGlobalMap = (scope: string = "global"): IDefinetionMap => {
-	if (!ScopeMap.has(scope)) {
-		ScopeMap.set(scope, {
-			label: {},
-			setVar: {},
-			choose: {}
-		});
-	}
-	return ScopeMap.get(scope)!;
-};
-
-/**
- * 清除指定作用域的映射表
- * @param scope 作用域标识符 (默认为 'global')
- */
-export const clearGlobalMap = (scope: string = "global") => {
-	const map = getGlobalMap(scope);
-	map.label = {};
-	map.setVar = {};
-	map.choose = {};
-};
-
-// 保持兼容性的默认导出
-export const GlobalMap = getGlobalMap("global");
-
-export const cleartGlobalMapAll = () => {
-	clearGlobalMap("global");
-};
-
 const isNodeRuntime =
 	typeof process !== "undefined" &&
 	!!process.versions &&
@@ -90,7 +54,7 @@ export const runCode = (text: string, ops?: expressions.CompileFuncOptions) => {
 	return expressions.compile(text, ops);
 };
 
-const getVariableDesc = (lines: string[], startLine: number) => {
+export const getVariableDesc = (lines: string[], startLine: number) => {
 	const desc: string[] = [];
 	for (let index = startLine - 2; index > 0; index--) {
 		const line = lines[index];

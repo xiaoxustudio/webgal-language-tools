@@ -1,80 +1,19 @@
 import type { WebgalDocumentLinkCandidate, WebgalVirtualCode } from "@/types";
 import {
+	analyzeWebgalText
+} from "@webgal/language-core";
+import {
 	buildLineStarts,
 	emptyDefinitionMap,
 	fullCodeInformation,
 	getLineCommandType,
 	getLineFromOffset,
-	getSnapshotText,
-	getVariableDesc
+	getSnapshotText
 } from "@/utils";
 import { languageId } from "@/utils/resources";
 import type { IScriptSnapshot } from "@volar/language-core";
-import type { IDefinetionMap } from "@webgal/language-core";
 import { FoldingRangeKind, type FoldingRange } from "vscode-languageserver";
 import type { URI } from "vscode-uri";
-
-export const analyzeWebgalText = (text: string): IDefinetionMap => {
-	const map: IDefinetionMap = {
-		label: {},
-		setVar: {},
-		choose: {}
-	};
-	const lines = text.split(/\r?\n/);
-	for (let lineNumber = 0; lineNumber < lines.length; lineNumber++) {
-		const currentLine = lines[lineNumber];
-		const setVarExec = /setVar:\s*(\w+)\s*=\s*([^;]*\S+);?/g.exec(
-			currentLine
-		);
-		const labelExec = /label:\s*(\S+);/g.exec(currentLine);
-		const getUserInputExec = /getUserInput:\s*([^\s;]+)/g.exec(currentLine);
-		const chooseExec = /choose:\s*([^\s;]+)/g.exec(currentLine);
-		if (setVarExec !== null) {
-			const currentVariablePool = (map.setVar[setVarExec[1]] ??= []);
-			const isGlobal = currentLine.indexOf("-global") !== -1;
-			const currentToken = {
-				word: setVarExec[1],
-				value: setVarExec[2],
-				input: setVarExec.input,
-				isGlobal,
-				isGetUserInput: false,
-				position: { line: lineNumber, character: setVarExec.index + 7 },
-				desc: getVariableDesc(lines, lineNumber)
-			};
-			currentVariablePool.push(currentToken);
-		} else if (labelExec !== null) {
-			(map.label[labelExec[1]] ??= []).push({
-				word: labelExec[1],
-				value: labelExec.input,
-				input: labelExec.input,
-				position: { line: lineNumber, character: 6 }
-			});
-		} else if (getUserInputExec !== null) {
-			(map.setVar[getUserInputExec[1]] ??= []).push({
-				word: getUserInputExec[1],
-				value: getUserInputExec.input,
-				input: getUserInputExec.input,
-				isGetUserInput: true,
-				position: { line: lineNumber, character: 13 }
-			});
-		} else if (chooseExec !== null) {
-			const options: IDefinetionMap["choose"][number]["options"] = [];
-			const text = chooseExec[1];
-			for (const machChooseOption of text.split("|")) {
-				const sliceArray = machChooseOption.split(":");
-				options.push({
-					text: sliceArray[0]?.trim(),
-					value: sliceArray[1]?.trim()
-				});
-			}
-			map.choose[lineNumber] = {
-				options,
-				line: lineNumber
-			};
-		}
-	}
-	return map;
-};
 
 export const analyzeWebgalDocumentLinks = (
 	lines: string[]

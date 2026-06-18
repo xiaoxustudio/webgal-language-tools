@@ -86,3 +86,26 @@ export interface FileAccessor {
 	readFile(path: string): Promise<Uint8Array>;
 	writeFile(path: string, contents: Uint8Array): Promise<void>;
 }
+
+/**
+ * 目录条目类型
+ */
+export type DirectoryEntry = {
+	name: string;
+	isDirectory: boolean;
+};
+
+/**
+ * 状态映射条目
+ */
+export interface StateMap {
+	key: string;
+	description: string;
+	type?: {
+		key: string;
+		description: string;
+	};
+	value?: StateMap | Record<string, StateMap> | string;
+	__WG$key?: string;
+	__WG$description?: string;
+}

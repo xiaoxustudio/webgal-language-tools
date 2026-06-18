@@ -1,44 +1,10 @@
 import {
-	createVolarFileSystem,
-	type VirtualFileSystem
-} from "@webgal/language-service";
-import {
 	FileType,
 	type FileStat,
 	type FileSystem
 } from "@volar/language-service";
 import type { Connection } from "@volar/language-server";
 import type { URI } from "vscode-uri";
-
-export function createVolarFileSystemFromVirtualFileSystem(
-	vfs: VirtualFileSystem,
-	options?: {
-		uriToPath?: (uri: URI) => string;
-	}
-): FileSystem {
-	let cached: FileSystem | null = null;
-	const load = async () => {
-		if (cached) {
-			return cached;
-		}
-		cached = createVolarFileSystem(vfs, options);
-		return cached;
-	};
-	return {
-		stat: async (uri) => {
-			const fs = await load();
-			return fs.stat(uri);
-		},
-		readFile: async (uri) => {
-			const fs = await load();
-			return fs.readFile(uri);
-		},
-		readDirectory: async (uri) => {
-			const fs = await load();
-			return fs.readDirectory(uri);
-		}
-	};
-}
 
 export function createClientVfsFileSystem(
 	connection: Connection,

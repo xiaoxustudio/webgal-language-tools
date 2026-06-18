@@ -13,8 +13,7 @@ import type {
 	Position
 } from "@volar/language-server";
 import { MarkupKind, Range } from "@volar/language-server";
-import type { IDefinetionMap } from "@webgal/language-core";
-import type { StateMap } from "@webgal/language-service/utils";
+import type { IDefinetionMap, StateMap } from "@webgal/language-core";
 import type { TextDocument } from "vscode-languageserver-textdocument";
 
 export default function () {

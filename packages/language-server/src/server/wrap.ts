@@ -1,21 +1,11 @@
-import { createServer, createSimpleProject } from "@volar/language-server/node";
-import type { InitializeParams } from "@volar/language-server";
-
+import { createConnection as createVscodeConnection } from "vscode-languageserver/node";
 import {
-	createConnection as createVscodeConnection,
-	type Connection
-} from "vscode-languageserver/node";
+	createServer,
+	createSimpleProject
+} from "@volar/language-server/node";
 import type { IncomingMessage } from "http";
-import type { StartServerOptions } from "@/types";
-import { createWebgalService, registerConnectionHandlers } from "../events";
-import {
-	applyClientCapabilities,
-	applyServerCapabilities
-} from "../events/onInitialize";
-import { bindCoreFileAccessorToClientVfs } from "@/utils";
-import { createClientVfsFileSystem } from "./code";
-import webgalLanguagePlugin from "./plugin";
-import { LanguageServerSettings } from "./setting";
+import { startServer } from "./startServer";
+export { startServer } from "./startServer";
 
 type WsOptions = {
 	port: number;
@@ -42,7 +32,7 @@ export async function startWebSocketServer(options: WsOptions) {
 		const reader = new WebSocketMessageReader(toSocket(socket));
 		const writer = new WebSocketMessageWriter(toSocket(socket));
 		const connection = createVscodeConnection(reader, writer);
-		startServer(connection, true);
+		startServer(connection, true, createServer, createSimpleProject);
 		reader.onClose(() => connection.dispose());
 	});
 }
@@ -71,47 +61,4 @@ export function getWsOptions(argv: string[]): WsOptions {
 		port,
 		path: path === "" ? null : path
 	};
-}
-
-export function startServer(
-	connection: Connection,
-	useClientVfs: boolean,
-	options?: StartServerOptions
-) {
-	// Create a settings instance for this server
-	const settings = new LanguageServerSettings();
-	// Apply feature options if provided
-	if (options?.features) {
-		settings.setFeatureOptions(options.features);
-	}
-	const server = createServer(connection);
-	const documents = server.documents;
-	bindCoreFileAccessorToClientVfs(connection);
-	if (useClientVfs) {
-		server.fileSystem.install(
-			"file",
-			createClientVfsFileSystem(connection)
-		);
-	}
-
-	connection.onInitialize((params: InitializeParams) => {
-		applyClientCapabilities(settings, params);
-
-		const result = server.initialize(
-			params,
-			createSimpleProject([webgalLanguagePlugin]),
-			[createWebgalService(connection, settings)]
-		);
-		applyServerCapabilities(settings, result);
-		return result;
-	});
-
-	connection.onInitialized(() => {
-		registerConnectionHandlers(documents, connection, settings);
-		server.initialized();
-	});
-
-	connection.onShutdown(server.shutdown);
-
-	connection.listen();
 }

@@ -1,4 +1,8 @@
-import { createConnection } from "@volar/language-server/node";
+import {
+	createConnection,
+	createServer,
+	createSimpleProject
+} from "@volar/language-server/node";
 import { startWebSocketServer, getWsOptions, startServer } from "./server/wrap";
 import type { StartServerOptions, LspFeatureOptions } from "./types";
 
@@ -10,5 +14,5 @@ const useWs = args.some((arg) => arg === "--ws" || arg.startsWith("--ws="));
 if (useWs) {
 	void startWebSocketServer(getWsOptions(args));
 } else {
-	startServer(createConnection(), false);
+	startServer(createConnection(), false, createServer, createSimpleProject);
 }

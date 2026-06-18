@@ -1,4 +1,4 @@
-import { fsAccessor } from "@webgal/language-core";
+import { setFsAccessor } from "@webgal/language-core";
 import type { IDefinetionMap } from "@webgal/language-core";
 import type {
 	Connection,
@@ -20,27 +20,29 @@ export function bindCoreFileAccessorToClientVfs(connection: Connection) {
 	const encoder = new TextEncoder();
 	const decoder = new TextDecoder();
 
-	fsAccessor.isWindows = isWindows;
-	fsAccessor.readFile = async (path: string): Promise<Uint8Array> => {
-		const content = (await connection.sendRequest(
-			"client/vfs/readFile",
-			path
-		)) as string | null;
-		if (content === null) {
-			throw new Error("File not found");
+	setFsAccessor({
+		isWindows,
+		readFile: async (path: string): Promise<Uint8Array> => {
+			const content = (await connection.sendRequest(
+				"client/vfs/readFile",
+				path
+			)) as string | null;
+			if (content === null) {
+				throw new Error("File not found");
+			}
+			return encoder.encode(content);
+		},
+		writeFile: async (
+			path: string,
+			contents: Uint8Array
+		): Promise<void> => {
+			const content = decoder.decode(contents);
+			await connection.sendRequest("client/vfs/writeFile", {
+				path,
+				content
+			});
 		}
-		return encoder.encode(content);
-	};
-	fsAccessor.writeFile = async (
-		path: string,
-		contents: Uint8Array
-	): Promise<void> => {
-		const content = decoder.decode(contents);
-		await connection.sendRequest("client/vfs/writeFile", {
-			path,
-			content
-		});
-	};
+	});
 }
 
 export const fullCodeInformation: CodeInformation = {
@@ -56,19 +58,6 @@ export const emptyDefinitionMap: IDefinetionMap = {
 	label: {},
 	setVar: {},
 	choose: {}
-};
-
-export const getVariableDesc = (lines: string[], startLine: number) => {
-	const desc: string[] = [];
-	for (let index = startLine - 2; index > 0; index--) {
-		const line = lines[index];
-		if (line.startsWith(";") && line.length > 0) {
-			desc.unshift(line.substring(1));
-		} else if (line.length > 0) {
-			break;
-		}
-	}
-	return desc.join("\n");
 };
 
 export const getSnapshotText = (snapshot: IScriptSnapshot) =>
