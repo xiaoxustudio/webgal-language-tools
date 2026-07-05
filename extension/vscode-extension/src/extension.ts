@@ -42,7 +42,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		vscode.commands.registerCommand(
 			"extension.restartLspServer",
 			async () => {
-				await restartLspServer(context);
+				await restartLspServer();
 			}
 		)
 	);
@@ -56,13 +56,10 @@ export function deactivate() {
 	return client?.stop();
 }
 
-async function restartLspServer(context: vscode.ExtensionContext) {
+async function restartLspServer() {
 	try {
 		if (client) {
-			await client.stop();
-			client = await createClient(context);
-			await client.start();
-			activateAutoInsertion("webgal", client);
+			await client.sendNotification("webgal/restartServer");
 			vscode.window.showInformationMessage("WebGal 语言服务器已重启");
 		}
 	} catch (e) {

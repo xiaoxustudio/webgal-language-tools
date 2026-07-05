@@ -64,10 +64,47 @@ export default function (settings: LanguageServerSettings) {
 		});
 
 		connection.onNotification("webgal/vfsChanged", () => {
-			if (!settings.getFeatureOptions().documentLink) {
-				return;
-			}
-			void connection.sendRequest("workspace/documentLink/refresh");
-		});
+				if (!settings.getFeatureOptions().documentLink) {
+					return;
+				}
+				void connection.sendRequest("workspace/documentLink/refresh");
+			});
+
+			// 重启语言服务器：清除所有缓存并触发全量刷新
+			connection.onNotification("webgal/restartServer", () => {
+				connection.console.info(
+					"[WebGalLanguageServer] Restarting server..."
+				);
+				settings.clearDocumentSettings();
+				void connection
+					.sendRequest("workspace/diagnostic/refresh")
+					.catch((e) =>
+						connection.console.warn(
+							`[WebGalLanguageServer] Refresh diagnostics failed: ${e}`
+						)
+					);
+				void connection
+					.sendRequest("workspace/inlayHint/refresh")
+					.catch((e) =>
+						connection.console.warn(
+							`[WebGalLanguageServer] Refresh inlayHint failed: ${e}`
+						)
+					);
+				void connection
+					.sendRequest("workspace/documentLink/refresh")
+					.catch((e) =>
+						connection.console.warn(
+							`[WebGalLanguageServer] Refresh documentLink failed: ${e}`
+						)
+					);
+				void connection
+					.sendRequest("workspace/semanticTokens/refresh")
+					.catch(() => {
+						// semanticTokens/refresh 可能不被客户端支持，静默忽略
+					});
+				connection.console.info(
+					"[WebGalLanguageServer] Server restarted successfully."
+				);
+			});
 	};
 }
