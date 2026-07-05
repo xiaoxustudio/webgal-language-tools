@@ -6,25 +6,99 @@ import {
 	WebGALCommandPrefix,
 	argsMap
 } from "@/utils/provider";
-import type {
-	Connection,
-	Hover,
-	MarkupContent,
-	Position
-} from "@volar/language-server";
+import type { Connection, Hover, MarkupContent } from "@volar/language-server";
+import { Position } from "@volar/language-server";
 import { MarkupKind, Range } from "@volar/language-server";
 import type { IDefinetionMap, StateMap } from "@webgal/language-core";
 import type { TextDocument } from "vscode-languageserver-textdocument";
+import { URI } from "vscode-uri";
+import type { WebgalDocumentLinkCandidate } from "@/types";
+import {
+	isImageFile,
+	buildImagePreviewMarkdown,
+	resolveCandidateFile
+} from "./onDocumentLinks";
+import type { LanguageServerSettings } from "@/server/setting";
 
-export default function () {
+export default function (settings: LanguageServerSettings) {
 	return async function provideHover(
 		document: TextDocument,
 		position: Position,
 		connection: Connection,
 		definitionMap: IDefinetionMap,
 		lineCommandTypes: string[],
-		sourceUri: string
+		sourceUri: string,
+		candidates: WebgalDocumentLinkCandidate[]
 	): Promise<Hover> {
+		let showImagePreview = true;
+		const config = await settings.getDocumentSettings(
+			connection,
+			document.uri
+		);
+		if (config && typeof config.isShowImagePreview === "boolean") {
+			showImagePreview = config.isShowImagePreview;
+		}
+
+		if (showImagePreview) {
+			for (const candidate of candidates) {
+				if (
+					candidate.line === position.line &&
+					position.character >= candidate.start &&
+					position.character <= candidate.end
+				) {
+					// 快速检查：候选文本是否以图片扩展名结尾
+					if (!isImageFile(candidate.text)) {
+						break;
+					}
+
+					// 解析文件路径
+					const pathArray = document.uri.split("/");
+					const currentDirectory =
+						await connection.sendRequest<string>(
+							"client/currentDirectory"
+						);
+					const pathName =
+						pathArray[
+							pathArray.length - 3 > 0
+								? pathArray.length - 3
+								: pathArray.length - 2
+						];
+					const isConfig =
+						pathArray[pathArray.length - 1] === "config.txt" &&
+						pathArray[pathArray.length - 2] === "game" &&
+						pathName === pathArray[pathArray.length - 3];
+
+					const resolvedPath = await resolveCandidateFile(
+						candidate,
+						currentDirectory,
+						isConfig,
+						connection
+					);
+
+					if (resolvedPath && isImageFile(resolvedPath)) {
+						const fileUri = URI.file(resolvedPath).toString();
+						return {
+							contents: {
+								kind: MarkupKind.Markdown,
+								value: buildImagePreviewMarkdown(
+									fileUri,
+									resolvedPath
+								)
+							} as MarkupContent,
+							range: Range.create(
+								Position.create(
+									candidate.line,
+									candidate.start
+								),
+								Position.create(candidate.line, candidate.end)
+							)
+						};
+					}
+					break;
+				}
+			}
+		}
+
 		const file_name = sourceUri;
 		const commandType = lineCommandTypes[position.line] ?? "";
 

@@ -69,17 +69,19 @@ export async function createClient(
 	 * 因为 "WebGalLanguageServer" 是 section 名而非 property 名，该调用返回 undefined。
 	 */
 	function extractWebGalConfig(): {
-		maxNumberOfProblems: number;
-		isShowWarning: boolean;
-		isShowHint: string;
-	} {
-		const cfg = workspace.getConfiguration("WebGalLanguageServer");
-		return {
-			maxNumberOfProblems: cfg.get<number>("maxNumberOfProblems", 1000),
-			isShowWarning: cfg.get<boolean>("isShowWarning", true),
-			isShowHint: cfg.get<string>("isShowHint", "变量名后")
-		};
-	}
+			maxNumberOfProblems: number;
+			isShowWarning: boolean;
+			isShowHint: string;
+			isShowImagePreview: boolean;
+		} {
+			const cfg = workspace.getConfiguration("WebGalLanguageServer");
+			return {
+				maxNumberOfProblems: cfg.get<number>("maxNumberOfProblems", 1000),
+				isShowWarning: cfg.get<boolean>("isShowWarning", true),
+				isShowHint: cfg.get<string>("isShowHint", "变量名后"),
+				isShowImagePreview: cfg.get<boolean>("isShowImagePreview", true)
+			};
+		}
 
 	/**
 	 * 将当前配置推送给语言服务器。

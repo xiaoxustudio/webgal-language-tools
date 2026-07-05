@@ -21,5 +21,6 @@
 	"WebGalLanguageServer.isShowHint.enum3": "变量名后",
 	"WebGalLanguageServer.isShowHint.enum4": "最后面",
 	"WebGalLanguageServer.isShowHint.default": "变量名后",
-	"WebGalLanguageServer.isShowHint.description": "是否显示变量类型镶嵌"
+	"WebGalLanguageServer.isShowHint.description": "是否显示变量类型镶嵌",
+	"WebGalLanguageServer.isShowImagePreview.description": "是否在悬停时显示图片预览"
 }

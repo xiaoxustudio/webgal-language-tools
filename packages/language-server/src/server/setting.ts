@@ -9,7 +9,8 @@ import { TextDocumentSyncKind } from "@volar/language-server";
 export const defaultSettings: ServerSettings = {
 	maxNumberOfProblems: 1000,
 	isShowWarning: true,
-	isShowHint: "变量名后"
+	isShowHint: "变量名后",
+	isShowImagePreview: true
 };
 
 export const defaultFeatureOptions: LspFeatureOptions = {
@@ -152,9 +153,17 @@ export class LanguageServerSettings {
 		}
 	}
 
-	// 将配置与默认值合并，确保所有属性都有正确的值
+	// 将配置与默认值合并，确保所有属性都有正确的值。
+	// 过滤掉 settings 中的 undefined 值，防止覆盖默认值。
 	private mergeWithDefaults(settings: ServerSettings): ServerSettings {
-		return { ...defaultSettings, ...settings };
+		const result = { ...defaultSettings };
+		for (const key of Object.keys(settings) as (keyof ServerSettings)[]) {
+			const val = settings[key];
+			if (val !== undefined) {
+				(result as Record<string, unknown>)[key] = val;
+			}
+		}
+		return result;
 	}
 
 	// Document settings

@@ -176,6 +176,12 @@
 					],
 					"default": "%WebGalLanguageServer.isShowHint.default%",
 					"description": "%WebGalLanguageServer.isShowHint.description%"
+				},
+				"WebGalLanguageServer.isShowImagePreview": {
+					"scope": "resource",
+					"type": "boolean",
+					"default": true,
+					"description": "%WebGalLanguageServer.isShowImagePreview.description%"
 				}
 			}
 		},

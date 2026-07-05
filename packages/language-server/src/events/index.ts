@@ -54,7 +54,7 @@ export function createWebgalService(
 ): LanguageServicePlugin {
 	const featureOptions = settings.getFeatureOptions();
 	const onCompletionHandler = onCompletion();
-	const onHoverHandler = onHover();
+	const onHoverHandler = onHover(settings);
 	const onDefinitionHandler = onDefinition();
 	const onDocumentLinksHandler = onDocumentLinks();
 	const onFoldingRangesHandler = onFoldingRanges();
@@ -131,22 +131,23 @@ export function createWebgalService(
 						}
 					: {}),
 				...(featureOptions.hover
-					? {
-							async provideHover(
-								document: TextDocument,
-								position: Position
-							): Promise<Hover> {
-								return onHoverHandler(
-									document,
-									position,
-									connection,
-									getDefinitionMap(document),
-									getLineCommandTypes(document),
-									getSourceUriString(document)
-								);
+						? {
+								async provideHover(
+									document: TextDocument,
+									position: Position
+								): Promise<Hover> {
+									return onHoverHandler(
+										document,
+										position,
+										connection,
+										getDefinitionMap(document),
+										getLineCommandTypes(document),
+										getSourceUriString(document),
+										getDocumentLinkCandidates(document)
+									);
+								}
 							}
-						}
-					: {}),
+						: {}),
 				...(featureOptions.definition
 					? {
 							provideDefinition(
