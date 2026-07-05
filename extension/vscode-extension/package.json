@@ -88,6 +88,10 @@
 			{
 				"title": "%extension.initFmtConfig%",
 				"command": "extension.initFmtConfig"
+			},
+			{
+				"title": "%extension.restartLspServer%",
+				"command": "extension.restartLspServer"
 			}
 		],
 		"menus": {

@@ -38,6 +38,15 @@ export async function activate(context: vscode.ExtensionContext) {
 		})
 	);
 
+	context.subscriptions.push(
+		vscode.commands.registerCommand(
+			"extension.restartLspServer",
+			async () => {
+				await restartLspServer(context);
+			}
+		)
+	);
+
 	const labsInfo = createLabsInfo(serverProtocol);
 	labsInfo.addLanguageClient(client);
 	return labsInfo.extensionExports;
@@ -45,6 +54,20 @@ export async function activate(context: vscode.ExtensionContext) {
 
 export function deactivate() {
 	return client?.stop();
+}
+
+async function restartLspServer(context: vscode.ExtensionContext) {
+	try {
+		if (client) {
+			await client.stop();
+			client = await createClient(context);
+			await client.start();
+			activateAutoInsertion("webgal", client);
+			vscode.window.showInformationMessage("WebGal 语言服务器已重启");
+		}
+	} catch (e) {
+		vscode.window.showErrorMessage(`重启 WebGal 语言服务器失败: ${e}`);
+	}
 }
 
 async function initFmtConfig() {
