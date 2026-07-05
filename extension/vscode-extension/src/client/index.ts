@@ -63,5 +63,82 @@ export async function createClient(
 
 	registerWebgalClientHandlers(client, handlers);
 
+	/**
+	 * 从 VSCode 配置中提取 WebGalLanguageServer 节的完整配置对象。
+	 * 不能直接使用 workspace.getConfiguration().get("WebGalLanguageServer")，
+	 * 因为 "WebGalLanguageServer" 是 section 名而非 property 名，该调用返回 undefined。
+	 */
+	function extractWebGalConfig(): {
+		maxNumberOfProblems: number;
+		isShowWarning: boolean;
+		isShowHint: string;
+	} {
+		const cfg = workspace.getConfiguration("WebGalLanguageServer");
+		// 诊断：打印各层级配置值，定位值来源
+		const inspectWarn = cfg.inspect<boolean>("isShowWarning");
+		const inspectHint = cfg.inspect<string>("isShowHint");
+		console.log(
+			"[WebGalLanguageServer] Config inspect:",
+			JSON.stringify({
+				isShowWarning: {
+					defaultValue: inspectWarn?.defaultValue,
+					globalValue: inspectWarn?.globalValue,
+					workspaceValue: inspectWarn?.workspaceValue,
+					effective: cfg.get<boolean>("isShowWarning", true)
+				},
+				isShowHint: {
+					defaultValue: inspectHint?.defaultValue,
+					globalValue: inspectHint?.globalValue,
+					workspaceValue: inspectHint?.workspaceValue,
+					effective: cfg.get<string>("isShowHint", "变量名后")
+				}
+			}, null, 2)
+		);
+		return {
+			maxNumberOfProblems: cfg.get<number>("maxNumberOfProblems", 1000),
+			isShowWarning: cfg.get<boolean>("isShowWarning", true),
+			isShowHint: cfg.get<string>("isShowHint", "变量名后")
+		};
+	}
+
+	/**
+	 * 将当前配置推送给语言服务器。
+	 * 使用自定义通知 "webgal/updateConfiguration" 而非标准 didChangeConfiguration，
+	 * 避免 @volar/language-server 或 vscode-languageclient@9 拦截/吞掉通知。
+	 */
+	function pushConfigurationToServer() {
+		const config = extractWebGalConfig();
+		console.log(
+			"[WebGalLanguageServer] Pushing config to server:",
+			JSON.stringify(config)
+		);
+		client
+			.sendNotification("webgal/updateConfiguration", config)
+			.catch((e) =>
+				console.error(
+					"[WebGalLanguageServer] Failed to send config:",
+					e
+				)
+			);
+	}
+
+	// 服务端就绪后主动推送一次初始配置（vscode-languageclient@9 已废弃自动同步）
+	// v9 没有 onReady()，改用 onDidChangeState 监听（State.Running === 2）
+	client.onDidChangeState((e) => {
+		if (e.newState === 2) {
+			pushConfigurationToServer();
+		}
+	});
+
+	// vscode-languageclient@9 的 SyncConfigurationFeature 已废弃，不会发送 didChangeConfiguration
+	// 这里手动监听配置变更并通知服务器
+	context.subscriptions.push(
+		workspace.onDidChangeConfiguration((event) => {
+			if (event.affectsConfiguration("WebGalLanguageServer")) {
+				pushConfigurationToServer();
+			}
+		})
+	);
+
 	return client;
 }

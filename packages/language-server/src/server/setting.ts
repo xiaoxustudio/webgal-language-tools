@@ -6,11 +6,11 @@ import type {
 } from "@volar/language-server";
 import { TextDocumentSyncKind } from "@volar/language-server";
 
-export const defaultSettings = {
+export const defaultSettings: ServerSettings = {
 	maxNumberOfProblems: 1000,
 	isShowWarning: true,
 	isShowHint: "变量名后"
-} satisfies ServerSettings;
+};
 
 export const defaultFeatureOptions: LspFeatureOptions = {
 	completion: true,
@@ -20,15 +20,20 @@ export const defaultFeatureOptions: LspFeatureOptions = {
 	diagnostics: true,
 	foldingRange: true,
 	definition: true,
-	formatting: true
+	formatting: true,
+	inlayHint: true
 };
+
+const CACHE_TTL_MS = 5000;
 
 /**
  * Manages settings for a language server instance.
  */
 export class LanguageServerSettings {
 	private globalSettings: ServerSettings;
-	private documentSettings: Map<string, Thenable<ServerSettings>>;
+	private cachedConfig: Promise<ServerSettings> | null;
+	private cachedAt: number;
+	private clientSettingsVersion: number;
 	private StateConfig: {
 		hasConfigurationCapability: boolean;
 		hasWorkspaceFolderCapability: boolean;
@@ -38,7 +43,9 @@ export class LanguageServerSettings {
 
 	constructor() {
 		this.globalSettings = { ...defaultSettings };
-		this.documentSettings = new Map();
+		this.cachedConfig = null;
+		this.cachedAt = 0;
+		this.clientSettingsVersion = 0;
 		this.StateConfig = {
 			hasConfigurationCapability: false,
 			hasWorkspaceFolderCapability: false,
@@ -49,11 +56,9 @@ export class LanguageServerSettings {
 
 	// Global settings
 	setGlobalSettings(settings: ServerSettings) {
-		this.globalSettings = settings;
-	}
-
-	getGlobalSettings(): ServerSettings {
-		return this.globalSettings;
+		// 与默认值合并，确保缺失属性不会丢失
+		this.globalSettings = { ...defaultSettings, ...settings };
+		this.clientSettingsVersion++;
 	}
 
 	// Feature options
@@ -147,32 +152,57 @@ export class LanguageServerSettings {
 		}
 	}
 
+	// 将配置与默认值合并，确保所有属性都有正确的值
+	private mergeWithDefaults(settings: ServerSettings): ServerSettings {
+		return { ...defaultSettings, ...settings };
+	}
+
 	// Document settings
-	async getDocumentSettings(
-		connection: Connection,
-		url: string
-	): Promise<ServerSettings> {
+	async getDocumentSettings(connection: Connection, _url?: string): Promise<ServerSettings> {
+		// globalSettings 已经被 didChangeConfiguration / onInitialized 更新，直接返回
+		if (this.StateConfig.hasConfigurationCapability && this.clientSettingsVersion > 0) {
+			return this.mergeWithDefaults(this.globalSettings);
+		}
 		if (!this.StateConfig.hasConfigurationCapability) {
-			return Promise.resolve(this.globalSettings);
+			return this.mergeWithDefaults(this.globalSettings);
 		}
-		let result = this.documentSettings.get(url);
-		if (!result) {
-			result = connection.workspace.getConfiguration({
-				scopeUri: url,
-				section: "WebGalLanguageServer"
-			});
-			this.documentSettings.set(url, result);
+		// 首次调用：从客户端拉取初始配置
+		const now = Date.now();
+		if (!this.cachedConfig || now - this.cachedAt > CACHE_TTL_MS) {
+			this.cachedConfig = connection.workspace
+				.getConfiguration("WebGalLanguageServer")
+				.then((config) => {
+					if (!config) {
+						return this.defaultSettings();
+					}
+					const merged = this.mergeWithDefaults(config as ServerSettings);
+					this.globalSettings = merged;
+					this.clientSettingsVersion++;
+					return merged;
+				})
+				.catch((err) => {
+					connection.console.warn(
+						`[WebGalLanguageServer] getConfiguration failed: ${err}`
+					);
+					return this.mergeWithDefaults(this.globalSettings);
+				});
+			this.cachedAt = now;
 		}
-		return result;
+		return this.cachedConfig;
 	}
 
-	// Clear all document settings
+	private defaultSettings(): ServerSettings {
+		return { ...defaultSettings };
+	}
+
+	// Clear cached config so next call fetches fresh
 	clearDocumentSettings(): void {
-		this.documentSettings.clear();
+		this.cachedConfig = null;
+		this.cachedAt = 0;
 	}
 
-	// Remove a specific document's settings
-	removeDocumentSettings(url: string): void {
-		this.documentSettings.delete(url);
+	// No-op: global config doesn't need per-URL cleanup
+	removeDocumentSettings(_url: string): void {
+		//保留接口兼容性
 	}
 }

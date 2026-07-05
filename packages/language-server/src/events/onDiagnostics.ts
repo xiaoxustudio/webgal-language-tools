@@ -14,7 +14,13 @@ export default function (settings: LanguageServerSettings) {
 		const config =
 			(await settings.getDocumentSettings(connection, document.uri)) ??
 			defaultSettings;
+		connection.console.info(
+			`[WebGalLanguageServer] Diagnostics: isShowWarning=${config.isShowWarning}, maxProblems=${config.maxNumberOfProblems}`
+		);
 		if (!config.isShowWarning) {
+			connection.console.info(
+				`[WebGalLanguageServer] Diagnostics suppressed (isShowWarning=false)`
+			);
 			return [];
 		}
 		const items = validateText(text, config.maxNumberOfProblems);

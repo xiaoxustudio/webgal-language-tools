@@ -15,11 +15,11 @@
   "configuration.title": "webgal configuration",
   "WebGalLanguageServer.maxNumberOfProblems.description": "Maximum number of warning messages",
   "WebGalLanguageServer.isShowWarning.description": "Show warning messages",
-  "WebGalLanguageServer.isShowWarning.enum0": "Off",
-  "WebGalLanguageServer.isShowWarning.enum1": "Front",
-  "WebGalLanguageServer.isShowWarning.enum2": "Before variable name",
-  "WebGalLanguageServer.isShowWarning.enum3": "After variable name",
-  "WebGalLanguageServer.isShowWarning.enum4": "Back",
-  "WebGalLanguageServer.isShowWarning.default": "After variable name",
+  "WebGalLanguageServer.isShowHint.enum0": "Off",
+  "WebGalLanguageServer.isShowHint.enum1": "Front",
+  "WebGalLanguageServer.isShowHint.enum2": "Before variable name",
+  "WebGalLanguageServer.isShowHint.enum3": "After variable name",
+  "WebGalLanguageServer.isShowHint.enum4": "Back",
+  "WebGalLanguageServer.isShowHint.default": "After variable name",
   "WebGalLanguageServer.isShowHint.description": "Show variable type inlay hints"
 }

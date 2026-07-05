@@ -23,6 +23,7 @@ export type LspFeatureOptions = {
 	foldingRange: boolean;
 	definition: boolean;
 	formatting: boolean;
+	inlayHint: boolean;
 };
 
 export type StartServerOptions = {

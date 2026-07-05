@@ -49,6 +49,9 @@ export function startServer(
 
 	connection.onInitialized(() => {
 		registerConnectionHandlers(documents, connection, settings);
+		// 初始配置由客户端通过 webgal/updateConfiguration 自定义通知主动推送，
+		// 不再依赖 workspace/configuration（vscode-languageclient@9 已废弃同步配置特性，
+		// 且 workspace/configuration 的 WorkspaceConfiguration 序列化可能不可靠）
 		server.initialized();
 	});
 

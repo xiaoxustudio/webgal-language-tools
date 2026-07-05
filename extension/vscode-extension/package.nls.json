@@ -15,11 +15,11 @@
 	"configuration.title": "wabgal configuration",
 	"WebGalLanguageServer.maxNumberOfProblems.description": "警告信息的最大数量",
 	"WebGalLanguageServer.isShowWarning.description": "是否显示警告信息",
-	"WebGalLanguageServer.isShowWarning.enum0": "关闭",
-	"WebGalLanguageServer.isShowWarning.enum1": "最前面",
-	"WebGalLanguageServer.isShowWarning.enum2": "变量名前",
-	"WebGalLanguageServer.isShowWarning.enum3": "变量名后",
-	"WebGalLanguageServer.isShowWarning.enum4": "最后面",
-	"WebGalLanguageServer.isShowWarning.default": "变量名后",
+	"WebGalLanguageServer.isShowHint.enum0": "关闭",
+	"WebGalLanguageServer.isShowHint.enum1": "最前面",
+	"WebGalLanguageServer.isShowHint.enum2": "变量名前",
+	"WebGalLanguageServer.isShowHint.enum3": "变量名后",
+	"WebGalLanguageServer.isShowHint.enum4": "最后面",
+	"WebGalLanguageServer.isShowHint.default": "变量名后",
 	"WebGalLanguageServer.isShowHint.description": "是否显示变量类型镶嵌"
 }

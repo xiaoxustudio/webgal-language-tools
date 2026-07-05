@@ -168,13 +168,13 @@
 					"scope": "resource",
 					"type": "string",
 					"enum": [
-						"%WebGalLanguageServer.isShowWarning.enum0%",
-						"%WebGalLanguageServer.isShowWarning.enum1%",
-						"%WebGalLanguageServer.isShowWarning.enum2%",
-						"%WebGalLanguageServer.isShowWarning.enum3%",
-						"%WebGalLanguageServer.isShowWarning.enum4%"
+						"%WebGalLanguageServer.isShowHint.enum0%",
+						"%WebGalLanguageServer.isShowHint.enum1%",
+						"%WebGalLanguageServer.isShowHint.enum2%",
+						"%WebGalLanguageServer.isShowHint.enum3%",
+						"%WebGalLanguageServer.isShowHint.enum4%"
 					],
-					"default": "%WebGalLanguageServer.isShowWarning.default%",
+					"default": "%WebGalLanguageServer.isShowHint.default%",
 					"description": "%WebGalLanguageServer.isShowHint.description%"
 				}
 			}

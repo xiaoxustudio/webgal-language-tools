@@ -6,7 +6,9 @@ import type {
 	DocumentLink,
 	FoldingRange,
 	Hover,
+	InlayHint,
 	Position,
+	Range,
 	LanguageServicePlugin
 } from "@volar/language-server";
 import type { ConnectionDocumentsType } from "@/types";
@@ -29,6 +31,7 @@ import onDefinition from "./onDefinition";
 import onDocumentLinks from "./onDocumentLinks";
 import onFoldingRanges from "./onFoldingRanges";
 import onHover from "./onHover";
+import onInlayHint from "./onInlayHint";
 import onDiagnostics from "./onDiagnostics";
 import type { LanguageServerSettings } from "../server/setting";
 
@@ -56,6 +59,7 @@ export function createWebgalService(
 	const onDocumentLinksHandler = onDocumentLinks();
 	const onFoldingRangesHandler = onFoldingRanges();
 	const onDiagnosticsHandler = onDiagnostics(settings);
+	const onInlayHintHandler = onInlayHint(settings);
 	const services: LanguageServicePlugin = {
 		name: "webgal-service",
 		capabilities: {
@@ -85,7 +89,10 @@ export function createWebgalService(
 			...(featureOptions.foldingRange
 				? { foldingRangeProvider: true }
 				: {}),
-			...(featureOptions.definition ? { definitionProvider: true } : {})
+			...(featureOptions.definition ? { definitionProvider: true } : {}),
+			...(featureOptions.inlayHint
+				? { inlayHintProvider: {} }
+				: {})
 		},
 		create(context) {
 			connection.sendRequest("client/showTip", "Create webgal-service");
@@ -182,7 +189,23 @@ export function createWebgalService(
 							}
 						}
 					: {}),
-				...(featureOptions.diagnostics
+				...(featureOptions.inlayHint
+					? {
+							async provideInlayHints(
+								document: TextDocument,
+								range: Range
+							): Promise<InlayHint[]> {
+								return onInlayHintHandler(
+									document,
+									range,
+									connection,
+									getDefinitionMap(document),
+									getVirtualCodeLines(document)
+								);
+							}
+						}
+					: {}),
+			...(featureOptions.diagnostics
 					? {
 							async provideDiagnostics(
 								document: TextDocument
