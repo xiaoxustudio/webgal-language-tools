@@ -76,7 +76,7 @@ export const analyzeWebgalText = (text: string): IDefinetionMap => {
 	const lines = text.split(/\r?\n/);
 	for (let lineNumber = 0; lineNumber < lines.length; lineNumber++) {
 		const currentLine = lines[lineNumber];
-		const setVarExec = /setVar:\s*(\w+)\s*=\s*([^;]*\S+);?/g.exec(
+		const setVarExec = /setVar:\s*(\w+)\s*=\s*([^;\s]*)(?=;?)/g.exec(
 			currentLine
 		);
 		const labelExec = /label:\s*(\S+);/g.exec(currentLine);

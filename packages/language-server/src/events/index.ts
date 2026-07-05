@@ -90,12 +90,9 @@ export function createWebgalService(
 				? { foldingRangeProvider: true }
 				: {}),
 			...(featureOptions.definition ? { definitionProvider: true } : {}),
-			...(featureOptions.inlayHint
-				? { inlayHintProvider: {} }
-				: {})
+			...(featureOptions.inlayHint ? { inlayHintProvider: {} } : {})
 		},
 		create(context) {
-			connection.sendRequest("client/showTip", "Create webgal-service");
 			const getDefinitionMap = (document: TextDocument) =>
 				getWebgalDefinitionMap(context, document);
 			const getVirtualCodeText = (document: TextDocument) =>
@@ -205,7 +202,7 @@ export function createWebgalService(
 							}
 						}
 					: {}),
-			...(featureOptions.diagnostics
+				...(featureOptions.diagnostics
 					? {
 							async provideDiagnostics(
 								document: TextDocument

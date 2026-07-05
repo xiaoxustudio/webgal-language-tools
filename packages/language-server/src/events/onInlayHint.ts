@@ -13,6 +13,7 @@ function inferType(token: IVToken): string {
 	if (token.isGetUserInput) {
 		return "string";
 	}
+
 	const value = token.value;
 	if (!value) {
 		return "string";
@@ -24,10 +25,7 @@ function inferType(token: IVToken): string {
 	if (/^(true|false)$/i.test(trimmed)) {
 		return "boolean";
 	}
-	if (/^["'].*["']$/.test(trimmed)) {
-		return "string";
-	}
-	return "any";
+	return "string";
 }
 
 export default function (settings: LanguageServerSettings) {
