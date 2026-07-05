@@ -15,7 +15,7 @@ function inferType(token: IVToken): string {
 	}
 	const value = token.value;
 	if (!value) {
-		return "any";
+		return "string";
 	}
 	const trimmed = value.trim();
 	if (/^-?\d+(\.\d+)?$/.test(trimmed)) {
@@ -41,13 +41,7 @@ export default function (settings: LanguageServerSettings) {
 		const config =
 			(await settings.getDocumentSettings(connection, document.uri)) ??
 			defaultSettings;
-		connection.console.info(
-			`[WebGalLanguageServer] InlayHint: isShowHint="${config.isShowHint}", variables=${Object.values(definitionMap.setVar ?? {}).reduce((s, v) => s + v.length, 0)}`
-		);
 		if (config.isShowHint === "关闭") {
-			connection.console.info(
-				`[WebGalLanguageServer] InlayHint suppressed (isShowHint="关闭")`
-			);
 			return [];
 		}
 

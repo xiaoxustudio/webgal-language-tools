@@ -74,26 +74,6 @@ export async function createClient(
 		isShowHint: string;
 	} {
 		const cfg = workspace.getConfiguration("WebGalLanguageServer");
-		// 诊断：打印各层级配置值，定位值来源
-		const inspectWarn = cfg.inspect<boolean>("isShowWarning");
-		const inspectHint = cfg.inspect<string>("isShowHint");
-		console.log(
-			"[WebGalLanguageServer] Config inspect:",
-			JSON.stringify({
-				isShowWarning: {
-					defaultValue: inspectWarn?.defaultValue,
-					globalValue: inspectWarn?.globalValue,
-					workspaceValue: inspectWarn?.workspaceValue,
-					effective: cfg.get<boolean>("isShowWarning", true)
-				},
-				isShowHint: {
-					defaultValue: inspectHint?.defaultValue,
-					globalValue: inspectHint?.globalValue,
-					workspaceValue: inspectHint?.workspaceValue,
-					effective: cfg.get<string>("isShowHint", "变量名后")
-				}
-			}, null, 2)
-		);
 		return {
 			maxNumberOfProblems: cfg.get<number>("maxNumberOfProblems", 1000),
 			isShowWarning: cfg.get<boolean>("isShowWarning", true),
