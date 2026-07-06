@@ -73,11 +73,20 @@ type IMapValue = Record<string, IVToken[]>;
 
 type IChooseMapValue = Record<number, IVChooseToken>; // 行号: 选择
 
+/** 依赖项：表示当前场景文件引用了另一个场景文件 */
+export interface IDepItem {
+	fileName: string; // 依赖的场景文件名（如 "a.txt"）
+	command: string; // 触发依赖的指令类型（callScene | changeScene | choose）
+	position: { line: number; character: number }; // 指令在文件中的位置
+	line: number; // 行号
+}
+
 // 全局映射表
 export interface IDefinetionMap {
 	label: IMapValue;
 	setVar: IMapValue;
 	choose: IChooseMapValue;
+	deps: IDepItem[]; // 当前文件引用的所有场景依赖
 }
 
 // debugger

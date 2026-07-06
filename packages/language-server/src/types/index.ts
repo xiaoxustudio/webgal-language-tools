@@ -5,7 +5,7 @@ import type {
 	TextDocumentChangeEvent,
 	VirtualCode
 } from "@volar/language-server";
-import type { IDefinetionMap } from "@webgal/language-core";
+import type { IDefinetionMap, IDepItem } from "@webgal/language-core";
 import type { TextDocument } from "vscode-languageserver-textdocument";
 import type { URI } from "vscode-uri";
 export interface ServerSettings {
@@ -56,4 +56,6 @@ export type WebgalVirtualCode = VirtualCode & {
 	webgalLines?: string[];
 	webgalLineCommandTypes?: string[];
 	webgalOriginalId?: string;
+	/** 当前文件引用的所有场景依赖 */
+	webgalDeps?: IDepItem[];
 };

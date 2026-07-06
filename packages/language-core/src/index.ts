@@ -2,6 +2,7 @@ import * as expressions from "angular-expressions";
 import type {
 	FileAccessor,
 	IDefinetionMap,
+	IDepItem,
 	IVChooseToken,
 	IVToken
 } from "./types";
@@ -67,11 +68,72 @@ export const getVariableDesc = (lines: string[], startLine: number) => {
 	return desc.join("\n");
 };
 
+export const analyzeWebgalDeps = (text: string): IDepItem[] => {
+	const deps: IDepItem[] = [];
+	const lines = text.split(/\r?\n/);
+	for (let lineNumber = 0; lineNumber < lines.length; lineNumber++) {
+		const currentLine = lines[lineNumber];
+		// callScene:xxx.txt —— 调用场景（执行完会返回）
+		const callSceneExec = /callScene:\s*([^\s;]+)/g.exec(currentLine);
+		if (callSceneExec) {
+			const fileName = callSceneExec[1];
+			if (fileName.endsWith(".txt")) {
+				deps.push({
+					fileName,
+					command: "callScene",
+					position: { line: lineNumber, character: callSceneExec.index },
+					line: lineNumber
+				});
+			}
+		}
+		// changeScene:xxx.txt —— 切换场景
+		const changeSceneExec = /changeScene:\s*([^\s;]+)/g.exec(
+			currentLine
+		);
+		if (changeSceneExec) {
+			const fileName = changeSceneExec[1];
+			if (fileName.endsWith(".txt")) {
+				deps.push({
+					fileName,
+					command: "changeScene",
+					position: {
+						line: lineNumber,
+						character: changeSceneExec.index
+					},
+					line: lineNumber
+				});
+			}
+		}
+		// choose:text1:file1.txt|text2:file2.txt —— 分支选择中的场景跳转
+		const chooseExec = /choose:\s*([^\s;]+)/g.exec(currentLine);
+		if (chooseExec) {
+			const optionsText = chooseExec[1];
+			for (const option of optionsText.split("|")) {
+				const parts = option.split(":");
+				const value = parts[1]?.trim();
+				if (value && value.endsWith(".txt")) {
+					deps.push({
+						fileName: value,
+						command: "choose",
+						position: {
+							line: lineNumber,
+							character: chooseExec.index
+						},
+						line: lineNumber
+					});
+				}
+			}
+		}
+	}
+	return deps;
+};
+
 export const analyzeWebgalText = (text: string): IDefinetionMap => {
 	const map: IDefinetionMap = {
 		label: {},
 		setVar: {},
-		choose: {}
+		choose: {},
+		deps: analyzeWebgalDeps(text)
 	};
 	const lines = text.split(/\r?\n/);
 	for (let lineNumber = 0; lineNumber < lines.length; lineNumber++) {

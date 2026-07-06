@@ -1,5 +1,5 @@
 import { setFsAccessor } from "@webgal/language-core";
-import type { IDefinetionMap } from "@webgal/language-core";
+import type { IDefinetionMap, IDepItem } from "@webgal/language-core";
 import type {
 	Connection,
 	FoldingRange,
@@ -11,6 +11,7 @@ import type { CodeInformation, IScriptSnapshot } from "@volar/language-core";
 import type { TextDocument } from "vscode-languageserver-textdocument";
 import { URI } from "vscode-uri";
 import type { WebgalDocumentLinkCandidate, WebgalVirtualCode } from "@/types";
+import { languageId } from "@/utils/resources";
 
 export function bindCoreFileAccessorToClientVfs(connection: Connection) {
 	const isWindows =
@@ -57,7 +58,8 @@ export const fullCodeInformation: CodeInformation = {
 export const emptyDefinitionMap: IDefinetionMap = {
 	label: {},
 	setVar: {},
-	choose: {}
+	choose: {},
+	deps: []
 };
 
 export const getSnapshotText = (snapshot: IScriptSnapshot) =>
@@ -461,4 +463,200 @@ export function getStageCompletionContext(
 		: fullSegments.slice(0, -1);
 
 	return { replaceRange, fullSegments, querySegments, prefix };
+}
+
+// ========== 依赖体系交互方法 ==========
+
+/**
+ * 全局虚拟代码索引表。
+ *
+ * 采用两级索引：外出 /game/scene/ 前缀后的相对路径做"短键"，
+ * 维护到同一短键下所有完整已归一化 URI 的映射，方便按文件名模糊查找；
+ * 同时在 flatMap 中以完整 URI 为键直接索引，保证 O(1) 精确增删。
+ *
+ * 不同工作区（workspace）产生的路径前缀不同，短键碰撞概率极低；
+ * 搜索函数 `findWebgalVirtualCodeByFileName` / `getParentVirtualCodes`
+ * 会额外通过 `context.env.workspaceFolders` 限定工作区范围，
+ * 确保多工作区场景下数据不会交叉污染。
+ */
+const virtualCodeRegistry = {
+	/** 短键 → 完整 id[] */
+	byShortName: new Map<string, string[]>(),
+	/** 完整 id → WebgalVirtualCode */
+	byFullId: new Map<string, WebgalVirtualCode>()
+};
+
+/** 从 URI 字符串中提取文件名（忽略路径和查询参数） */
+function getFileNameFromUriString(uriString: string): string {
+	try {
+		const uri = URI.parse(uriString);
+		const path = uri.path;
+		const lastSlash = path.lastIndexOf("/");
+		return lastSlash >= 0 ? path.substring(lastSlash + 1) : path;
+	} catch {
+		return uriString;
+	}
+}
+
+/** 获取虚拟代码的归一化完整标识 */
+function getVcFullId(vc: WebgalVirtualCode): string {
+	return (vc.webgalOriginalId ?? vc.id).toLowerCase();
+}
+
+/** 判断虚拟代码是否属于指定的某个工作区 */
+function isVcInWorkspace(vc: WebgalVirtualCode, workspaceFolders: URI[]): boolean {
+	const vcPath = getVcFullId(vc);
+	for (const folder of workspaceFolders) {
+		const folderPath = folder.toString().toLowerCase();
+		if (vcPath.startsWith(folderPath)) {
+			return true;
+		}
+	}
+	return false;
+}
+
+/** 将虚拟代码注册到索引表 */
+export function registerWebgalVirtualCode(vc: WebgalVirtualCode): void {
+	if (vc.languageId !== languageId) {
+		return;
+	}
+	const fullId = getVcFullId(vc);
+	const shortName = getFileNameFromUriString(fullId);
+
+	// 精确索引
+	virtualCodeRegistry.byFullId.set(fullId, vc);
+
+	// 短键索引（用于按文件名查找）
+	const ids = virtualCodeRegistry.byShortName.get(shortName);
+	if (ids) {
+		if (!ids.includes(fullId)) {
+			ids.push(fullId);
+		}
+	} else {
+		virtualCodeRegistry.byShortName.set(shortName, [fullId]);
+	}
+}
+
+/** 从索引表中注销虚拟代码 */
+export function unregisterWebgalVirtualCode(vc: WebgalVirtualCode): void {
+	const fullId = getVcFullId(vc);
+	const shortName = getFileNameFromUriString(fullId);
+
+	virtualCodeRegistry.byFullId.delete(fullId);
+
+	const ids = virtualCodeRegistry.byShortName.get(shortName);
+	if (ids) {
+		const idx = ids.indexOf(fullId);
+		if (idx !== -1) {
+			ids.splice(idx, 1);
+		}
+		if (ids.length === 0) {
+			virtualCodeRegistry.byShortName.delete(shortName);
+		}
+	}
+}
+
+/**
+ * 按文件名查找指定工作区内的虚拟代码
+ * @param context 语言服务上下文（用于获取工作区范围）
+ * @param fileName 目标场景文件名（如 "a.txt"）
+ */
+export function findWebgalVirtualCodeByFileName(
+	context: LanguageServiceContext,
+	fileName: string
+): WebgalVirtualCode | undefined {
+	const targetName = fileName.toLowerCase();
+	const ids = virtualCodeRegistry.byShortName.get(targetName);
+	if (!ids || ids.length === 0) {
+		return undefined;
+	}
+	const workspaceFolders = context.env.workspaceFolders;
+
+	for (const fullId of ids) {
+		const vc = virtualCodeRegistry.byFullId.get(fullId);
+		if (!vc) {
+			continue;
+		}
+		if (!workspaceFolders || workspaceFolders.length === 0) {
+			return vc;
+		}
+		if (isVcInWorkspace(vc, workspaceFolders)) {
+			return vc;
+		}
+	}
+	return undefined;
+}
+
+/** 获取当前文档的完整依赖列表 */
+export function getWebgalDeps(
+	context: LanguageServiceContext,
+	document: TextDocument
+): IDepItem[] {
+	const { virtualCode } = getSourceVirtualCode(context, document);
+	return (
+		virtualCode?.webgalDeps ?? virtualCode?.webgalDefinitionMap?.deps ?? []
+	);
+}
+
+/**
+ * 获取 deps 数组中指定索引项对应的虚拟代码（被依赖方）
+ * @param context  语言服务上下文
+ * @param document 当前文档
+ * @param depIndex deps 数组索引
+ * @returns 对应依赖场景的虚拟代码，找不到返回 undefined
+ */
+export function getDepItemVirtualCode(
+	context: LanguageServiceContext,
+	document: TextDocument,
+	depIndex: number
+): WebgalVirtualCode | undefined {
+	const deps = getWebgalDeps(context, document);
+	if (depIndex < 0 || depIndex >= deps.length) {
+		return undefined;
+	}
+	return findWebgalVirtualCodeByFileName(context, deps[depIndex].fileName);
+}
+
+/**
+ * 获取父级（被依赖方）虚拟代码列表——即哪些场景文件依赖了当前文件。
+ * 扫描索引表中与当前文档同工作区的所有虚拟代码，
+ * 找出 deps 中包含当前文件名的虚拟代码。
+ * @returns 所有依赖当前文件的虚拟代码数组（已限定工作区）
+ */
+export function getParentVirtualCodes(
+	context: LanguageServiceContext,
+	document: TextDocument
+): WebgalVirtualCode[] {
+	const { virtualCode: currentVc } = getSourceVirtualCode(context, document);
+	if (!currentVc) {
+		return [];
+	}
+
+	const currentFileName = getFileNameFromUriString(
+		getVcFullId(currentVc)
+	);
+	const workspaceFolders = context.env.workspaceFolders;
+
+	const parents: WebgalVirtualCode[] = [];
+	for (const [, vc] of virtualCodeRegistry.byFullId) {
+		if (vc === currentVc) {
+			continue;
+		}
+		// 限定同工作区
+		if (
+			workspaceFolders &&
+			!isVcInWorkspace(vc, workspaceFolders)
+		) {
+			continue;
+		}
+		const vcDeps = vc.webgalDeps ?? vc.webgalDefinitionMap?.deps;
+		if (
+			vcDeps?.some(
+				(dep) => dep.fileName.toLowerCase() === currentFileName
+			)
+		) {
+			parents.push(vc);
+		}
+	}
+	return parents;
 }

@@ -1,12 +1,13 @@
 import type { WebgalDocumentLinkCandidate, WebgalVirtualCode } from "@/types";
-import { analyzeWebgalText } from "@webgal/language-core";
+import { analyzeWebgalDeps, analyzeWebgalText } from "@webgal/language-core";
 import {
 	buildLineStarts,
 	emptyDefinitionMap,
 	fullCodeInformation,
 	getLineCommandType,
 	getLineFromOffset,
-	getSnapshotText
+	getSnapshotText,
+	registerWebgalVirtualCode
 } from "@/utils";
 import { languageId } from "@/utils/resources";
 import type { IScriptSnapshot } from "@volar/language-core";
@@ -81,9 +82,10 @@ export const createWebgalVirtualCode = (
 	const lineCommandTypes = lines.map(getLineCommandType);
 	const map =
 		languageId === "webgal" ? analyzeWebgalText(text) : emptyDefinitionMap;
+	const deps = languageId === "webgal" ? analyzeWebgalDeps(text) : [];
 	const linkCandidates = analyzeWebgalDocumentLinks(lines);
 	const foldingRanges = analyzeWebgalFoldingRanges(text);
-	return {
+	const virtualCode: WebgalVirtualCode = {
 		id: normalizedId,
 		languageId,
 		snapshot,
@@ -100,8 +102,11 @@ export const createWebgalVirtualCode = (
 		webgalDocumentLinkCandidates: linkCandidates,
 		webgalFoldingRanges: foldingRanges,
 		webgalLines: lines,
-		webgalLineCommandTypes: lineCommandTypes
+		webgalLineCommandTypes: lineCommandTypes,
+		webgalDeps: deps
 	};
+	registerWebgalVirtualCode(virtualCode);
+	return virtualCode;
 };
 
 export const updateWebgalVirtualCode = (
@@ -135,12 +140,15 @@ export const updateWebgalVirtualCode = (
 		virtualCode.webgalDocumentLinkCandidates =
 			analyzeWebgalDocumentLinks(lines);
 		virtualCode.webgalFoldingRanges = analyzeWebgalFoldingRanges(text);
+		virtualCode.webgalDeps = analyzeWebgalDeps(text);
 	} else {
 		virtualCode.webgalDefinitionMap = emptyDefinitionMap;
 		virtualCode.webgalDocumentLinkCandidates = [];
 		virtualCode.webgalFoldingRanges = [];
 		virtualCode.webgalLines = [];
 		virtualCode.webgalLineCommandTypes = [];
+		virtualCode.webgalDeps = [];
 	}
+	registerWebgalVirtualCode(virtualCode);
 	return virtualCode;
 };
