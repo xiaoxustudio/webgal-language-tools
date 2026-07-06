@@ -115,7 +115,7 @@ export function createWebgalService(
 								position: Position
 							): Promise<CompletionList> {
 								return {
-									isIncomplete: false,
+									isIncomplete: true,
 									items: await onCompletionHandler(
 										document,
 										position,

@@ -162,11 +162,35 @@ export default function () {
 			!!currentLine.match(/\s-(enter|exit)=[^\s;]*$/) &&
 			animationCommandTypes.has(commandType);
 
+		// 输入 - 时仅展示参数补全（-next, -when, -continue 等），不与资源文件补全混合
+		if (token.startsWith("-") && wordMeta) {
+			const keyData =
+				WebGALKeywords[wordMeta.word as CommandNameSpecial] ??
+				WebGALKeywords["say"];
+			const data = [...keyData.args, ...globalArgs].map((arg) => {
+				return {
+					label: arg.label,
+					kind: CompletionItemKind.Constant,
+					documentation: arg.documentation,
+					detail: arg.detail
+				};
+			}) as CompletionItem[];
+			const uniqueData = data.filter(
+				(parentItem, index, self) =>
+					index ===
+					self.findIndex(
+						(item) => item.label === parentItem.label
+					)
+			);
+			CompletionItemSuggestions.push(...uniqueData);
+			return CompletionItemSuggestions;
+		}
+
 		if (
-			token.startsWith("-") ||
 			isResourceCommand ||
 			isAnimationArgCompletion
 		) {
+			let hasResourceResults = false;
 			if (enableResourceCompletion) {
 				let resourceBaseDir: string | undefined;
 				let subDir = "";
@@ -199,87 +223,99 @@ export default function () {
 					} else {
 						subDir = getPath(currentLine);
 					}
+					// 从用户正在输入的 token 中提取过滤前缀
+					if (token && !token.startsWith("-")) {
+						const lastSlash = token.lastIndexOf("/");
+						filterPrefix =
+							lastSlash >= 0
+								? token.slice(lastSlash + 1)
+								: token;
+					}
 				}
 				if (resourceBaseDir) {
-					const dirs = await connection.sendRequest<DirectoryEntry[]>(
-						"client/getResourceDirectory",
-						subDir ? [resourceBaseDir, subDir] : [resourceBaseDir]
-					);
-					if (dirs) {
-						const visibleDirs = dirs.filter(
-							(dir) => !dir.name.startsWith(".")
-						);
-						if (isAnimationSuggestion) {
-							const filtered = visibleDirs
-								.filter(
-									(file) =>
-										file.name !== "animationTable.json"
-								)
-								.filter((file) =>
-									filterPrefix
-										? file.name.startsWith(filterPrefix)
-										: true
-								);
-							for (const file of filtered) {
-								if (file.isDirectory) {
-									const dirName = `${file.name}/`;
-									CompletionItemSuggestions.push({
-										label: dirName,
-										insertText: dirName,
-										kind: CompletionItemKind.Folder
-									} satisfies CompletionItem);
-								} else {
-									const insertName = file.name.endsWith(
-										".json"
+					const requestUrls = subDir
+						? [resourceBaseDir, subDir]
+						: [resourceBaseDir];
+					try {
+						const dirs =
+							await connection.sendRequest<DirectoryEntry[]>(
+								"client/getResourceDirectory",
+								requestUrls
+							);
+						if (dirs && dirs.length > 0) {
+							const visibleDirs = dirs.filter(
+								(dir) => !dir.name.startsWith(".")
+							);
+							if (isAnimationSuggestion) {
+								const filtered = visibleDirs
+									.filter(
+										(file) =>
+											file.name !==
+											"animationTable.json"
 									)
-										? file.name.slice(0, -5)
-										: file.name;
+									.filter((file) =>
+										filterPrefix
+											? file.name.startsWith(
+													filterPrefix
+												)
+											: true
+									);
+								for (const file of filtered) {
+									if (file.isDirectory) {
+										const dirName = `${file.name}/`;
+										CompletionItemSuggestions.push({
+											label: dirName,
+											insertText: dirName,
+											kind: CompletionItemKind.Folder
+										} satisfies CompletionItem);
+									} else {
+										const insertName = file.name.endsWith(
+											".json"
+										)
+											? file.name.slice(0, -5)
+											: file.name;
+										CompletionItemSuggestions.push({
+											label: insertName,
+											insertText: insertName,
+											kind: CompletionItemKind.File
+										} satisfies CompletionItem);
+									}
+								}
+							} else {
+								// 通用资源/场景文件补全：按用户输入前缀过滤
+								const filtered = filterPrefix
+									? visibleDirs.filter((entry) =>
+											entry.name
+												.toLowerCase()
+												.startsWith(
+													filterPrefix.toLowerCase()
+												)
+										)
+									: visibleDirs;
+								for (const dir of filtered) {
 									CompletionItemSuggestions.push({
-										label: insertName,
-										insertText: insertName,
-										kind: CompletionItemKind.File
+										label: dir.name,
+										insertText: dir.name,
+										kind: dir.isDirectory
+											? CompletionItemKind.Folder
+											: CompletionItemKind.File
 									} satisfies CompletionItem);
 								}
 							}
-						} else {
-							for (const dir of visibleDirs) {
-								CompletionItemSuggestions.push({
-									label: dir.name,
-									insertText: dir.name,
-									kind: dir.isDirectory
-										? CompletionItemKind.Folder
-										: CompletionItemKind.File
-								} satisfies CompletionItem);
-							}
+							hasResourceResults =
+								CompletionItemSuggestions.length > 0;
 						}
+					} catch {
+						// 资源目录请求失败（VFS 未就绪、路径不存在等），回退到基础补全
 					}
 				}
 			}
-
-			if (wordMeta && token.startsWith("-")) {
-				const keyData =
-					WebGALKeywords[wordMeta.word as CommandNameSpecial] ??
-					WebGALKeywords["say"];
-
-				const data = [...keyData.args, ...globalArgs].map((arg) => {
-					return {
-						label: arg.label,
-						kind: CompletionItemKind.Constant,
-						documentation: arg.documentation,
-						detail: arg.detail
-					};
-				}) as CompletionItem[];
-
-				const uniqueData = data.filter(
-					(parentItem, index, self) =>
-						index ===
-						self.findIndex(
-							(item) => item.label === parentItem.label
-						)
-				);
-				CompletionItemSuggestions.push(...uniqueData);
+			// 仅在确实获得了资源补全结果时才提前返回；
+			// 否则回退到基础补全（变量 + 命令 + $stage/$userData）
+			if (hasResourceResults) {
+				return CompletionItemSuggestions;
 			}
-			return CompletionItemSuggestions;
+			// fall through → 基础补全
 		}
 
 		if (token) {

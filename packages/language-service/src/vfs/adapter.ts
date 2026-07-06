@@ -56,7 +56,8 @@ export function createVirtualFileSystem(
 			return null;
 		},
 		getResourceDirectory: async (urls) => {
-			const target = joinPaths(root, ...urls);
+			// 资源目录在 game/ 子目录下（如 game/scene/, game/background/ 等）
+			const target = joinPaths(root, "game", ...urls);
 			const entries = await fs.readDirectory(pathToUri(target));
 			return entries.map(([name, type]) => ({
 				name,

@@ -420,7 +420,8 @@ export function createNodeFileSystem(
 	};
 
 	const getResourceDirectory = async (urls: string[]) => {
-		const target = path.join(root, ...urls);
+		// 资源目录在 game/ 子目录下（如 game/scene/, game/background/ 等）
+		const target = path.join(root, "game", ...urls);
 		return readDirectory(target);
 	};
 
