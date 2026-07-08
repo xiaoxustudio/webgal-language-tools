@@ -1,6 +1,6 @@
 {
 	"name": "@webgal/language-server",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"main": "build/node.cjs",
 	"module": "build/node.mjs",
 	"types": "build/node.d.mts",
