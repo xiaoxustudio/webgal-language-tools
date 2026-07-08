@@ -2,6 +2,20 @@
 
 All notable changes to the "webgal-for-vscode" extension will be documented in this file.
 
+## [2.0.4] - 2026.07.9
+### 🚀 特性
+- **core,server**：添加场景依赖分析 - 作者 **xiaoxustudio** [<samp>(f3a72)</samp>](https://github.com/xiaoxustudio/webgal-language-tools/commit/f3a7270)  
+- **language-server**：添加鼠标悬停时的图片预览 - 作者 **xiaoxustudio** [<samp>(9ed6a)</samp>](https://github.com/xiaoxustudio/webgal-language-tools/commit/9ed6a54)  
+- **lsp**：通过通知重启服务器 - 作者 **xiaoxustudio** [<samp>(ee656)</samp>](https://github.com/xiaoxustudio/webgal-language-tools/commit/ee6565c)  
+- **vscode**：添加重启LSP服务器命令 - 作者 **xiaoxustudio** [<samp>(8ff10)</samp>](https://github.com/xiaoxustudio/webgal-language-tools/commit/8ff10ce)
+### 🐞 修复
+- WebgalFoldingRanges 无法工作 - 作者 **xiaoxustudio** [<samp>(125a3)</samp>](https://github.com/xiaoxustudio/webgal-language-tools/commit/125a3ba)
+- **core**：全局 navigator 对象的 TypeScript 错误 - 作者 **xiaoxustudio** [<samp>(ed5df)</samp>](https://github.com/xiaoxustudio/webgal-language-tools/commit/ed5df38)
+- **lang-server**：减少日志噪音并优化解析 - 作者 **xiaoxustudio** [<samp>(93fdc)</samp>](https://github.com/xiaoxustudio/webgal-language-tools/commit/93fdc3a)
+- **language-server**：修复资源路径完成和回退逻辑 - 作者 **xiaoxustudio** [<samp>(c2d03)</samp>](https://github.com/xiaoxustudio/webgal-language-tools/commit/c2d038f)
+- **server**：验证无效 - 作者 **xiaoxustudio** [<samp>(5d17e)</samp>](https://github.com/xiaoxustudio/webgal-language-tools/commit/5d17e2c)
+- **service**：改进 getState 函数 - 作者 **xiaoxustudio** [<samp>(cb8cc)</samp>](https://github.com/xiaoxustudio/webgal-language-tools/commit/cb8cc7e)
+
 ## [2.0.3] - 2026.05.17
 
 - 增加格式化文件`fmt.json`，可通过指令生成该文件
