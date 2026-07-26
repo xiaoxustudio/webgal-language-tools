@@ -335,10 +335,9 @@ export default function () {
 			}
 		}
 
-		if (
-			(!wordMeta && position.character === 0) ||
-			(token && !~currentLine.indexOf(":"))
-		) {
+		const textBeforeCursor = currentLine.slice(0, position.character);
+		const isValidCommandPrefix = /^[A-Za-z]\w*$/.test(textBeforeCursor);
+		if (isValidCommandPrefix) {
 			CompletionItemSuggestions.push(...WebgGALKeywordsCompletionMap);
 		}
 
