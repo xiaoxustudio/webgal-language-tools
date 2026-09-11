@@ -1,28 +1,31 @@
 packages:
-    - packages/*
-    - extension/*
+  - packages/*
+  - extension/*
 
-onlyBuiltDependencies:
-    - "@vscode/vsce-sign"
-    - esbuild
-    - keytar
-    - nx
+allowBuilds:
+  nx: true
 
 catalogs:
-    default:
-        "vite": "^8.0.13"
-        "tsdown": "^0.22.0"
-        "typescript": "^5.5.4"
-        "@codingame/monaco-vscode-editor-api": "26.1.1"
-        "@codingame/monaco-vscode-extension-api": "26.1.1"
-        "@codingame/monaco-vscode-api": "26.1.1"
-        "@codingame/monaco-vscode-extensions-service-override": "26.1.1"
-        "@codingame/monaco-vscode-files-service-override": "26.1.1"
-        "@codingame/monaco-vscode-textmate-service-override": "26.1.1"
-        "@codingame/monaco-vscode-languages-service-override": "26.1.1"
-        "@codingame/monaco-vscode-theme-service-override": "26.1.1"
-        "monaco-editor": "npm:@codingame/monaco-vscode-editor-api@26.1.1"
-        vscode: "npm:@codingame/monaco-vscode-extension-api@26.1.1"
+  default:
+    '@codingame/monaco-vscode-api': 26.1.1
+    '@codingame/monaco-vscode-editor-api': 26.1.1
+    '@codingame/monaco-vscode-extension-api': 26.1.1
+    '@codingame/monaco-vscode-extensions-service-override': 26.1.1
+    '@codingame/monaco-vscode-files-service-override': 26.1.1
+    '@codingame/monaco-vscode-languages-service-override': 26.1.1
+    '@codingame/monaco-vscode-textmate-service-override': 26.1.1
+    '@codingame/monaco-vscode-theme-service-override': 26.1.1
+    monaco-editor: npm:@codingame/monaco-vscode-editor-api@26.1.1
+    tsdown: ^0.22.0
+    typescript: ^5.9.3
+    vite: ^8.0.13
+    vscode: npm:@codingame/monaco-vscode-extension-api@26.1.1
+
+onlyBuiltDependencies:
+  - '@vscode/vsce-sign'
+  - esbuild
+  - keytar
+  - nx
 
 overrides:
-    vite: "^8.0.13"
+  vite: ^8.0.13
