@@ -5,6 +5,9 @@
 		"type": "git",
 		"url": "https://github.com/xiaoxustudio/webgal-language-tools.git"
 	},
+	"engines": {
+		"node": ">=22.0.0"
+	},
 	"scripts": {
 		"dev": "lerna run dev --scope playground",
 		"dev:lsp": "lerna run dev:ws --scope playground",
